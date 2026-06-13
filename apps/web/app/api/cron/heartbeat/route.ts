@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-// Fallback local db wrapper for simulation, in prod this points to real supabase pg driver
-import { LocalDbController } from "@aether/db";
+import { LocalDbController, createAetherClient } from "@aether/db";
 
 export const dynamic = "force-dynamic";
 
@@ -12,8 +11,29 @@ export async function GET(req: Request) {
     return NextResponse.json({ ok: false }, { status: 401 });
   }
 
+  // If Supabase URL is configured, run query on Supabase database to keep it active
+  if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    try {
+      console.log("[Keepalive] Querying Supabase instance to prevent Free-Tier pausing.");
+      const supabase = createAetherClient();
+      const { data, error } = await supabase.from("tenants").select("id").limit(1);
+      
+      if (error) throw error;
+      
+      return NextResponse.json({
+        ok: true,
+        at: new Date().toISOString(),
+        target: "supabase",
+        message: "Supabase free-tier survival keepalive executed successfully."
+      });
+    } catch (error: any) {
+      console.error("[Keepalive] Supabase query failed:", error.message || error);
+      return NextResponse.json({ ok: false, error: "Supabase unreachable" }, { status: 500 });
+    }
+  }
+
   try {
-    console.log("[Keepalive] Simulating Heartbeat to Supabase instance.");
+    console.log("[Keepalive] Simulating Heartbeat to Local Database instance.");
     // Simulate updating the heartbeat table to prevent Free-Tier pausing
     LocalDbController.addSkillRun({
       tenantSlug: "system",
@@ -24,7 +44,12 @@ export async function GET(req: Request) {
       response: '{"beat": "success"}'
     });
 
-    return NextResponse.json({ ok: true, at: new Date().toISOString(), message: "Free-tier survival keepalive executed." });
+    return NextResponse.json({
+      ok: true,
+      at: new Date().toISOString(),
+      target: "local_db",
+      message: "Free-tier survival keepalive executed (simulation)."
+    });
   } catch (error) {
     return NextResponse.json({ ok: false, error: "Database unreachable" }, { status: 500 });
   }
