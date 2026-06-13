@@ -857,7 +857,7 @@ export default function TenantDashboard() {
         showToast("Page saved successfully!");
         setEditingPage(null);
       }
-    } catch (_) { showToast("Failed to save page", "error"); }
+    } catch (_) { showToast("Failed to save page"); }
     finally { setPagesSaving(false); }
   };
   const [storeKitchenOffers, setStoreKitchenOffers] = useState<{ title: string, desc: string, badge: string, image?: string }[]>([
