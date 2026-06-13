@@ -64,7 +64,7 @@ import {
   ArrowLeft, LayoutTemplate, Component, Monitor, Smartphone, Undo2, Redo2, Save, MousePointerClick, Settings2, LayoutDashboard, Code, Share2, CheckCircle2, XCircle,
   Bell, Bike, Timer, MapPin, Phone, Flame, Gift, Star, Zap, AlertCircle, Navigation, RefreshCw,
   WalletCards, BookOpen, UserCircle, MessageCircle, BarChart3, Fingerprint, Network, Puzzle, Play, ShieldAlert, BadgeInfo,
-  Clock, ChefHat, Volume2, VolumeX, QrCode, Archive } from 'lucide-react';
+  Clock, ChefHat, Volume2, VolumeX, QrCode, Archive, ChevronRight } from 'lucide-react';
 import { QRCodeSVG } from "qrcode.react";
 import ChatWidgetUI from "@/components/ChatWidgetUI";
 import BookingSuiteTab from "@/components/BookingSuiteTab";
