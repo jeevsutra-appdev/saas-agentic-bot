@@ -1998,7 +1998,7 @@ export default function TenantDashboard() {
           setOrdersList(prev => {
             // Merge: update existing orders with latest delivery status, keep new ones on top
             const updated = new Map(data.orders.map((o: any) => [o.id, o]));
-            return prev.map(o => updated.has(o.id) ? { ...o, ...updated.get(o.id) } : o);
+            return prev.map(o => updated.has(o.id) ? { ...o, ...(updated.get(o.id) as any) } : o);
           });
         }
       } catch (_) {}
