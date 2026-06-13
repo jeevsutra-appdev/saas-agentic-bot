@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Funnel Bundle — 3 High-Converting Funnel Systems</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#02040A;--bg1:#070A13;--bg2:#0D1117;--text:#e2e8f0;--muted:#64748b;--border:rgba(255,255,255,0.08)}
+html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+/* NAV */
+nav{background:rgba(2,4,10,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{font-size:20px;font-weight:900;color:white;letter-spacing:-0.5px}
+.logo span{background:linear-gradient(135deg,#6366f1,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+/* HERO */
+.hero{padding:80px 0 60px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(99,102,241,0.15),transparent 70%);pointer-events:none}
+.hero h1{font-size:clamp(32px,5vw,58px);font-weight:900;color:white;letter-spacing:-1.5px;line-height:1.1;margin-bottom:16px}
+.hero p{font-size:16px;color:var(--muted);max-width:600px;margin:0 auto 40px;line-height:1.7}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.3);color:#a5b4fc;font-size:12px;font-weight:700;padding:6px 16px;border-radius:99px;margin-bottom:24px;letter-spacing:0.06em;text-transform:uppercase}
+.gradient-text{background:linear-gradient(135deg,#a5b4fc,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+/* STATS BAR */
+.stats-bar{background:var(--bg1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:24px 0}
+.stats-inner{display:flex;flex-wrap:wrap;justify-content:center;gap:40px}
+.stat{text-align:center}.stat .val{font-size:24px;font-weight:900;color:white}.stat .lbl{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px}
+/* FUNNELS */
+.funnels{padding:80px 0}
+.section-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px}
+.section-title{font-size:clamp(26px,4vw,40px);font-weight:900;color:white;letter-spacing:-1px;line-height:1.15;margin-bottom:8px}
+.section-sub{font-size:15px;color:var(--muted);margin-bottom:56px;max-width:560px}
+.funnel-card{border-radius:24px;border:1px solid var(--border);overflow:hidden;margin-bottom:32px;transition:border-color 0.3s}
+.funnel-card:hover{border-color:rgba(255,255,255,0.15)}
+.funnel-header{padding:32px 36px;position:relative;overflow:hidden}
+.funnel-glow{position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;opacity:0.15;filter:blur(40px);pointer-events:none}
+.funnel-tag{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;padding:4px 12px;border-radius:99px;margin-bottom:16px}
+.funnel-emoji{font-size:36px;margin-bottom:12px;display:block}
+.funnel-name{font-size:22px;font-weight:900;color:white;margin-bottom:6px}
+.funnel-desc{font-size:13px;color:rgba(255,255,255,0.5);line-height:1.6;max-width:560px}
+.funnel-target{display:flex;align-items:center;gap:6px;margin-top:12px;font-size:11px;color:rgba(255,255,255,0.4);font-weight:600}
+/* PAGE SEQUENCE */
+.funnel-pages{background:var(--bg2);padding:0 36px 28px;border-top:1px solid var(--border)}
+.pages-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);padding:20px 0 14px}
+.pages-flow{display:flex;flex-wrap:wrap;gap:0;align-items:center}
+.page-step{display:flex;flex-direction:column;gap:4px;flex:1;min-width:140px}
+.page-num{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;opacity:0.5;margin-bottom:2px}
+.page-link{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;border:1px solid var(--border);text-decoration:none;color:white;font-size:12px;font-weight:700;transition:all 0.2s;background:rgba(255,255,255,0.03)}
+.page-link:hover{background:rgba(255,255,255,0.08);transform:translateY(-1px)}
+.page-link .page-icon{font-size:14px;flex-shrink:0}
+.page-link .page-info{display:flex;flex-direction:column;gap:1px}
+.page-link .page-type{font-size:10px;opacity:0.5;font-weight:600}
+.page-arrow{font-size:16px;color:var(--muted);padding:0 6px;flex-shrink:0;display:flex;align-items:center}
+.customize-note{display:flex;align-items:center;gap:8px;margin-top:20px;padding:12px 16px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;font-size:11px;color:var(--muted)}
+/* HOW TO CUSTOMIZE */
+.customize{padding:80px 0;background:var(--bg1)}
+.guide-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;margin-top:48px}
+.guide-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px}
+.guide-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:white;margin-bottom:14px}
+.guide-card h4{font-size:15px;font-weight:800;color:white;margin-bottom:8px}
+.guide-card p{font-size:13px;color:var(--muted);line-height:1.65}
+code{font-family:monospace;background:rgba(255,255,255,0.06);padding:2px 6px;border-radius:4px;font-size:12px;color:#a5b4fc}
+/* VAR TABLE */
+.var-table{width:100%;border-collapse:collapse;margin-top:32px;font-size:13px}
+.var-table th{text-align:left;padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:0.08em;font-weight:700}
+.var-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--text)}
+.var-table td:first-child{font-family:monospace;color:#a5b4fc;font-size:12px}
+/* FOOTER */
+footer{background:var(--bg);border-top:1px solid var(--border);padding:40px 0;text-align:center}
+footer p{font-size:13px;color:var(--muted)}
+/* RESPONSIVE */
+@media(max-width:768px){.funnel-header{padding:24px 20px}.funnel-pages{padding:0 20px 20px}.pages-flow{gap:6px}.page-arrow{display:none}.page-step{min-width:calc(50% - 8px)}.stats-inner{gap:24px}}
+</style>
+</head>
+<body>
+<nav><div class="container"><div class="nav-inner">
+  <div class="logo">Funnel<span>Bundle</span></div>
+  <div style="font-size:13px;color:var(--muted);font-weight:600">3 Complete Funnel Systems · 15 Pages Total</div>
+</div></div></nav>
+
+<!-- HERO -->
+<section class="hero"><div class="container">
+  <div class="hero-badge">⚡ Complete Funnel Bundle — 3 Systems · 15 Pages</div>
+  <h1>Your Complete <span class="gradient-text">High-Converting</span><br>Funnel Bundle</h1>
+  <p>3 psychology-engineered funnel systems with Landing Page → Checkout → Upsell → Downsell → Thank You pages. Click any page to preview. Edit the CSS variables to customize colors, copy, and branding in minutes.</p>
+</div></section>
+
+<!-- STATS BAR -->
+<div class="stats-bar"><div class="container"><div class="stats-inner">
+  <div class="stat"><div class="val">3</div><div class="lbl">Complete Funnels</div></div>
+  <div class="stat"><div class="val">15</div><div class="lbl">Total Pages</div></div>
+  <div class="stat"><div class="val">3</div><div class="lbl">Buyer Targets</div></div>
+  <div class="stat"><div class="val">∞</div><div class="lbl">Customizable</div></div>
+  <div class="stat"><div class="val">100%</div><div class="lbl">Standalone HTML</div></div>
+</div></div></div>
+
+<!-- FUNNELS -->
+<section class="funnels"><div class="container">
+  <div class="section-label" style="color:#6366f1">3 Complete Funnel Systems</div>
+  <h2 class="section-title">Choose Your Funnel — <span class="gradient-text">Click to Preview Any Page</span></h2>
+  <p class="section-sub">Each funnel is fully independent. All pages are linked to each other in the correct sequence.</p>
+
+  <!-- FUNNEL 1 -->
+  <div class="funnel-card">
+    <div class="funnel-header" style="background:linear-gradient(135deg,#0F0B2A 0%,#070A13 100%)">
+      <div class="funnel-glow" style="background:#6366f1"></div>
+      <div class="funnel-tag" style="background:rgba(99,102,241,0.15);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3)">🚀 Funnel 1 of 3</div>
+      <span class="funnel-emoji">🚀</span>
+      <div class="funnel-name">Agency Growth Machine</div>
+      <div class="funnel-desc">High-authority B2B funnel for marketing agencies & consultants. ROI framing, authority signals, risk reversal. Converts cold leads into $297/month retainer clients.</div>
+      <div class="funnel-target">🎯 Target: Marketing Agencies · B2B SaaS · Consultants &nbsp;|&nbsp; 💰 Price: $297/mo membership</div>
+    </div>
+    <div class="funnel-pages">
+      <div class="pages-label">📂 Page Sequence (click to open)</div>
+      <div class="pages-flow">
+        <div class="page-step">
+          <div class="page-num">Page 1 — Landing</div>
+          <a href="agency-growth.html" target="_blank" class="page-link" style="border-color:rgba(99,102,241,0.4);background:rgba(99,102,241,0.08)">
+            <span class="page-icon">🏠</span>
+            <div class="page-info"><span>Agency Growth Machine</span><span class="page-type">Main Landing Page</span></div>
+          </a>
+        </div>
+        <div class="page-arrow">→</div>
+        <div class="page-step">
+          <div class="page-num">Page 2 — Checkout</div>
+          <a href="agency-checkout.html" target="_blank" class="page-link" style="border-color:rgba(99,102,241,0.25)">
+            <span class="page-icon">💳</span>
+            <div class="page-info"><span>Secure Checkout</span><span class="page-type">Order Form</span></div>
+          </a>
+        </div>
+        <div class="page-arrow">→</div>
+        <div class="page-step">
+          <div class="page-num">Page 3 — Upsell</div>
+          <a href="agency-upsell.html" target="_blank" class="page-link" style="border-color:rgba(99,102,241,0.25)">
+            <span class="page-icon">⬆️</span>
+            <div class="page-info"><span>VIP Mastermind Add-On</span><span class="page-type">One-Time Upsell</span></div>
+          </a>
+        </div>
+        <div class="page-arrow">→</div>
+        <div class="page-step">
+          <div class="page-num">Page 4 — Downsell</div>
+          <a href="agency-downsell.html" target="_blank" class="page-link" style="border-color:rgba(99,102,241,0.25)">
+            <span class="page-icon">⬇️</span>
+            <div class="page-info"><span>Starter Templates Pack</span><span class="page-type">One-Time Downsell</span></div>
+          </a>
+        </div>
+        <div class="page-arrow">→</div>
+        <div class="page-step">
+          <div class="page-num">Page 5 — Thank You</div>
+          <a href="agency-thankyou.html" target="_blank" class="page-link" style="border-color:rgba(99,102,241,0.25)">
+            <span class="page-icon">🎉</span>
+            <div class="page-info"><span>Welcome to Agency Scale</span><span class="page-type">Thank You + Access</span></div>
+          </a>
+        </div>
+      </div>
+      <div class="customize-note">🎨 To customize: Open any file → edit the <code>:root { --primary: #6366f1 }</code> CSS variables at the top of the &lt;style&gt; block</div>
+    </div>
+  </div>
+
+  <!-- FUNNEL 2 -->
+  <div class="funnel-card">
+    <div class="funnel-header" style="background:linear-gradient(135deg,#150202 0%,#070A13 100%)">
+      <div class="funnel-glow" style="background:#ef4444"></div>
+      <div class="funnel-tag" style="background:rgba(239,68,68,0.15);color:#fca5a5;border:1px solid rgba(239,68,68,0.3)">🔥 Funnel 2 of 3</div>
+      <span class="funnel-emoji">🔥</span>
+      <div class="funnel-name">Flash Sale Crusher</div>
+      <div class="funnel-desc">High-urgency e-commerce funnel for impulse buyers. Countdown timer, scarcity framing, price anchoring. Converts browsers to buyers at $97 (slashed from $297) in minutes.</div>
+      <div class="funnel-target">🎯 Target: E-Commerce · Flash Sales · Product Launches &nbsp;|&nbsp; 💰 Price: $97 flash sale</div>
+    </div>
+    <div class="funnel-pages">
+      <div class="pages-label">📂 Page Sequence (click to open)</div>
+      <div class="pages-flow">
+        <div class="page-step">
+          <div class="page-num">Page 1 — Landing</div>
+          <a href="flash-sale.html" target="_blank" class="page-link" style="border-color:rgba(239,68,68,0.4);background:rgba(239,68,68,0.08)">
+            <span class="page-icon">🏠</span>
+            <div class="page-info"><span>Flash Sale Crusher</span><span class="page-type">Main Landing Page</span></div>
+          </a>
+        </div>
+        <div class="page-arrow">→</div>
+        <div class="page-step">
+          <div class="page-num">Page 2 — Checkout</div>
+          <a href="flash-checkout.html" target="_blank" class="page-link" style="border-color:rgba(239,68,68,0.25)">
+            <span class="page-icon">💳</span>
+            <div class="page-info"><span>Secure Checkout</span><span class="page-type">Order Form</span></div>
+          </a>
+        </div>
+        <div class="page-arrow">→</div>
+        <div class="page-step">
+          <div class="page-num">Page 3 — Upsell</div>
+          <a href="flash-upsell.html" target="_blank" class="page-link" style="border-color:rgba(239,68,68,0.25)">
+            <span class="page-icon">⬆️</span>
+            <div class="page-info"><span>Done-For-You Templates</span><span class="page-type">One-Time Upsell</span></div>
+          </a>
+        </div>
+        <div class="page-arrow">→</div>
+        <div class="page-step">
+          <div class="page-num">Page 4 — Downsell</div>
+          <a href="flash-downsell.html" target="_blank" class="page-link" style="border-color:rgba(239,68,68,0.25)">
+            <span class="page-icon">⬇️</span>
+            <div class="page-info"><span>Email Swipe File</span><span class="page-type">One-Time Downsell</span></div>
+          </a>
+        </div>
+        <div class="page-arrow">→</div>
+        <div class="page-step">
+          <div class="page-num">Page 5 — Thank You</div>
+          <a href="flash-thankyou.html" target="_blank" class="page-link" style="border-color:rgba(239,68,68,0.25)">
+            <span class="page-icon">🎉</span>
+            <div class="page-info"><span>Order Confirmed!</span><span class="page-type">Thank You + Access</span></div>
+          </a>
+        </div>
+      </div>
+      <div class="customize-note">🎨 To customize: Open any file → edit the <code>:root { --primary: #ef4444 }</code> CSS variables at the top of the &lt;style&gt; block</div>
+    </div>
+  </div>
+
+  <!-- FUNNEL 3 -->
+  <div class="funnel-card">
+    <div class="funnel-header" style="background:linear-gradient(135deg,#021508 0%,#070A13 100%)">
+      <div class="funnel-glow" style="background:#10b981"></div>
+      <div class="funnel-tag" style="background:rgba(16,185,129,0.15);color:#6ee7b7;border:1px solid rgba(16,185,129,0.3)">✨ Funnel 3 of 3</div>
+      <span class="funnel-emoji">✨</span>
+      <div class="funnel-name">Life Transformation Blueprint</div>
+      <div class="funnel-desc">Emotion-driven coaching funnel using the Pain→Dream→Fix framework. Deep empathy, transformation stories, aspirational outcomes. Enrolls students at $997.</div>
+      <div class="funnel-target">🎯 Target: Online Courses · Life Coaching · Masterminds &nbsp;|&nbsp; 💰 Price: $997 program</div>
+    </div>
+    <div class="funnel-pages">
+      <div class="pages-label">📂 Page Sequence (click to open)</div>
+      <div class="pages-flow">
+        <div class="page-step">
+          <div class="page-num">Page 1 — Landing</div>
+          <a href="transformation.html" target="_blank" class="page-link" style="border-color:rgba(16,185,129,0.4);background:rgba(16,185,129,0.08)">
+            <span class="page-icon">🏠</span>
+            <div class="page-info"><span>Transformation Blueprint</span><span class="page-type">Main Landing Page</span></div>
+          </a>
+        </div>
+        <div class="page-arrow">→</div>
+        <div class="page-step">
+          <div class="page-num">Page 2 — Checkout</div>
+          <a href="transformation-checkout.html" target="_blank" class="page-link" style="border-color:rgba(16,185,129,0.25)">
+            <span class="page-icon">💳</span>
+            <div class="page-info"><span>Secure Enrollment</span><span class="page-type">Order Form</span></div>
+          </a>
+        </div>
+        <div class="page-arrow">→</div>
+        <div class="page-step">
+          <div class="page-num">Page 3 — Upsell</div>
+          <a href="transformation-upsell.html" target="_blank" class="page-link" style="border-color:rgba(16,185,129,0.25)">
+            <span class="page-icon">⬆️</span>
+            <div class="page-info"><span>1-on-1 Coaching Sessions</span><span class="page-type">One-Time Upsell</span></div>
+          </a>
+        </div>
+        <div class="page-arrow">→</div>
+        <div class="page-step">
+          <div class="page-num">Page 4 — Downsell</div>
+          <a href="transformation-downsell.html" target="_blank" class="page-link" style="border-color:rgba(16,185,129,0.25)">
+            <span class="page-icon">⬇️</span>
+            <div class="page-info"><span>Self-Study Access</span><span class="page-type">One-Time Downsell</span></div>
+          </a>
+        </div>
+        <div class="page-arrow">→</div>
+        <div class="page-step">
+          <div class="page-num">Page 5 — Thank You</div>
+          <a href="transformation-thankyou.html" target="_blank" class="page-link" style="border-color:rgba(16,185,129,0.25)">
+            <span class="page-icon">🎉</span>
+            <div class="page-info"><span>Welcome to the Blueprint</span><span class="page-type">Thank You + Access</span></div>
+          </a>
+        </div>
+      </div>
+      <div class="customize-note">🎨 To customize: Open any file → edit the <code>:root { --primary: #10b981 }</code> CSS variables at the top of the &lt;style&gt; block</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- HOW TO CUSTOMIZE -->
+<section class="customize"><div class="container">
+  <div class="section-label" style="color:#10b981">Easy Customization Guide</div>
+  <h2 class="section-title">Customize Any Page in <span style="background:linear-gradient(135deg,#10b981,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Under 5 Minutes</span></h2>
+  <p class="section-sub">Every page uses CSS custom properties (variables). Change the values at the top and all colors update instantly.</p>
+  <div class="guide-grid">
+    <div class="guide-card">
+      <div class="guide-num" style="background:rgba(99,102,241,0.2);color:#a5b4fc">1</div>
+      <h4>Change Brand Colors</h4>
+      <p>Open any HTML file → find <code>:root { }</code> at the top of <code>&lt;style&gt;</code> → change <code>--primary</code>, <code>--secondary</code>, <code>--accent</code> to your hex colors.</p>
+    </div>
+    <div class="guide-card">
+      <div class="guide-num" style="background:rgba(239,68,68,0.2);color:#fca5a5">2</div>
+      <h4>Update Headline & Copy</h4>
+      <p>All text is plain HTML. Find the <code>&lt;h1&gt;</code>, <code>&lt;h2&gt;</code>, <code>&lt;p&gt;</code> tags and edit directly. No frameworks, no components — just text.</p>
+    </div>
+    <div class="guide-card">
+      <div class="guide-num" style="background:rgba(16,185,129,0.2);color:#6ee7b7">3</div>
+      <h4>Change Prices</h4>
+      <p>Search for the price amount (e.g., <code>297</code>) and replace with your price. Crossed-out prices and "save $X" copy update accordingly.</p>
+    </div>
+    <div class="guide-card">
+      <div class="guide-num" style="background:rgba(245,158,11,0.2);color:#fcd34d">4</div>
+      <h4>Connect Pages</h4>
+      <p>Each CTA button links to the next page via <code>href="..."</code>. Update the <code>href</code> to your own URLs or payment processor links.</p>
+    </div>
+    <div class="guide-card">
+      <div class="guide-num" style="background:rgba(139,92,246,0.2);color:#c4b5fd">5</div>
+      <h4>Add Countdown Timer</h4>
+      <p>Find <code>TIMER_HOURS</code> in the JavaScript at the bottom of checkout/upsell pages. Change the number to set how many hours until expiry.</p>
+    </div>
+    <div class="guide-card">
+      <div class="guide-num" style="background:rgba(6,182,212,0.2);color:#67e8f9">6</div>
+      <h4>Replace Testimonials</h4>
+      <p>Each testimonial card is a self-contained <code>&lt;div class="testimonial-card"&gt;</code>. Edit the quote text, name, title, and the initials inside the avatar circle.</p>
+    </div>
+  </div>
+  
+  <div style="margin-top:48px;background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow:hidden">
+    <div style="padding:20px 24px;border-bottom:1px solid var(--border)">
+      <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted)">CSS Variables Reference — Edit These to Customize</div>
+    </div>
+    <div style="padding:0 24px 24px;overflow-x:auto">
+      <table class="var-table">
+        <thead><tr><th>Variable</th><th>Default (Funnel 1)</th><th>What It Controls</th></tr></thead>
+        <tbody>
+          <tr><td>--primary</td><td>#6366f1 / #ef4444 / #10b981</td><td>Buttons, highlights, accents</td></tr>
+          <tr><td>--secondary</td><td>#8b5cf6 / #f97316 / #06b6d4</td><td>Gradients, hover states</td></tr>
+          <tr><td>--bg-0</td><td>#02040A</td><td>Main page background</td></tr>
+          <tr><td>--bg-1</td><td>#070A13</td><td>Alternate section background</td></tr>
+          <tr><td>--text</td><td>#e2e8f0</td><td>All body text</td></tr>
+          <tr><td>--muted</td><td>#64748b</td><td>Secondary/description text</td></tr>
+          <tr><td>--success</td><td>#10b981</td><td>Checkmarks, result badges</td></tr>
+          <tr><td>--warning</td><td>#f59e0b</td><td>Star ratings, highlights</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div></section>
+
+<footer><div class="container">
+  <p style="margin-bottom:8px;font-size:15px;font-weight:700;color:white">🎉 Funnel Bundle — 3 Systems · 15 Pages</p>
+  <p>All pages are standalone HTML files. No dependencies required.</p>
+</div></footer>
+</body>
+</html>

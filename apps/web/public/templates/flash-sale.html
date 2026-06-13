@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Flash Sale Crusher — 67% OFF Ends Tonight</title>
+<meta name="description" content="The proven flash sale playbook that generated $2.4M in 72 hours. Get lifetime access for just $97 — today only."/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--primary:#ef4444;--secondary:#f97316;--accent:#fca5a5;--bg:#02040A;--bg1:#0A0202;--bg2:#110303;--text:#e2e8f0;--muted:#64748b;--border:rgba(255,255,255,0.08);--success:#10b981;--warning:#f59e0b;--glow:rgba(239,68,68,0.25)}
+html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+.container{max-width:1100px;margin:0 auto;padding:0 24px}
+/* FUNNEL NAV */
+.funnel-nav{background:#0A0202;border-bottom:1px solid rgba(239,68,68,0.2);padding:8px 0}
+.funnel-nav-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.funnel-crumb{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700}
+.crumb-funnel{color:var(--primary);text-decoration:none}
+.crumb-sep{color:var(--muted)}
+.crumb-active{color:white;background:rgba(239,68,68,0.15);padding:2px 10px;border-radius:99px;border:1px solid rgba(239,68,68,0.3)}
+.funnel-steps{display:flex;gap:4px;align-items:center}
+.step-dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;border:1px solid rgba(255,255,255,0.1);color:var(--muted);text-decoration:none}
+.step-dot.active{background:var(--primary);color:white;border-color:var(--primary)}
+.step-dot.done{background:rgba(239,68,68,0.2);color:var(--primary);border-color:rgba(239,68,68,0.4)}
+/* URGENCY BAR */
+.urgency-bar{background:linear-gradient(90deg,var(--primary),var(--secondary));padding:10px 0;text-align:center}
+.urgency-bar p{font-size:13px;font-weight:800;color:white;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+#hero-timer{font-family:monospace;font-size:15px;letter-spacing:2px;background:rgba(0,0,0,0.25);padding:3px 10px;border-radius:6px}
+/* NAV */
+nav{background:rgba(2,4,10,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-size:18px;font-weight:900;color:white}.logo span{color:var(--primary)}
+.price-tag{display:flex;align-items:center;gap:8px}
+.old-price{font-size:14px;color:var(--muted);text-decoration:line-through;font-weight:600}
+.new-price{font-size:18px;font-weight:900;color:var(--primary)}
+/* HERO */
+.hero{padding:80px 0 64px;background:linear-gradient(180deg,var(--bg1) 0%,var(--bg) 100%);position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(239,68,68,0.15),transparent 70%);pointer-events:none}
+.hero-inner{text-align:center;max-width:880px;margin:0 auto;position:relative;z-index:1}
+.sale-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.4);color:var(--accent);font-size:12px;font-weight:800;padding:6px 18px;border-radius:99px;margin-bottom:24px;letter-spacing:0.06em;text-transform:uppercase}
+h1{font-size:clamp(36px,6vw,68px);font-weight:900;color:white;line-height:1.08;letter-spacing:-2px;margin-bottom:20px}
+.strike{text-decoration:line-through;color:var(--muted);font-size:0.75em}
+.fire{color:var(--primary)}
+.hero-sub{font-size:clamp(15px,2vw,19px);color:var(--muted);max-width:620px;margin:0 auto 32px;line-height:1.65}
+.hero-price-box{display:inline-flex;flex-direction:column;align-items:center;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:24px 40px;margin-bottom:32px;gap:6px}
+.orig-price{font-size:14px;color:var(--muted);text-decoration:line-through}
+.sale-price{font-size:52px;font-weight:900;color:white;line-height:1;letter-spacing:-2px}
+.save-badge{font-size:13px;font-weight:800;color:var(--success);background:rgba(16,185,129,0.12);padding:4px 14px;border-radius:99px}
+.btn-fire{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:18px 48px;border-radius:14px;font-size:17px;font-weight:900;cursor:pointer;border:none;background:linear-gradient(135deg,var(--primary),var(--secondary));color:white;box-shadow:0 0 40px rgba(239,68,68,0.4);transition:all 0.2s;text-decoration:none;width:100%;max-width:480px}
+.btn-fire:hover{transform:translateY(-3px);box-shadow:0 0 60px rgba(239,68,68,0.5),0 10px 30px rgba(0,0,0,0.3)}
+.hero-sub2{font-size:12px;color:var(--muted);margin-top:12px}
+/* SCARCITY */
+.scarcity-bar{background:var(--bg1);border-top:1px solid rgba(239,68,68,0.2);border-bottom:1px solid rgba(239,68,68,0.2);padding:20px 0}
+.scarcity-inner{max-width:600px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
+.scarcity-label{display:flex;justify-content:space-between;align-items:center}
+.scarcity-label span:first-child{font-size:12px;font-weight:800;color:var(--primary);text-transform:uppercase;letter-spacing:0.08em}
+.scarcity-label span:last-child{font-size:12px;font-weight:700;color:white}
+.scarcity-track{height:12px;background:rgba(239,68,68,0.12);border-radius:99px;overflow:hidden}
+.scarcity-fill{height:100%;background:linear-gradient(90deg,#ef4444,#f97316);border-radius:99px;position:relative;overflow:hidden;width:73%}
+.scarcity-fill::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);animation:shimmer 1.5s infinite}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.scarcity-sub{text-align:center;font-size:12px;font-weight:600;color:var(--muted)}
+/* PROOF */
+.proof{display:flex;flex-wrap:wrap;justify-content:center;gap:32px;padding:36px 0;border-bottom:1px solid var(--border)}
+.proof-item{text-align:center}
+.proof-item .val{font-size:24px;font-weight:900;color:white}
+.proof-item .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;font-weight:700;margin-top:2px}
+/* WHAT YOU GET */
+.what{padding:80px 0;background:var(--bg)}
+.section-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:var(--primary);margin-bottom:12px}
+h2{font-size:clamp(26px,4vw,44px);font-weight:900;color:white;letter-spacing:-1px;line-height:1.12}
+.gradient-text{background:linear-gradient(135deg,#fca5a5,#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.section-sub{font-size:15px;color:var(--muted);margin-top:12px;margin-bottom:48px;max-width:560px}
+.checklist{display:flex;flex-direction:column;gap:16px;max-width:720px;margin:0 auto}
+.check-item{display:flex;align-items:flex-start;gap:16px;background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:20px 24px;transition:all 0.3s}
+.check-item:hover{border-color:rgba(239,68,68,0.3);background:rgba(239,68,68,0.04)}
+.check-icon{width:36px;height:36px;border-radius:10px;background:rgba(239,68,68,0.12);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.check-text h4{font-size:15px;font-weight:800;color:white;margin-bottom:4px}
+.check-text p{font-size:13px;color:var(--muted);line-height:1.55}
+.check-value{margin-left:auto;font-size:12px;font-weight:800;color:var(--success);white-space:nowrap;padding-left:16px}
+/* TESTIMONIALS */
+.testimonials{padding:80px 0;background:var(--bg1)}
+.t-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin-top:48px}
+.t-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:14px}
+.t-result{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:99px;font-size:11px;font-weight:800;color:var(--success);align-self:flex-start}
+.t-quote{font-size:13px;color:#cbd5e1;line-height:1.7}
+.t-stars{color:var(--warning);font-size:13px}
+.t-attr{display:flex;align-items:center;gap:10px;padding-top:12px;border-top:1px solid var(--border)}
+.t-av{width:38px;height:38px;border-radius:50%;font-size:12px;font-weight:800;color:white;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.t-name{font-size:13px;font-weight:700;color:white}
+.t-title{font-size:11px;color:var(--muted)}
+/* PRICING */
+.pricing{padding:80px 0;background:var(--bg)}
+.price-box{max-width:560px;margin:48px auto 0;background:var(--bg2);border:1px solid rgba(239,68,68,0.3);border-radius:24px;padding:40px;display:flex;flex-direction:column;gap:24px;position:relative;overflow:hidden}
+.price-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--primary),var(--secondary))}
+.timer-box{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:16px;text-align:center}
+.timer-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:var(--primary);margin-bottom:8px}
+#checkout-timer{font-size:32px;font-weight:900;font-family:monospace;color:white;letter-spacing:4px}
+.crossed{font-size:16px;color:var(--muted);text-decoration:line-through;text-align:center}
+.big-price{font-size:64px;font-weight:900;color:white;letter-spacing:-3px;line-height:1;text-align:center}
+.big-price span{font-size:24px;vertical-align:top;margin-top:12px;display:inline-block;color:var(--muted)}
+.save-pill{text-align:center}
+.save-pill span{background:rgba(16,185,129,0.12);color:var(--success);border:1px solid rgba(16,185,129,0.25);padding:5px 16px;border-radius:99px;font-size:12px;font-weight:800}
+.feat-list{display:flex;flex-direction:column;gap:8px}
+.feat-list li{display:flex;align-items:center;gap:10px;font-size:14px;color:#94a3b8;list-style:none}
+.feat-list li::before{content:'✓';color:var(--success);font-weight:900}
+.guarantee{display:flex;align-items:center;gap:12px;padding:14px;background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.2);border-radius:10px;font-size:12px;color:var(--muted)}
+.guarantee strong{color:white}
+/* TRUST */
+.trust{background:rgba(255,255,255,0.02);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:18px 0}
+.trust-inner{display:flex;flex-wrap:wrap;justify-content:center;gap:24px}
+.trust-item{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted);font-weight:600}
+/* FAQ */
+.faq{padding:70px 0;background:var(--bg1)}
+.faq-list{max-width:680px;margin:40px auto 0;display:flex;flex-direction:column;gap:2px}
+.faq-item{background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.faq-q{width:100%;background:none;border:none;color:white;font-size:14px;font-weight:700;padding:18px 20px;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;font-family:inherit}
+.faq-q:hover{color:var(--accent)}
+.faq-icon{font-size:16px;transition:transform 0.3s;flex-shrink:0;color:var(--primary)}
+.faq-item.open .faq-icon{transform:rotate(45deg)}
+.faq-a{display:none;padding:0 20px 16px;font-size:13px;color:var(--muted);line-height:1.7;border-top:1px solid var(--border);padding-top:14px}
+.faq-item.open .faq-a{display:block}
+/* CTA */
+.cta-section{padding:100px 0;text-align:center;position:relative;overflow:hidden}
+.cta-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 100%,rgba(239,68,68,0.2),transparent 70%);pointer-events:none}
+.cta-inner{position:relative;z-index:1;max-width:640px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:20px}
+footer{background:var(--bg);border-top:1px solid var(--border);padding:36px 0;text-align:center}
+footer p{font-size:13px;color:var(--muted)}
+@media(max-width:768px){h1{letter-spacing:-1px}.hero-price-box{padding:20px 24px}.btn-fire{padding:16px 24px;font-size:15px}}
+</style>
+</head>
+<body>
+
+<!-- FUNNEL NAV -->
+<div class="funnel-nav"><div class="container"><div class="funnel-nav-inner">
+  <div class="funnel-crumb">
+    <span>🔥</span>
+    <a href="index.html" class="crumb-funnel">Flash Sale Crusher</a>
+    <span class="crumb-sep">›</span>
+    <span class="crumb-active">Page 1 of 5: Landing Page</span>
+  </div>
+  <div class="funnel-steps">
+    <a href="flash-sale.html" class="step-dot active" title="Landing Page">1</a>
+    <a href="flash-checkout.html" class="step-dot" title="Checkout">2</a>
+    <a href="flash-upsell.html" class="step-dot" title="Upsell">3</a>
+    <a href="flash-downsell.html" class="step-dot" title="Downsell">4</a>
+    <a href="flash-thankyou.html" class="step-dot" title="Thank You">5</a>
+  </div>
+</div></div></div>
+
+<!-- URGENCY BAR -->
+<div class="urgency-bar"><p>🔥 FLASH SALE ENDS IN: <span id="hero-timer">--:--:--</span> &nbsp;|&nbsp; Only 27 spots left at this price!</p></div>
+
+<!-- NAV -->
+<nav><div class="container"><div class="nav-inner">
+  <div class="logo">Flash<span>Sale</span>Crusher</div>
+  <div class="price-tag"><span class="old-price">$297</span><span class="new-price">$97 Today</span></div>
+  <a href="flash-checkout.html" class="btn-fire" style="width:auto;padding:10px 20px;font-size:13px;">Grab It Now →</a>
+</div></div></nav>
+
+<!-- HERO -->
+<section class="hero"><div class="container"><div class="hero-inner">
+  <div class="sale-badge">🔥 67% Off — Today Only · 27 Spots Left</div>
+  <h1>Run a Flash Sale That Generates <span class="fire">$50,000</span><br>in <span class="gradient-text">72 Hours or Less</span></h1>
+  <p class="hero-sub">The exact playbook our students used to generate $2.4M in combined flash sale revenue — now available for the first time at 67% off the regular price.</p>
+  <div class="hero-price-box">
+    <div class="orig-price">Regular Price: $297</div>
+    <div class="sale-price">$97</div>
+    <div class="save-badge">🎉 You Save $200 Today</div>
+  </div>
+  <a href="flash-checkout.html" class="btn-fire">🔥 YES! I Want Instant Access for $97</a>
+  <p class="hero-sub2">🔒 Secure checkout · Instant access · 30-day money-back guarantee</p>
+</div></div></section>
+
+<!-- SCARCITY -->
+<div class="scarcity-bar"><div class="container"><div class="scarcity-inner">
+  <div class="scarcity-label"><span>🔥 Spots Claimed at Flash Price</span><span><strong style="color:var(--primary)">73 of 100</strong> spots taken</span></div>
+  <div class="scarcity-track"><div class="scarcity-fill"></div></div>
+  <p class="scarcity-sub">When all 100 spots are claimed, price goes back to $297 permanently</p>
+</div></div></div>
+
+<!-- PROOF BAR -->
+<div class="container"><div class="proof">
+  <div class="proof-item"><div class="val">$2.4M+</div><div class="lbl">Generated by students</div></div>
+  <div class="proof-item"><div class="val">47,000+</div><div class="lbl">Copies sold</div></div>
+  <div class="proof-item"><div class="val">4.8★</div><div class="lbl">Average rating</div></div>
+  <div class="proof-item"><div class="val">72hrs</div><div class="lbl">To first $50k sale</div></div>
+</div></div>
+
+<!-- WHAT YOU GET -->
+<section class="what"><div class="container">
+  <div class="section-label">Everything Inside The Bundle</div>
+  <h2>Here's <span class="gradient-text">Exactly</span> What You Get</h2>
+  <p class="section-sub">A complete flash sale system — campaigns, emails, ads, and scripts — ready to deploy in 24 hours.</p>
+  <div class="checklist">
+    <div class="check-item"><div class="check-icon">📋</div><div class="check-text"><h4>The 72-Hour Flash Sale Playbook</h4><p>Step-by-step system to plan, launch, and close a six-figure flash sale from scratch — even with a small list.</p></div><div class="check-value">Value: $197</div></div>
+    <div class="check-item"><div class="check-icon">📧</div><div class="check-text"><h4>47 High-Converting Email Swipes</h4><p>Pre-written emails for every phase: tease, launch, urgency, last-chance, and cart-close. Copy, paste, send.</p></div><div class="check-value">Value: $147</div></div>
+    <div class="check-item"><div class="check-icon">📱</div><div class="check-text"><h4>Social Media Ad Templates (Facebook + Instagram)</h4><p>12 scroll-stopping ad creatives with copy that drives buyers — not just clicks. Proven across 200+ campaigns.</p></div><div class="check-value">Value: $97</div></div>
+    <div class="check-item"><div class="check-icon">🎯</div><div class="check-text"><h4>Flash Sale Pricing Psychology Guide</h4><p>How to frame your price anchor, strike-through, and urgency so buyers feel compelled to act NOW — not later.</p></div><div class="check-value">Value: $67</div></div>
+    <div class="check-item"><div class="check-icon">🔄</div><div class="check-text"><h4>Post-Sale Upsell System</h4><p>Maximize your revenue per buyer with the 3-step post-purchase upsell sequence that adds 40-60% to your AOV.</p></div><div class="check-value">Value: $87</div></div>
+  </div>
+  <div style="text-align:center;margin-top:32px;font-size:14px;color:var(--muted)">Total Value: <strong style="color:white;text-decoration:line-through">$595</strong> &nbsp;·&nbsp; Your Price Today: <strong style="color:var(--primary);font-size:20px">$97</strong></div>
+</div></section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials"><div class="container">
+  <div class="section-label">What Our Students Are Saying</div>
+  <h2>They Used This Exact System to <span class="gradient-text">Cash In</span></h2>
+  <div class="t-grid">
+    <div class="t-card"><div class="t-result">🚀 $73,400 in 68 hours</div><p class="t-quote">"I've done flash sales before and never broke $10k. Following this playbook step-by-step, I hit $73k in my first 68 hours. The email sequence alone is worth 100x the price."</p><div class="t-stars">★★★★★</div><div class="t-attr"><div class="t-av" style="background:#ef4444">LR</div><div><div class="t-name">Lisa Rodriguez</div><div class="t-title">Course Creator · Miami, FL</div></div></div></div>
+    <div class="t-card"><div class="t-result">💰 $41k in 3 days</div><p class="t-quote">"My email list is only 2,200 people. Most gurus say you need 50k subscribers. But I followed the segmentation strategy and made $41k from a list a fraction of that size."</p><div class="t-stars">★★★★★</div><div class="t-attr"><div class="t-av" style="background:#f97316">KP</div><div><div class="t-name">Kevin Park</div><div class="t-title">E-Commerce Store Owner · Seattle, WA</div></div></div></div>
+    <div class="t-card"><div class="t-result">📈 4x previous revenue</div><p class="t-quote">"My previous best flash sale was $9k. After implementing the price anchoring and urgency system from this playbook, my next sale hit $38k. The difference was night and day."</p><div class="t-stars">★★★★★</div><div class="t-attr"><div class="t-av" style="background:#8b5cf6">AM</div><div><div class="t-name">Aisha Mohammed</div><div class="t-title">Digital Product Seller · London, UK</div></div></div></div>
+  </div>
+</div></section>
+
+<!-- PRICING -->
+<section class="pricing"><div class="container" style="text-align:center">
+  <div class="section-label">Your Investment Today</div>
+  <h2>Get Everything for <span class="gradient-text">One Low Price</span></h2>
+  <div class="price-box">
+    <div class="timer-box"><div class="timer-label">⏰ Flash Sale Price Expires In</div><div id="checkout-timer">00:00:00</div></div>
+    <div class="crossed">Regular Price: $297</div>
+    <div class="big-price"><span>$</span>97</div>
+    <div class="save-pill"><span>You Save $200 — 67% Discount</span></div>
+    <ul class="feat-list">
+      <li>72-Hour Flash Sale Playbook</li><li>47 Email Swipe Templates</li><li>12 Ad Creative Templates</li>
+      <li>Pricing Psychology Guide</li><li>Post-Sale Upsell System</li><li>30-Day Money-Back Guarantee</li>
+    </ul>
+    <a href="flash-checkout.html" class="btn-fire">🔥 YES! Get Instant Access for $97</a>
+    <div class="guarantee"><span style="font-size:24px">🛡️</span><div><strong>30-Day Money-Back Guarantee.</strong> If you don't make your money back within 30 days of implementing, email us and we'll refund every cent. No questions.</div></div>
+  </div>
+</div></section>
+
+<!-- TRUST -->
+<div class="trust"><div class="container"><div class="trust-inner">
+  <div class="trust-item"><span>🔒</span> SSL Secured</div>
+  <div class="trust-item"><span>✅</span> 30-Day Money Back</div>
+  <div class="trust-item"><span>💳</span> Safe Checkout</div>
+  <div class="trust-item"><span>⚡</span> Instant Access</div>
+  <div class="trust-item"><span>🛡️</span> No Questions Asked</div>
+</div></div></div>
+
+<!-- FAQ -->
+<section class="faq"><div class="container">
+  <h2 style="text-align:center;margin-bottom:8px">Common Questions</h2>
+  <div class="faq-list">
+    <div class="faq-item open"><button class="faq-q" onclick="toggleFaq(this)">Does this work if I have a small email list? <span class="faq-icon">+</span></button><div class="faq-a">Yes! One of our most successful students, Kevin Park, had only 2,200 subscribers and made $41k. The playbook includes a section specifically on maximizing revenue with small lists using micro-segmentation.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">What type of products can I sell with this? <span class="faq-icon">+</span></button><div class="faq-a">The system works for digital products, courses, coaching, software, physical products, and services. The core principles of urgency, scarcity, and price anchoring apply to any offer.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Will the price really go back up to $297? <span class="faq-icon">+</span></button><div class="faq-a">Yes. This is a genuine flash sale, not a fake countdown. When 100 spots are claimed at $97, the price reverts to the standard $297. We do this to honor our own scarcity principles.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">How quickly can I get results? <span class="faq-icon">+</span></button><div class="faq-a">Most students launch their first flash sale within 72 hours of purchasing. The fastest result on record was $18k made within 48 hours of buying the course. Speed depends on your list size and offer readiness.</div></div>
+  </div>
+</div></section>
+
+<!-- FINAL CTA -->
+<section class="cta-section"><div class="container"><div class="cta-inner">
+  <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:var(--primary)">🔥 Price Goes Up When Timer Hits Zero</div>
+  <h2>Don't Let This Opportunity Slip Away</h2>
+  <p style="color:var(--muted);font-size:15px;max-width:480px;text-align:center">Thousands of sellers are stuck doing the same low-revenue launches. This playbook is your shortcut to a $50k+ flash sale.</p>
+  <a href="flash-checkout.html" class="btn-fire" style="max-width:none;width:auto;padding:18px 48px">🔥 Get Instant Access for $97</a>
+  <p style="font-size:12px;color:var(--muted)">30-day money-back guarantee · Instant access · Secure checkout</p>
+</div></div></section>
+
+<footer><div class="container"><p style="margin-bottom:6px;color:white;font-weight:700">FlashSaleCrusher™</p><p>© 2026 · <a href="#" style="color:var(--muted)">Privacy</a> · <a href="#" style="color:var(--muted)">Terms</a> · <a href="#" style="color:var(--muted)">Contact</a></p></div></footer>
+
+<script>
+function startTimer(el,seconds){let t=seconds;function tick(){const h=Math.floor(t/3600),m=Math.floor((t%3600)/60),s=t%60;el.textContent=[h,m,s].map(n=>String(n).padStart(2,'0')).join(':');if(t>0)t--;else{el.textContent='EXPIRED';el.style.color='#ef4444'}}tick();setInterval(tick,1000)}
+const HOURS=6;startTimer(document.getElementById('hero-timer'),HOURS*3600);startTimer(document.getElementById('checkout-timer'),HOURS*3600);
+function toggleFaq(btn){const item=btn.closest('.faq-item');document.querySelectorAll('.faq-item').forEach(i=>{if(i!==item)i.classList.remove('open')});item.classList.toggle('open')}
+</script>
+</body>
+</html>

@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Agency Growth Machine — Scale to 7 Figures</title>
+<meta name="description" content="The #1 system used by 500+ agencies to land premium retainer clients and scale to $50k/month without cold calling." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --primary: #6366f1;
+    --primary-glow: rgba(99,102,241,0.25);
+    --secondary: #8b5cf6;
+    --accent: #a78bfa;
+    --bg-0: #02040A;
+    --bg-1: #070A13;
+    --bg-2: #0D1117;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --border: rgba(255,255,255,0.08);
+    --success: #10b981;
+    --warning: #f59e0b;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; background: var(--bg-0); color: var(--text); overflow-x: hidden; }
+
+  /* ── Utilities ── */
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+  .badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px; border-radius: 99px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; }
+  .badge-primary { background: rgba(99,102,241,0.15); color: var(--primary); border: 1px solid rgba(99,102,241,0.3); }
+  .badge-success { background: rgba(16,185,129,0.12); color: var(--success); border: 1px solid rgba(16,185,129,0.25); }
+  .badge-warning { background: rgba(245,158,11,0.12); color: var(--warning); border: 1px solid rgba(245,158,11,0.25); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 28px; border-radius: 12px; font-size: 15px; font-weight: 800; cursor: pointer; transition: all 0.2s; border: none; text-decoration: none; }
+  .btn-primary { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; box-shadow: 0 0 30px var(--primary-glow); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 50px var(--primary-glow), 0 8px 24px rgba(0,0,0,0.3); }
+  .btn-ghost { background: rgba(255,255,255,0.06); color: var(--text); border: 1px solid var(--border); }
+  .btn-ghost:hover { background: rgba(255,255,255,0.1); }
+  .btn-xl { padding: 18px 40px; font-size: 17px; border-radius: 16px; }
+  .divider { height: 1px; background: var(--border); }
+  .glow { text-shadow: 0 0 40px var(--primary); }
+  .gradient-text { background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, var(--primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  
+  /* ── Animations ── */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(32px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes pulse-ring { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.4); opacity: 0; } }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+  @keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+  .fade-up { animation: fadeUp 0.6s ease forwards; }
+  .delay-1 { animation-delay: 0.1s; opacity: 0; }
+  .delay-2 { animation-delay: 0.2s; opacity: 0; }
+  .delay-3 { animation-delay: 0.3s; opacity: 0; }
+  .delay-4 { animation-delay: 0.4s; opacity: 0; }
+  .delay-5 { animation-delay: 0.5s; opacity: 0; }
+
+  /* ── Navbar ── */
+  nav { position: sticky; top: 0; z-index: 100; backdrop-filter: blur(20px); background: rgba(2,4,10,0.85); border-bottom: 1px solid var(--border); }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .logo { font-size: 20px; font-weight: 900; color: white; letter-spacing: -0.5px; }
+  .logo span { color: var(--primary); }
+  .nav-links { display: flex; align-items: center; gap: 32px; }
+  .nav-links a { color: var(--muted); font-size: 14px; font-weight: 600; text-decoration: none; transition: color 0.2s; }
+  .nav-links a:hover { color: white; }
+
+  /* ── Hero ── */
+  .hero { padding: 100px 0 80px; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 0%, var(--primary-glow) 0%, transparent 70%); pointer-events: none; }
+  .hero-inner { text-align: center; max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
+  .hero-eyebrow { margin-bottom: 24px; }
+  h1 { font-size: clamp(40px, 6vw, 72px); font-weight: 900; line-height: 1.08; letter-spacing: -2px; color: white; margin-bottom: 24px; }
+  .hero-sub { font-size: clamp(16px, 2vw, 20px); color: var(--muted); max-width: 640px; margin: 0 auto 40px; line-height: 1.65; }
+  .hero-cta { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 48px; }
+  .hero-trust { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+  .avatar-stack { display: flex; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--bg-0); font-size: 11px; font-weight: 800; color: white; display: flex; align-items: center; justify-content: center; margin-right: -10px; }
+  .stars { color: var(--warning); font-size: 14px; }
+  .hero-trust p { font-size: 13px; color: var(--muted); }
+  .hero-trust strong { color: white; }
+
+  /* ── Social Proof Bar ── */
+  .proof-bar { background: var(--bg-1); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 32px 0; }
+  .proof-bar-inner { display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; }
+  .proof-stat { text-align: center; }
+  .proof-stat .value { font-size: 28px; font-weight: 900; color: white; line-height: 1; }
+  .proof-stat .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; margin-top: 4px; }
+  .proof-sep { width: 1px; background: var(--border); }
+
+  /* ── Features ── */
+  .features { padding: 100px 0; background: var(--bg-0); }
+  .section-header { text-align: center; margin-bottom: 64px; }
+  .section-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--primary); margin-bottom: 16px; }
+  h2 { font-size: clamp(28px, 4vw, 48px); font-weight: 900; color: white; line-height: 1.1; letter-spacing: -1px; }
+  .section-sub { font-size: 16px; color: var(--muted); margin-top: 16px; max-width: 560px; margin-left: auto; margin-right: auto; }
+  .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+  .feature-card { background: var(--bg-2); border: 1px solid var(--border); border-radius: 20px; padding: 32px; transition: all 0.3s; position: relative; overflow: hidden; }
+  .feature-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--primary), transparent); opacity: 0; transition: opacity 0.3s; }
+  .feature-card:hover { border-color: rgba(99,102,241,0.3); transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+  .feature-card:hover::before { opacity: 1; }
+  .feature-icon { width: 48px; height: 48px; border-radius: 14px; background: rgba(99,102,241,0.15); display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 20px; }
+  .feature-card h3 { font-size: 18px; font-weight: 800; color: white; margin-bottom: 10px; }
+  .feature-card p { font-size: 14px; color: var(--muted); line-height: 1.65; }
+  .feature-result { display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; padding: 5px 12px; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); border-radius: 99px; font-size: 11px; font-weight: 700; color: var(--success); }
+
+  /* ── Testimonials ── */
+  .testimonials { padding: 100px 0; background: var(--bg-1); }
+  .testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-top: 64px; }
+  .testimonial-card { background: var(--bg-2); border: 1px solid var(--border); border-radius: 20px; padding: 28px; display: flex; flex-direction: column; gap: 16px; position: relative; overflow: hidden; }
+  .testimonial-glow { position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; border-radius: 50%; opacity: 0.15; filter: blur(20px); }
+  .result-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); border-radius: 99px; font-size: 11px; font-weight: 700; color: var(--success); align-self: flex-start; }
+  .quote-mark { font-size: 48px; color: white; opacity: 0.1; line-height: 1; margin-bottom: -16px; font-family: Georgia, serif; }
+  .testimonial-text { font-size: 14px; color: #cbd5e1; line-height: 1.7; }
+  .star-row { color: var(--warning); font-size: 13px; letter-spacing: 2px; }
+  .attribution { display: flex; align-items: center; gap: 12px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .avatar-lg { width: 44px; height: 44px; border-radius: 50%; font-size: 13px; font-weight: 800; color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .attribution-name { font-size: 14px; font-weight: 700; color: white; }
+  .attribution-title { font-size: 11px; color: var(--muted); }
+
+  /* ── Pricing ── */
+  .pricing { padding: 100px 0; background: var(--bg-0); }
+  .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-top: 64px; max-width: 960px; margin-left: auto; margin-right: auto; }
+  .pricing-card { background: var(--bg-2); border: 1px solid var(--border); border-radius: 24px; padding: 36px 32px; display: flex; flex-direction: column; gap: 24px; }
+  .pricing-card.featured { border-color: rgba(99,102,241,0.5); background: linear-gradient(135deg, rgba(99,102,241,0.08) 0%, var(--bg-2) 100%); position: relative; }
+  .popular-tag { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; font-size: 11px; font-weight: 800; padding: 4px 16px; border-radius: 99px; white-space: nowrap; }
+  .plan-name { font-size: 14px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .plan-price { display: flex; align-items: flex-end; gap: 4px; }
+  .plan-price .currency { font-size: 20px; font-weight: 800; color: white; line-height: 1.5; }
+  .plan-price .amount { font-size: 52px; font-weight: 900; color: white; line-height: 1; letter-spacing: -2px; }
+  .plan-price .period { font-size: 14px; color: var(--muted); margin-bottom: 8px; }
+  .plan-desc { font-size: 13px; color: var(--muted); }
+  .plan-features { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .plan-features li { display: flex; align-items: center; gap: 10px; font-size: 14px; color: #94a3b8; }
+  .plan-features li::before { content: '✓'; color: var(--success); font-weight: 900; flex-shrink: 0; }
+  .plan-cta { width: 100%; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 800; cursor: pointer; border: none; transition: all 0.2s; }
+  .plan-cta.featured { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; box-shadow: 0 0 30px var(--primary-glow); }
+  .plan-cta.featured:hover { transform: translateY(-2px); box-shadow: 0 0 50px var(--primary-glow); }
+  .plan-cta.outline { background: transparent; border: 1px solid var(--border); color: white; }
+  .plan-cta.outline:hover { background: rgba(255,255,255,0.06); }
+  .price-guarantee { text-align: center; margin-top: 40px; font-size: 13px; color: var(--muted); display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+  /* ── FAQ ── */
+  .faq { padding: 100px 0; background: var(--bg-1); }
+  .faq-list { max-width: 720px; margin: 64px auto 0; display: flex; flex-direction: column; gap: 2px; }
+  .faq-item { background: var(--bg-2); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .faq-q { width: 100%; background: none; border: none; color: white; font-size: 15px; font-weight: 700; padding: 20px 24px; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 16px; font-family: inherit; }
+  .faq-q:hover { color: var(--accent); }
+  .faq-icon { font-size: 18px; transition: transform 0.3s; flex-shrink: 0; color: var(--primary); }
+  .faq-item.open .faq-icon { transform: rotate(45deg); }
+  .faq-a { display: none; padding: 0 24px 20px; font-size: 14px; color: var(--muted); line-height: 1.7; border-top: 1px solid var(--border); padding-top: 16px; }
+  .faq-item.open .faq-a { display: block; }
+
+  /* ── CTA Section ── */
+  .cta-section { padding: 120px 0; background: var(--bg-0); text-align: center; position: relative; overflow: hidden; }
+  .cta-section::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 60% at 50% 100%, rgba(99,102,241,0.2) 0%, transparent 70%); pointer-events: none; }
+  .cta-inner { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 24px; }
+  .cta-urgency { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--primary); }
+  .cta-section h2 { font-size: clamp(32px, 5vw, 56px); }
+  .cta-section p { font-size: 16px; color: var(--muted); max-width: 480px; }
+  .cta-footnote { font-size: 12px; color: var(--muted); }
+
+  /* ── Trust Strip ── */
+  .trust-strip { background: var(--bg-2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 20px 0; }
+  .trust-inner { display: flex; flex-wrap: wrap; justify-content: center; gap: 32px; }
+  .trust-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); font-weight: 600; }
+  .trust-item span { font-size: 16px; }
+
+  /* ── Footer ── */
+  footer { background: var(--bg-0); border-top: 1px solid var(--border); padding: 40px 0; text-align: center; }
+  footer p { font-size: 13px; color: var(--muted); }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .proof-sep { display: none; }
+    h1 { letter-spacing: -1px; }
+    .pricing-grid { grid-template-columns: 1fr; max-width: 400px; }
+    .hero-cta { flex-direction: column; align-items: center; }
+    .btn-xl { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav>
+  <div class="container">
+    <div class="nav-inner">
+      <div class="logo">Agency<span>Scale</span></div>
+      <div class="nav-links">
+        <a href="#features">How It Works</a>
+        <a href="#testimonials">Success Stories</a>
+        <a href="#pricing">Pricing</a>
+      </div>
+      <a href="#pricing" class="btn btn-primary" style="padding:10px 20px;font-size:13px;">Get Started →</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-eyebrow fade-up delay-1">
+        <span class="badge badge-primary">🚀 500+ Agencies Already Inside</span>
+      </div>
+      <h1 class="fade-up delay-2">Scale Your Agency to <span class="gradient-text">$50k/Month</span> Without Cold Calling</h1>
+      <p class="hero-sub fade-up delay-3">The proven client-acquisition system that lands premium retainer contracts on autopilot — built by agency owners, for agency owners.</p>
+      <div class="hero-cta fade-up delay-4">
+        <a href="#pricing" class="btn btn-primary btn-xl">🚀 Start My Free 14-Day Trial</a>
+        <a href="#testimonials" class="btn btn-ghost btn-xl">See Success Stories</a>
+      </div>
+      <div class="hero-trust fade-up delay-5">
+        <div class="avatar-stack">
+          <div class="avatar" style="background:#4f46e5">MT</div>
+          <div class="avatar" style="background:#7c3aed">JW</div>
+          <div class="avatar" style="background:#059669">DC</div>
+          <div class="avatar" style="background:#db2777">AS</div>
+          <div class="avatar" style="background:#0891b2">RK</div>
+        </div>
+        <div class="stars">★★★★★</div>
+        <p><strong>4.9/5</strong> from 2,847 agency owners · <strong>No credit card</strong> required</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SOCIAL PROOF BAR ── -->
+<section class="proof-bar">
+  <div class="container">
+    <div class="proof-bar-inner">
+      <div class="proof-stat"><div class="value">500+</div><div class="label">Active Agencies</div></div>
+      <div class="proof-sep"></div>
+      <div class="proof-stat"><div class="value">$2.4B</div><div class="label">Client Revenue Generated</div></div>
+      <div class="proof-sep"></div>
+      <div class="proof-stat"><div class="value">340%</div><div class="label">Avg. ROI Increase</div></div>
+      <div class="proof-sep"></div>
+      <div class="proof-stat"><div class="value">4.9★</div><div class="label">Average Rating</div></div>
+      <div class="proof-sep"></div>
+      <div class="proof-stat"><div class="value">14 Days</div><div class="label">Avg. Time to First Client</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ── -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Why 500+ Agencies Choose Us</div>
+      <h2>Everything You Need to Land <span class="gradient-text">Premium Clients</span></h2>
+      <p class="section-sub">Stop trading time for money. Our system puts client acquisition on autopilot so you can focus on delivering results.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>AI-Powered Prospect Engine</h3>
+        <p>Our AI identifies and pre-qualifies your ideal clients before you ever send a message. Stop wasting time on bad-fit prospects.</p>
+        <div class="feature-result">📈 Avg. 47% more qualified leads/month</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h3>Authority Positioning System</h3>
+        <p>Get featured in 12+ industry publications in 30 days. Command premium rates by becoming the go-to expert in your niche.</p>
+        <div class="feature-result">💰 Agencies 2-3x their rates after</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔄</div>
+        <h3>Automated Follow-Up Sequences</h3>
+        <p>7-touch nurture sequences that convert cold prospects to warm leads — running 24/7 while you sleep or serve existing clients.</p>
+        <div class="feature-result">📊 68% higher close rate vs manual</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📋</div>
+        <h3>Proposal & Pricing Templates</h3>
+        <p>Battle-tested proposal templates that have closed $50k+ contracts. Stop underselling — learn to frame your value like a premium firm.</p>
+        <div class="feature-result">✅ $15k avg. contract size increase</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🧠</div>
+        <h3>Retention & Upsell Playbooks</h3>
+        <p>Keep clients longer, expand accounts automatically. Turn one-off projects into 12-month retainers with proven expansion frameworks.</p>
+        <div class="feature-result">🔒 92% client retention rate</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">👥</div>
+        <h3>Private Agency Owner Community</h3>
+        <p>Join 500+ agency owners sharing what's working right now. Weekly hot seats, deal reviews, and a referral network worth $10k+/year.</p>
+        <div class="feature-result">🤝 Members refer avg. 3 clients/year</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TESTIMONIALS ── -->
+<section class="testimonials" id="testimonials">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Real Agency Owners · Real Results</div>
+      <h2>They Were Exactly <span class="gradient-text">Where You Are Now</span></h2>
+      <p class="section-sub">These aren't cherry-picked outliers. This is what happens when you follow the system.</p>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="testimonial-glow" style="background:#4f46e5"></div>
+        <div class="result-badge">🚀 $47k in first 90 days</div>
+        <div class="quote-mark">"</div>
+        <p class="testimonial-text">I'd been stuck at $8k/month for 2 years, trying everything. Within 14 days of joining, I had my first $10k retainer. By month 3, I'd replaced my old job income 4x. The system works.</p>
+        <div class="star-row">★★★★★</div>
+        <div class="attribution">
+          <div class="avatar-lg" style="background:#4f46e5">MT</div>
+          <div>
+            <div class="attribution-name">Marcus Thompson</div>
+            <div class="attribution-title">Founder, GrowthLab Agency · Chicago, IL</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-glow" style="background:#7c3aed"></div>
+        <div class="result-badge">📈 340% more client leads</div>
+        <div class="quote-mark">"</div>
+        <p class="testimonial-text">As a 15-year marketing veteran, I was skeptical about yet another system. But the ROI-first positioning framework alone was worth 10x the price. Our average contract size went from $3k to $18k.</p>
+        <div class="star-row">★★★★★</div>
+        <div class="attribution">
+          <div class="avatar-lg" style="background:#7c3aed">JW</div>
+          <div>
+            <div class="attribution-name">Jennifer Walsh</div>
+            <div class="attribution-title">CMO, Apex Digital · New York, NY</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-glow" style="background:#059669"></div>
+        <div class="result-badge">💰 $50k/month in 6 months</div>
+        <div class="quote-mark">"</div>
+        <p class="testimonial-text">I joined when I had 2 clients and was considering going back to a 9-to-5. Six months later, I have a team of 6, 14 retainer clients, and crossed $50k MRR last week. This is life-changing.</p>
+        <div class="star-row">★★★★★</div>
+        <div class="attribution">
+          <div class="avatar-lg" style="background:#059669">DC</div>
+          <div>
+            <div class="attribution-name">David Chen</div>
+            <div class="attribution-title">CEO, ScaleForce Media · Austin, TX</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:48px;color:var(--muted);font-size:13px;">
+      ★★★★★ &nbsp;&nbsp;|&nbsp;&nbsp; 4.9/5 average · 2,847 verified reviews · Updated daily
+    </div>
+  </div>
+</section>
+
+<!-- ── TRUST STRIP ── -->
+<div class="trust-strip">
+  <div class="container">
+    <div class="trust-inner">
+      <div class="trust-item"><span>🔒</span> SSL Secured</div>
+      <div class="trust-item"><span>✅</span> 30-Day Money Back</div>
+      <div class="trust-item"><span>💳</span> Safe Checkout</div>
+      <div class="trust-item"><span>⭐</span> 5-Star Support</div>
+      <div class="trust-item"><span>🚀</span> Instant Access</div>
+      <div class="trust-item"><span>🛡️</span> No Questions Asked</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── PRICING ── -->
+<section class="pricing" id="pricing">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Transparent Pricing · No Hidden Fees</div>
+      <h2>Start Free. Scale <span class="gradient-text">Without Limits</span></h2>
+      <p class="section-sub">Every plan comes with a 30-day money-back guarantee. If you don't land a qualified lead, we'll refund you in full.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="plan-name">Starter</div>
+        <div class="plan-price"><span class="currency">$</span><span class="amount">97</span><span class="period">/mo</span></div>
+        <p class="plan-desc">Perfect for solopreneurs ready to land their first premium client.</p>
+        <ul class="plan-features">
+          <li>AI Prospect Engine (50 leads/mo)</li>
+          <li>3 Proposal Templates</li>
+          <li>Email Automation (3 sequences)</li>
+          <li>Community Access</li>
+          <li>Weekly Group Coaching</li>
+        </ul>
+        <button class="plan-cta outline">Start Free Trial</button>
+      </div>
+      <div class="pricing-card featured">
+        <div class="popular-tag">⚡ Most Popular</div>
+        <div class="plan-name">Growth</div>
+        <div class="plan-price"><span class="currency">$</span><span class="amount">297</span><span class="period">/mo</span></div>
+        <p class="plan-desc">For agencies ready to break $20k/month and build a real team.</p>
+        <ul class="plan-features">
+          <li>AI Prospect Engine (Unlimited)</li>
+          <li>All 47 Proposal Templates</li>
+          <li>Unlimited Email Sequences</li>
+          <li>Authority Positioning System</li>
+          <li>1-on-1 Monthly Strategy Call</li>
+          <li>Priority Slack Support</li>
+          <li>Deal Review Access</li>
+        </ul>
+        <button class="plan-cta featured">🚀 Start My Free 14-Day Trial</button>
+      </div>
+      <div class="pricing-card">
+        <div class="plan-name">Agency Pro</div>
+        <div class="plan-price"><span class="currency">$</span><span class="amount">697</span><span class="period">/mo</span></div>
+        <p class="plan-desc">For established agencies targeting $50k+ MRR and enterprise clients.</p>
+        <ul class="plan-features">
+          <li>Everything in Growth</li>
+          <li>Done-For-You Campaigns</li>
+          <li>Weekly 1-on-1 Coaching</li>
+          <li>Referral Partner Network</li>
+          <li>White-Label Rights</li>
+          <li>Dedicated Account Manager</li>
+        </ul>
+        <button class="plan-cta outline">Apply Now →</button>
+      </div>
+    </div>
+    <div class="price-guarantee">
+      🛡️ <strong style="color:white">30-Day Money-Back Guarantee</strong> — If you don't land a qualified lead in 30 days, we'll refund 100%. No questions asked.
+    </div>
+  </div>
+</section>
+
+<!-- ── FAQ ── -->
+<section class="faq" id="faq">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Common Questions</div>
+      <h2>Everything You Need to <span class="gradient-text">Know</span></h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item open">
+        <button class="faq-q" onclick="toggleFaq(this)">How quickly will I see results? <span class="faq-icon">+</span></button>
+        <div class="faq-a">Most members land their first qualified prospect within 7-14 days of implementing the system. The median time to first new retainer client is 21 days. Results vary based on your niche, current network, and effort — but the system is designed for rapid wins first.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">I'm just starting out — is this right for me? <span class="faq-icon">+</span></button>
+        <div class="faq-a">Yes. 34% of our members joined with fewer than 3 clients. We have a dedicated fast-track track for agencies under $10k/month that gets you to your first $5k+ retainer before anything else. The system works at every stage.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">What if I've tried other programs and failed? <span class="faq-icon">+</span></button>
+        <div class="faq-a">We hear this a lot. The difference is that other programs teach tactics. We build a system. Every step is sequenced, measured, and iterated based on what 500+ agencies are doing right now. We also have a 30-day guarantee so you risk nothing.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">How much time does this take per week? <span class="faq-icon">+</span></button>
+        <div class="faq-a">We recommend 5-10 hours/week during the first 30 days to set up your systems. After that, the automation handles 80% of prospecting. Most members spend 2-3 hours/week maintaining their pipeline once fully set up.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">What's your refund policy? <span class="faq-icon">+</span></button>
+        <div class="faq-a">Simple: If you implement the system for 30 days and don't land a single qualified prospect, email us with proof of implementation and we'll refund 100% of your payment — no questions, no guilt trips, no hoops to jump through.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-inner">
+      <div class="cta-urgency">⚡ Founding Member Pricing — Closes When We Hit 600 Members</div>
+      <h2 class="fade-up">Ready to Finally <span class="gradient-text">Scale Your Agency?</span></h2>
+      <p>Join 500+ agency owners who stopped wondering "what if" and started building the business they actually wanted.</p>
+      <a href="#pricing" class="btn btn-primary btn-xl">🚀 Start My Free 14-Day Trial</a>
+      <div class="cta-footnote">No credit card required · Cancel anytime · 30-day money-back guarantee</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="container">
+    <p style="margin-bottom:8px;"><strong style="color:white">AgencyScale</strong> — The #1 System for Agency Growth</p>
+    <p>© 2026 AgencyScale. All rights reserved. · <a href="#" style="color:var(--muted)">Privacy</a> · <a href="#" style="color:var(--muted)">Terms</a></p>
+  </div>
+</footer>
+
+<script>
+  function toggleFaq(btn) {
+    const item = btn.closest('.faq-item');
+    document.querySelectorAll('.faq-item').forEach(i => { if(i !== item) i.classList.remove('open'); });
+    item.classList.toggle('open');
+  }
+  // Scroll animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if(e.isIntersecting) { e.target.style.animation = 'fadeUp 0.6s ease forwards'; e.target.style.opacity = '1'; } });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.feature-card, .testimonial-card, .pricing-card').forEach(el => {
+    el.style.opacity = '0'; observer.observe(el);
+  });
+</script>
+</body>
+</html>

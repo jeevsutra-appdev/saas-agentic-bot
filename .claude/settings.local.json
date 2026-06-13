@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"c:\\\\App developement\\\\Demo apps for clients\\\\saas Agentic bot\" -Directory)",
+      "Bash(Select-Object Name)",
+      "Bash(xargs grep -l \"openRouterApiKey\\\\|openAIApiKey\\\\|geminiApiKey\")",
+      "Bash(xargs grep -l \"tenant-settings\\\\|tenantSettings\")",
+      "Bash(npx tsc *)",
+      "Read(//c/App developement/Business n8n work flows 2026/Astro agent work flows/New work flow Astro Agent/Js astro-mini/netlify/functions/**)",
+      "Read(//c/App developement/Business n8n work flows 2026/Astro agent work flows/New work flow Astro Agent/Js astro-mini/**)",
+      "PowerShell(Select-String -Path \"c:\\\\App developement\\\\Business n8n work flows 2026\\\\Astro agent work flows\\\\New work flow Astro Agent\\\\Js astro-mini\\\\chat.html\" -Pattern \"fetch|function|api|netlify\" -CaseSensitive:$false)",
+      "PowerShell(\\(Get-Content \"c:\\\\App developement\\\\Business n8n work flows 2026\\\\Astro agent work flows\\\\New work flow Astro Agent\\\\Js astro-mini\\\\chat.html\"\\).Count)"
+    ]
+  }
+}

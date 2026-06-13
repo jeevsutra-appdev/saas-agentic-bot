@@ -1,0 +1,1 @@
+Write-Output (Get-Content -Path "c:\App developement\Demo apps for clients\saas Agentic bot\apps\db\local_db.json" | ConvertFrom-Json | Select-Object -ExpandProperty tenantSettings | Where-Object { $_.tenantSlug -eq "demo" } | ConvertTo-Json -Depth 5)

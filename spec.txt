@@ -1,0 +1,771 @@
+PROJECT BLUEPRINT
+Aether AI
+An Agentic AI Chatbot SaaS — 2026-Grade, Future-Proof
+Full architecture, feature map, free-tier deployment strategy, and step-by-step AI-coder prompts for end-to-end build.
+Prepared for: Imran
+Role: Founder / Product Owner
+Date: May 2026
+Document version: 1.0 (Master Build Spec)
+Table of Contents
+1. Executive Summary
+Aether AI is a multi-tenant Agentic AI Chatbot SaaS that lets any business spin up a premium, brand-customised chatbot in minutes. The bot is not a thin wrapper around an LLM — it is an agent with pluggable skills, payments, e-commerce, appointment booking, and webhook automations through n8n. The platform is designed to look and feel like a flagship 2026 consumer product (Linear, Vercel, Arc, Raycast tier polish) while remaining buildable on free-tier infrastructure (Supabase + Vercel/Netlify) and ready to scale to enterprise without a rewrite.
+Three surfaces ship together: a marketing landing page, a Super-Admin SaaS console (you control providers, plans, credits, analytics, payments), and a Client/Company dashboard (your subscribers build, customise, and deploy their bots). The chat experience itself is a native-mobile-grade, full-width UI with five premium design presets, deep brand customisation, and rich Markdown / formatting output.
+Differentiators: agentic skills marketplace, in-chat commerce (Razorpay + Stripe), WordPress plugin with one-click auth, custom-domain bot hosting, dual-region payments (Stripe global + Razorpay India), and a credit-based metering model that works across every major LLM provider.
+2. Vision and Target Industries
+Aether AI is industry-agnostic by design. Each vertical activates a different combination of skills:
+Industry
+Primary Skills Activated
+Example Use Case
+E-commerce / D2C
+Product catalog, cart, payments, order tracking
+Sell dresses, cakes, food, machinery in-chat
+Restaurants / Cloud Kitchens
+Menu, order, COD, delivery slot, Razorpay
+Take orders without an app
+Clinics / Salons / Coaches
+Appointment booking, calendar sync, reminders
+Book consultations 24x7
+Real Estate
+Lead capture, property search, site-visit booking
+Qualify buyers automatically
+Education / Coaching
+Course discovery, fee payment, doubt solver
+Onboard students end-to-end
+SaaS / Agencies
+Lead qualification, ticket triage, CRM webhooks
+Replace tier-1 support
+Local Services
+Quote builder, booking, COD, WhatsApp handoff
+Plumbers, electricians, tutors
+B2B / Manufacturing
+Catalog, RFQ, document Q&A, sales handoff
+Industrial quoting bots
+3. Recommended Tech Stack (2026-grade, Future-Proof)
+Every choice below is selected for three things: works on free tier today, scales to paid tier without code changes, and stays mainstream through 2028+. No exotic frameworks.
+3.1 Frontend
+Layer
+Technology
+Why
+Framework
+Next.js 15 (App Router, React 19, Server Actions)
+Hybrid SSR/RSC, edge-ready, Vercel-native
+Language
+TypeScript 5.6 (strict)
+Type safety across the monorepo
+Styling
+Tailwind CSS v4 + CSS variables
+Theme tokens, light/dark, brand overrides
+UI Kit
+shadcn/ui + Radix UI primitives
+Accessible, copy-owned, fully restyleable
+Animations
+Framer Motion + GSAP (selective)
+Premium micro-interactions
+3D / Hero
+React Three Fiber (optional landing)
+Modern hero scenes
+State
+Zustand + TanStack Query v5
+Lean client state, server cache
+Forms
+React Hook Form + Zod
+Schema-first validation
+Charts
+Recharts + Tremor
+Dashboard analytics
+i18n
+next-intl
+Multi-language ready
+Icons
+Lucide React
+Lightweight, consistent
+3.2 Backend
+Layer
+Technology
+Why
+Runtime
+Next.js Route Handlers + Edge Functions
+Co-located with frontend, zero infra
+Heavy/Long jobs
+Supabase Edge Functions (Deno)
+Free-tier serverless, no cold-start tax
+Database
+Supabase Postgres (RLS, pgvector)
+Multi-tenant, vector RAG built-in
+Auth
+Supabase Auth (email, OAuth, magic link)
+Free, JWT, RLS-aware
+Storage
+Supabase Storage (S3-compatible)
+Brand logos, attachments, avatars
+Realtime
+Supabase Realtime (Postgres CDC)
+Live chat, live analytics
+Queue / Cron
+Upstash QStash + Vercel Cron (free)
+Skill execution, keepalives
+Cache
+Upstash Redis (free 10k cmd/day)
+Rate-limit, session, response cache
+Search
+Postgres FTS + pgvector hybrid
+No separate search infra
+Observability
+Sentry (free) + Vercel Analytics + Logflare
+Errors, perf, structured logs
+3.3 AI / Agent Layer
+Concern
+Technology
+Why
+Provider abstraction
+Vercel AI SDK 5 (streaming, tool calls)
+One API for every model
+Agent orchestration
+Custom thin runtime over AI SDK + LangGraph patterns
+Tool calling, skill routing, memory
+RAG
+pgvector + Cohere/Voyage rerank (optional)
+Free-tier embeddings via Gemini/Voyage
+Models supported
+OpenAI, Anthropic Claude, Google Gemini, Groq, Mistral, OpenRouter, Qwen, DeepSeek
+Full provider mesh
+Skills / actions
+JSON-schema tool definitions, n8n webhook bridge
+Visual skill authoring for non-coders
+Guardrails
+Zod-validated tool I/O + per-tenant policy
+Safe agentic execution
+3.4 Payments, Automation, Integrations
+Need
+Choice
+Global payments + subscriptions
+Stripe (Checkout + Billing + Webhooks)
+India payments (UPI/cards/COD logic)
+Razorpay (Checkout + Subscriptions + Webhooks)
+Workflow automation
+n8n (self-hosted on free Railway/Render, or n8n Cloud)
+Email
+Resend (free 3k/mo) + React Email templates
+WhatsApp / SMS (future)
+Twilio / Meta Cloud API via n8n
+WordPress integration
+Custom plugin (PHP) + JS embed loader
+Custom domains
+Vercel Domains API (wildcard) + per-tenant SSL
+4. System Architecture
+Aether AI is a multi-tenant monorepo. One Next.js app serves three logical surfaces, each gated by middleware and Supabase Row-Level Security.
+4.1 High-Level Topology
+[ Visitors ]                [ Bot End-Users ]            [ Client Companies ]         [ You / Super Admin ]
+      |                            |                              |                              |
+      v                            v                              v                              v
++-------------+        +--------------------+        +------------------------+        +----------------------+
+| Landing     |        | Public Chat UI     |        | Client Dashboard       |        | Super-Admin Console  |
+| (aether.ai) |        | (bot.<tenant>.com  |        | (app.aether.ai/c)      |        | (app.aether.ai/admin)|
+|             |        |  OR /b/<slug>)     |        | bot editor, billing... |        | providers, plans...  |
++------+------+        +---------+----------+        +-----------+------------+        +-----------+----------+
+       |                         |                               |                                 |
+       +-------------+-----------+---------------+---------------+---------------------------------+
+                     |                           |
+                     v                           v
+              +-------------+            +----------------+
+              | Next.js 15  | <--------> | Vercel Edge    |  ai-gateway, streaming
+              | App Router  |            +----------------+
+              +------+------+
+                     |
+       +-------------+--------------+-----------------+---------------+
+       |             |              |                 |               |
+       v             v              v                 v               v
+  +--------+   +-----------+  +-----------+   +-------------+   +---------+
+  |Supabase|   | Upstash   |  | n8n       |   | Stripe +    |   | LLM     |
+  |Postgres|   | Redis +   |  | Skills    |   | Razorpay    |   | Provider|
+  |+RLS    |   | QStash    |  | webhooks  |   | webhooks    |   | mesh    |
+  |+pgvec  |   +-----------+  +-----------+   +-------------+   +---------+
+  |+Auth   |
+  |+Storage|
+  +--------+
+4.2 Multi-Tenancy Model
+Single Postgres database. Every tenant-owned row carries tenant_id (UUID).
+Row-Level Security policies enforce tenant_id = auth.jwt() ->> 'tenant_id' on every table.
+Super-Admin role bypasses RLS via a server-only service-role key (never exposed to the browser).
+Bots are addressable by slug (aether.ai/b/<slug>), subdomain (<slug>.bots.aether.ai), or custom domain.
+4.3 Request Lifecycle (Chat Message)
+End-user types a message in the chat widget.
+POST /api/chat/[botId] streams to Edge Runtime.
+Middleware resolves tenant → loads bot config, theme, skills, model, credit pool.
+Credit guard: check tenant balance + per-bot quota in Redis (atomic decrement).
+AI SDK builds the prompt: system prompt + RAG context (pgvector) + skill tool schemas.
+LLM call (provider chosen per bot: client API key or admin pool key).
+If the model returns a tool call → execute skill (built-in handler or n8n webhook).
+Stream tokens back to UI; persist message + usage rows; settle credits.
+Realtime broadcast → Client Dashboard sees the conversation live.
+5. Database Schema (Supabase / Postgres)
+Minimal but complete. Add columns as you grow; never remove tenant_id.
+-- Tenants & users
+tenants(id, name, slug, plan_id, credits_balance, status, created_at)
+users(id, email, full_name, avatar_url, role)         -- supabase auth.users mirror
+memberships(user_id, tenant_id, role)                  -- role: owner|admin|editor|viewer
+super_admins(user_id)
+
+-- Plans & billing
+plans(id, name, monthly_credits, price_inr, price_usd, features_json, is_active)
+subscriptions(id, tenant_id, plan_id, provider, provider_sub_id,
+              status, current_period_end, cancel_at_period_end)
+credit_ledger(id, tenant_id, delta, reason, ref_id, balance_after, created_at)
+invoices(id, tenant_id, provider, amount, currency, status, pdf_url, created_at)
+
+-- AI providers (admin-managed pool)
+ai_providers(id, code, display_name, is_enabled, default_for_free_tier)
+ai_provider_keys(id, provider_id, key_ciphertext, label, monthly_cap_usd, is_active)
+ai_models(id, provider_id, model_id, display_name, input_cost, output_cost, context_window)
+
+-- Per-tenant overrides
+tenant_ai_keys(id, tenant_id, provider_id, key_ciphertext, is_active)  -- BYO key
+tenant_settings(tenant_id, default_model_id, allow_byo_key, ...)
+
+-- Bots
+bots(id, tenant_id, name, slug, custom_domain, status, created_at)
+bot_personas(bot_id, system_prompt, persona_name, tone, language)
+bot_themes(bot_id, preset_code, primary, accent, bg, text, font_family,
+           font_size, radius, avatar_url, logo_url, header_title, header_subtitle,
+           bubble_style, message_density, custom_css)
+bot_models(bot_id, model_id, temperature, top_p, max_tokens, use_byo_key)
+
+-- Skills (agentic tools)
+skills(id, bot_id, name, slug, description, type, schema_json,
+       handler, n8n_webhook_url, is_active)         -- type: builtin|webhook|http|sql
+skill_runs(id, bot_id, conversation_id, skill_id, input_json, output_json,
+           status, latency_ms, created_at)
+
+-- Conversations & messages
+conversations(id, bot_id, end_user_id, channel, started_at, closed_at, meta_json)
+end_users(id, bot_id, external_id, name, email, phone, attributes_json)
+messages(id, conversation_id, role, content_md, tool_calls_json,
+         tokens_in, tokens_out, model_id, cost_credits, created_at)
+
+-- Knowledge base (RAG)
+kb_documents(id, bot_id, title, source_url, content_md, file_path, status)
+kb_chunks(id, document_id, content, embedding vector(1536), tokens, meta_json)
+
+-- E-commerce
+products(id, tenant_id, sku, name, description, price, currency, stock,
+         images_jsonb, attributes_jsonb, is_active)
+orders(id, tenant_id, conversation_id, end_user_id, items_jsonb,
+       subtotal, shipping, total, currency, payment_method, status)
+payments(id, order_id, provider, provider_payment_id, amount, status, created_at)
+
+-- Appointments
+appointment_slots(id, bot_id, start_at, end_at, capacity, location, is_active)
+appointments(id, slot_id, end_user_id, status, notes, created_at)
+
+-- Integrations
+integrations(id, tenant_id, kind, config_jsonb, is_active)
+            -- kind: razorpay|stripe|n8n|wordpress|whatsapp
+webhook_endpoints(id, tenant_id, url, secret, events_jsonb, is_active)
+
+-- Audit & analytics
+audit_log(id, tenant_id, user_id, action, target, meta_jsonb, created_at)
+usage_daily(tenant_id, day, messages, tokens_in, tokens_out, credits_used)
+
+-- Keepalive (free-tier survival)
+heartbeat(id serial primary key, beat_at timestamptz default now())
+5.1 Row-Level Security (sample)
+-- Every table that holds tenant data:
+alter table bots enable row level security;
+create policy tenant_isolation on bots
+  using (tenant_id = (auth.jwt() ->> 'tenant_id')::uuid);
+create policy tenant_write on bots
+  for all using (tenant_id = (auth.jwt() ->> 'tenant_id')::uuid)
+  with check (tenant_id = (auth.jwt() ->> 'tenant_id')::uuid);
+
+-- Super-admin bypass via service-role key (server-only).
+6. Module Breakdown
+6.1 Public Marketing Landing Page (aether.ai)
+Hero with animated 3D / Lottie, gradient mesh background, dark-mode default with light toggle.
+Sections: Live chatbot demo (try it in-page), Industries we serve, Skills marketplace teaser, Pricing (INR & USD toggle), Customer logos, Testimonials, FAQ, CTA.
+Pixel-perfect on mobile; Lighthouse > 95 across the board; uses next/image, edge caching.
+Blog (MDX) and Docs site (Fumadocs or Nextra) under /blog and /docs.
+6.2 Super-Admin (SaaS Owner) Console
+Dashboard: MRR, ARR, active tenants, daily signups, message volume, top providers by cost, anomaly alerts.
+AI Providers: add/edit keys for Gemini, Claude, OpenAI, Groq, Mistral, OpenRouter, Qwen, DeepSeek; rotate, set monthly USD cap, mark as 'free-tier default'.
+Models: enable/disable per provider, set input/output cost, expose to which plans.
+Plans & Pricing: create plans, set monthly credit grants, feature flags, trial days.
+Subscriptions: view + manually adjust any tenant's plan, refund, credit, cancel.
+Credit Management: top-up any tenant, view full credit ledger, set per-plan rate cards.
+Users & Tenants: list, impersonate (secure), suspend, delete; tenant detail page with usage graphs.
+Activity Stream: realtime feed of every signup, payment, error, skill run, suspicious event.
+Business Analytics: cohort retention, churn, LTV, ARPU, provider cost vs revenue margin.
+Payments: Razorpay + Stripe connection status, webhook health, failed-payment dunning.
+n8n: connect default n8n instance; manage signed-webhook secrets.
+Settings: branding for the SaaS itself, legal pages, feature flags, kill-switches.
+6.3 Client (Company) Dashboard
+Onboarding wizard: create first bot in < 90 seconds (name → industry template → brand colors → done).
+Bots list with status, last activity, deploy URL, custom domain status.
+Bot Editor — Identity tab: name, avatar, logo, header title, subtitle, welcome message, suggested prompts.
+Bot Editor — Theme tab: pick from 5 premium UI presets, then customise primary/accent/background/text colors, font family + size, border radius, bubble style, message density, light/dark behaviour, custom CSS escape hatch.
+Bot Editor — Brain tab: system prompt with live preview, persona, tone, language, knowledge base upload (PDF, DOCX, URLs).
+Bot Editor — Model tab: pick from admin pool OR enter own API key per provider; choose model, temperature, max tokens.
+Bot Editor — Skills tab: enable built-in skills (payments, e-commerce, booking, lead capture, handoff); add custom skill by giving it a name + n8n webhook URL + JSON schema for its arguments.
+Bot Editor — E-commerce tab: product manager (CSV import, image upload), shipping rules, COD toggle, connect Razorpay/Stripe.
+Bot Editor — Booking tab: define services, availability windows, buffer time, calendar sync (Google/Outlook later).
+Deploy tab: embed snippet (one-line script), share link, QR code, WordPress plugin install, custom domain setup wizard.
+Conversations: searchable inbox, takeover-to-human, tag, export.
+Analytics: messages, CSAT, conversion (orders/bookings), top intents, drop-off funnel.
+Billing: current plan, credits used vs granted, top-up, invoices, switch plan.
+Team: invite teammates with roles (owner / admin / editor / viewer).
+6.4 Chat UI (the crown jewel)
+Full-width, mobile-app-grade, butter-smooth. Ships with five presets the client can pick and then fine-tune:
+Preset
+Vibe
+Best for
+Nimbus
+Glassmorphic, soft gradients, frosted blur
+SaaS / B2B
+Onyx
+Pure dark, neon accents, monospace headers
+Dev tools / AI startups
+Sakura
+Warm, rounded, generous whitespace
+Beauty, wellness, coaching
+Kiosk
+High-contrast, large buttons, card-based replies
+Restaurants, retail, in-store
+Concierge
+Minimal, serif type, premium ivory/charcoal
+Luxury, hospitality, real estate
+Rich Markdown: bold, italics, code, tables, ordered/unordered lists, callouts.
+Streaming token rendering with smooth caret; copy / regenerate / thumb up-down on every reply.
+Inline cards: product card, order summary, slot picker, form, payment button, image carousel.
+Voice input (Web Speech API) and TTS playback (browser + ElevenLabs optional).
+File upload (images, PDFs) when the model supports vision.
+Keyboard-first UX, swipe gestures on mobile, haptics where supported.
+Accessibility: WCAG 2.2 AA; full-keyboard, screen-reader labels, motion-reduce respect.
+6.5 Skills System (Agentic Tools)
+Skills are the agent's hands. Three flavours:
+Built-in skills (we ship them): search_products, create_order, take_payment, list_slots, book_appointment, capture_lead, handoff_to_human, search_knowledge_base, send_email.
+Webhook skills (no-code via n8n): client gives a name, description, JSON-schema for arguments, and an n8n webhook URL. The agent learns to call it.
+HTTP / SQL skills (advanced): for power users — paste an OpenAPI snippet or a parameterised SQL query.
+Skill execution is sandboxed, timeouts enforced, every run logged to skill_runs with input/output for debugging. The bot trainer UI lets clients add few-shot examples so the agent learns when to call each skill.
+6.6 In-Chat E-commerce
+Universal product model — works for dresses, cakes, food, machinery, courses, services.
+Bot can: search catalog, recommend, show product cards, build cart, collect address, take payment OR mark as COD, create order, send confirmation, track status.
+Two checkout modes: conversational (entirely in chat) or popup form (inline modal) — client toggles per bot.
+Payment routing: amount currency = INR → Razorpay; else → Stripe. COD allowed when client enables it.
+Order webhooks back into client's existing ERP/CRM via n8n.
+6.7 Appointment Booking
+Services with duration, price, staff (optional).
+Availability rules: weekly windows, blackout dates, buffer between bookings, max per day.
+Bot collects intent → suggests slots → confirms → takes deposit (optional) → emails ICS file.
+Reminder workflow via n8n (email/SMS/WhatsApp 24h and 1h before).
+6.8 WordPress Plugin
+Lightweight PHP plugin (single file, < 200 LOC). Installable from a ZIP or WP plugin directory.
+Settings screen: paste Aether AI API key → plugin calls /api/wp/connect → bot is bound to this WP site.
+On bind, plugin auto-injects the embed script with the right bot ID; site owner picks which pages to show the bot on.
+Single sign-on: WP admins can jump into the Aether dashboard from inside WP admin.
+Hooks: WooCommerce product/order sync (optional), Contact Form 7 fallback handoff.
+6.9 Custom Domains
+Client adds CNAME → bots.aether.ai in their DNS, then enters domain in dashboard.
+Server uses Vercel Domains API (free) to provision SSL automatically.
+Bot is now served at https://chat.client-brand.com fully white-labelled.
+7. AI Provider Mesh
+One provider abstraction. Eight providers ship on day one.
+Provider
+Auth
+Sample Models
+Strengths
+OpenAI
+API key
+gpt-4.1-mini, gpt-4o, o4-mini
+All-round, vision, tool use
+Anthropic (Claude)
+API key
+claude-sonnet-4-6, claude-haiku-4-5
+Long context, careful reasoning
+Google (Gemini)
+API key
+gemini-2.5-pro, gemini-2.5-flash
+Free tier, multimodal
+Groq
+API key
+llama-3.3-70b, mixtral-8x7b
+Ultra-low latency
+Mistral
+API key
+mistral-large, codestral
+European hosting
+OpenRouter
+API key
+Hundreds of models behind one key
+Aggregator fallback
+Qwen
+API key
+qwen-max, qwen-plus
+Strong multilingual
+DeepSeek
+API key
+deepseek-v3, deepseek-r1
+Cheap reasoning
+Implementation note: use Vercel AI SDK + per-provider adapter packages. For providers without an official AI-SDK adapter, use OpenAI-compatible endpoints (most expose one).
+8. Payments & Subscriptions
+8.1 Subscription Plans (example)
+Plan
+INR / mo
+USD / mo
+Credits / mo
+Bots
+Team Seats
+Free
+0
+0
+2,000
+1
+1
+Starter
+999
+12
+25,000
+3
+3
+Growth
+2,999
+39
+100,000
+10
+10
+Scale
+9,999
+129
+500,000
+Unlimited
+25
+Enterprise
+Custom
+Custom
+Custom
+Unlimited
+Unlimited
+8.2 Credit Metering
+1 credit ≈ 1,000 tokens of gpt-4o-mini-equivalent. Each model has a multiplier (e.g., Claude Sonnet = 3x, Groq Llama = 0.3x).
+Decrement atomically in Redis on every successful response; settle to credit_ledger asynchronously.
+Bring-your-own-key bypasses metering entirely (client pays the provider directly).
+8.3 Razorpay (India) + Stripe (Global)
+Currency detection: IP geo + user setting. INR → Razorpay; everything else → Stripe.
+Both providers' webhooks land at /api/webhooks/razorpay and /api/webhooks/stripe with signature verification.
+Subscription lifecycle (created, renewed, payment_failed, cancelled) updates subscriptions and credit_ledger.
+Dunning: 3 retries over 7 days, then downgrade to Free.
+9. Free-Tier Keepalive Strategy
+Supabase free tier pauses a project after 7 days of inactivity. Aether AI ships a built-in keepalive so this never happens.
+9.1 The Heartbeat Pattern
+A heartbeat table exists solely to be written to.
+A /api/cron/heartbeat route runs an INSERT INTO heartbeat DEFAULT VALUES then DELETE FROM heartbeat WHERE beat_at < now() - interval '7 days'.
+Both Vercel Cron and a backup scheduler (cron-job.org, UptimeRobot, or GitHub Actions schedule) hit the route every 6 hours.
+A separate Supabase Edge Function (pg_cron-triggered every 24 hours) does an internal SELECT 1 too, so even if HTTP is blocked the DB itself stays warm.
+// app/api/cron/heartbeat/route.ts
+import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+
+export const runtime = "edge";
+export const dynamic = "force-dynamic";
+
+export async function GET(req: Request) {
+  // Protect with a shared secret
+  const auth = req.headers.get("x-cron-secret");
+  if (auth !== process.env.CRON_SECRET) {
+    return NextResponse.json({ ok: false }, { status: 401 });
+  }
+
+  const sb = createClient({ service: true });
+  await sb.from("heartbeat").insert({});
+  await sb.from("heartbeat")
+    .delete()
+    .lt("beat_at", new Date(Date.now() - 7 * 86_400_000).toISOString());
+
+  return NextResponse.json({ ok: true, at: new Date().toISOString() });
+}
+# vercel.json
+{
+  "crons": [
+    { "path": "/api/cron/heartbeat", "schedule": "0 */6 * * *" }
+  ]
+}
+On Netlify, replace vercel.json with a Scheduled Function (netlify.toml schedule = "0 */6 * * *"). Add UptimeRobot pinging the same URL every 5 minutes as a free belt-and-braces.
+9.2 Other Free-Tier Guardrails
+Storage: lazy-load brand assets via Supabase Storage CDN; resize/convert to webp on upload.
+Edge Functions: cold-start avoidance — keep functions tiny; warm critical ones via the heartbeat.
+Redis: Upstash free 10k commands/day — cache LLM responses for identical (bot_id, hash(prompt)) for 5 minutes.
+Email: Resend free 3k/mo — for higher volume route via n8n + SMTP relay.
+10. Deployment Plan
+10.1 Recommendation: Vercel (primary)
+Native Next.js 15 support, Edge Runtime, Cron, Domains, KV. Free tier covers MVP easily.
+Set environment variables in Vercel Project Settings (never commit secrets).
+Two environments: Preview (every PR) and Production (main branch).
+10.2 Fallback: Netlify
+Equally capable; use Netlify Functions + Scheduled Functions for cron.
+netlify.toml example below.
+# netlify.toml
+[build]
+  command = "pnpm build"
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[functions."heartbeat"]
+  schedule = "0 */6 * * *"
+10.3 Required Environment Variables
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+
+# Cron
+CRON_SECRET=
+
+# Redis / QStash
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
+QSTASH_TOKEN=
+QSTASH_CURRENT_SIGNING_KEY=
+QSTASH_NEXT_SIGNING_KEY=
+
+# Payments
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+RAZORPAY_KEY_ID=
+RAZORPAY_KEY_SECRET=
+RAZORPAY_WEBHOOK_SECRET=
+
+# AI providers (admin pool — store ciphertext in DB, only KMS key here)
+AI_KEY_ENCRYPTION_KEY=
+
+# Email
+RESEND_API_KEY=
+
+# App
+NEXT_PUBLIC_APP_URL=https://app.aether.ai
+NEXT_PUBLIC_BOT_HOST=bots.aether.ai
+11. Security, Privacy, Compliance
+All API keys encrypted at rest with AES-256-GCM; encryption key in env, not DB.
+Row-Level Security on every tenant table; service-role key never reaches browser.
+HMAC signature verification on every inbound webhook (Stripe, Razorpay, n8n, WordPress).
+Rate limiting on chat endpoint (per bot, per IP) via Upstash Redis + sliding window.
+Content safety: per-bot toggle for moderation pre/post-filter using OpenAI Moderation or Llama Guard.
+GDPR / DPDP ready: per-user data export and erasure; audit log retains hash-only after erase.
+SOC2 path: structured logs, change management via PRs, secrets in vault, MFA on admin accounts.
+12. Step-by-Step Build Plan (10 Phases)
+Each phase is shippable. Do not skip ahead.
+Phase
+Name
+Scope
+Phase 0
+Repo + Tooling (Day 1)
+Init monorepo (pnpm), Next.js 15 app, TypeScript strict, ESLint+Prettier+Husky, Tailwind v4, shadcn/ui, env loader, Sentry, Vercel project, Supabase project, GitHub Actions for CI (typecheck + lint + unit).
+Phase 1
+Auth + Multi-Tenant Foundation (Week 1)
+Supabase Auth (email + Google), tenants/memberships/super_admins tables, RLS policies, JWT custom claim with tenant_id, role-aware middleware, /onboarding flow to create first tenant.
+Phase 2
+Super-Admin Console v1 (Week 2)
+Admin shell, AI providers + keys CRUD with KMS encryption, models catalog, plans CRUD, tenants list + impersonation, activity stream.
+Phase 3
+Client Dashboard + Bot Editor v1 (Weeks 3-4)
+Bot CRUD, Identity/Theme/Brain/Model tabs, 5 chat UI presets, theme tokens via CSS variables, system-prompt editor with live preview.
+Phase 4
+Chat Runtime + Provider Mesh (Weeks 4-5)
+Vercel AI SDK integration, provider adapters (all 8), streaming endpoint /api/chat/[botId], message persistence, credit guard + ledger.
+Phase 5
+Skills System + n8n Bridge (Week 6)
+Built-in skills (lead capture, handoff, KB search), webhook skill type with signed-request bridge to n8n, skill runs log, trainer UI.
+Phase 6
+Payments (Week 7)
+Stripe Checkout + Billing, Razorpay Checkout + Subscriptions, webhook handlers, dunning workflow, plan switching, invoices.
+Phase 7
+E-commerce + Appointments (Weeks 8-9)
+Products CRUD + CSV import, in-chat cards for product/cart/order/slot, order pipeline, COD logic, services + availability + booking flow, ICS email.
+Phase 8
+Deploy Surfaces — WordPress + Custom Domains (Week 10)
+Embed snippet, WP plugin (bind via API key, inject script, SSO jump), custom domain wizard via Vercel Domains API.
+Phase 9
+Polish + Marketing (Week 11)
+Landing page, docs, blog scaffold, pricing page, onboarding emails, in-app product tour, accessibility audit, Lighthouse pass.
+Phase 10
+Hardening + Launch (Week 12)
+Pen-test checklist, load test the chat endpoint, backup + restore drill, status page (BetterStack free), launch on Product Hunt + Indian SaaS communities.
+13. AI-Coder Prompts (Copy-Paste, Phase by Phase)
+Hand each block to your AI coder (Claude Code / Cursor / Windsurf). Run them in order. Each one assumes the previous phase shipped.
+13.1 Master Prompt (paste once at the start of every session)
+You are the lead engineer on "Aether AI" — a multi-tenant Agentic AI Chatbot SaaS.
+
+Stack:
+- Next.js 15 (App Router, React 19, Server Actions, Edge where it pays off)
+- TypeScript strict, Tailwind v4, shadcn/ui, Framer Motion
+- Supabase (Postgres + Auth + Storage + Realtime + Edge Functions + pgvector)
+- Upstash Redis + QStash for cache/rate-limit/jobs
+- Vercel AI SDK 5 for the LLM mesh (OpenAI, Anthropic, Google, Groq, Mistral, OpenRouter, Qwen, DeepSeek)
+- Stripe (global) + Razorpay (India)
+- n8n for skill webhooks
+- Deploys to Vercel (Netlify fallback). Must work on free tiers.
+
+Non-negotiables:
+- Multi-tenant from line one. Every tenant row has tenant_id. RLS everywhere.
+- Light + dark mode driven by CSS variables. Never hardcode colors.
+- No 'any' in TypeScript. Zod-validate every external boundary (HTTP, webhook, env).
+- Server-only secrets stay server-only. Use server actions + route handlers.
+- Stream every LLM response. Never block.
+- Accessibility (WCAG 2.2 AA), keyboard-first, motion-reduce respected.
+
+When I give you a phase, output: (a) file tree, (b) full file contents,
+(c) any SQL migrations, (d) env vars added, (e) a 5-step manual test.
+Phase 0 Prompt
+Phase 0: bootstrap the monorepo.
+- pnpm workspace with apps/web (Next.js 15) and packages/db, packages/ui, packages/config.
+- TypeScript strict, ESLint flat config, Prettier, Husky + lint-staged.
+- Tailwind v4 with CSS variables for theme tokens (--bg, --fg, --primary, --accent, --muted, --radius).
+- shadcn/ui installed with neutral base; add Button, Input, Card, Dialog, Tabs, Toast.
+- Sentry browser + server.
+- GitHub Actions: pnpm install, typecheck, lint, unit (vitest).
+- README with setup steps.
+Deliver everything.
+Phase 1 Prompt
+Phase 1: auth + multi-tenant foundation.
+- Supabase Auth: email + magic-link + Google OAuth.
+- Tables: tenants, memberships (role enum), super_admins. Add RLS policies enforcing tenant_id from JWT.
+- A Supabase Edge Function 'set-tenant-claim' that, on login, picks the user's default tenant and sets a custom claim tenant_id on the JWT.
+- Middleware: /admin requires super_admins, /c requires membership.
+- Onboarding wizard at /onboarding: collect tenant name + slug, create tenant + owner membership, redirect to /c/<slug>.
+- Tests for RLS via SQL.
+Phase 2 Prompt
+Phase 2: super-admin console.
+- /admin layout with sidebar (Dashboard, Providers, Models, Plans, Tenants, Activity, Settings).
+- Providers page: CRUD for ai_providers + ai_provider_keys. Keys encrypted with AES-256-GCM using AI_KEY_ENCRYPTION_KEY. Test-call button.
+- Models page: list + enable/disable, set per-1k input/output cost.
+- Plans page: CRUD plans with monthly_credits, price_inr, price_usd, feature flags.
+- Tenants page: list with usage, drill-down, impersonate (server-issued short-lived JWT).
+- Activity stream: realtime feed from audit_log using Supabase Realtime.
+- All forms server-action + Zod.
+Phase 3 Prompt
+Phase 3: client dashboard + bot editor (no chat runtime yet).
+- /c/<slug> layout: sidebar (Bots, Conversations, Analytics, Billing, Team, Settings).
+- Bots list + create-bot dialog.
+- Bot Editor at /c/<slug>/bots/<botId> with tabs: Identity, Theme, Brain, Model, Skills (stub), Deploy (stub).
+- Theme tab: 5 presets (Nimbus, Onyx, Sakura, Kiosk, Concierge) — each preset is a JSON of CSS-variable values. Allow per-token overrides. Live preview pane on the right.
+- Brain tab: system prompt textarea with live token count + persona, tone, language dropdowns. KB upload (PDF/DOCX/URL) → enqueue to QStash for chunking + embedding (handler stubbed, no real embedding yet).
+- Model tab: pick from admin pool; BYO key form per provider.
+- Persist everything to bot_themes, bot_personas, bot_models.
+Phase 4 Prompt
+Phase 4: chat runtime + provider mesh.
+- Install Vercel AI SDK + provider adapters for openai, anthropic, google, groq, mistral, openrouter (use OpenAI-compatible), qwen (OpenAI-compatible), deepseek (OpenAI-compatible).
+- Edge route POST /api/chat/[botId]: resolve bot, theme, model, system prompt, RAG context (pgvector top-k=6), build messages, stream via AI SDK.
+- Credit guard: atomic decrement in Upstash Redis keyed by tenant_id; if <= 0, refuse with 402.
+- Persist messages, settle credit_ledger every 30s in a QStash job.
+- Public chat page at /b/<slug> that uses the saved theme presets — full-width, mobile-app-grade UI with the streaming, copy, regenerate, thumb up/down features described.
+Phase 5 Prompt
+Phase 5: skills system + n8n bridge.
+- skills table + CRUD UI in the bot editor.
+- Built-in skill handlers: capture_lead, handoff_to_human, search_kb, send_email (via Resend).
+- Webhook skill type: client enters n8n webhook URL + JSON schema. We sign the outgoing request with HMAC-SHA256 (per-tenant secret).
+- Agent loop: when the LLM returns tool_calls, execute them, append tool messages, re-prompt, stream final answer.
+- skill_runs logged with input/output/latency.
+- Trainer UI: client adds few-shot examples to bias when each skill fires.
+Phase 6 Prompt
+Phase 6: payments.
+- Stripe Checkout + Billing for non-INR; subscription products mirror our plans table.
+- Razorpay Checkout + Subscriptions for INR.
+- Webhook routes /api/webhooks/stripe and /api/webhooks/razorpay with signature verification.
+- On successful payment/renewal: update subscriptions, grant monthly_credits to credit_ledger, send invoice email.
+- Failure: 3-retry dunning over 7 days, then downgrade to Free.
+- Top-up flow for extra credits, both providers.
+Phase 7 Prompt
+Phase 7: e-commerce + appointments.
+- products table + CRUD with CSV import and image upload to Supabase Storage.
+- In-chat cards: ProductCard, CartCard, OrderSummaryCard, SlotPickerCard, BookingConfirmedCard.
+- Built-in skills: search_products, add_to_cart, checkout, take_payment (routes to Stripe/Razorpay by currency), create_order, list_slots, book_appointment.
+- COD toggle per bot; if true, take_payment can return method=COD without payment.
+- Appointment slots manager (services, availability, blackout, buffer).
+- ICS file email on booking confirmation.
+Phase 8 Prompt
+Phase 8: deploy surfaces.
+- Embed snippet: a 1-line <script src="https://app.aether.ai/embed.js" data-bot="<slug>"></script> that mounts a launcher button + iframe.
+- WordPress plugin: single PHP file + a settings page. Field for Aether API key. On save, POST /api/wp/connect to bind site_url. Inject the embed script on selected page types. Add an SSO jump button to the Aether dashboard.
+- Custom domains: dashboard wizard that asks for the domain, shows the CNAME instruction, then uses the Vercel Domains API to add the domain to the project. Poll /api/domains/<domain>/status until verified.
+Phase 9 Prompt
+Phase 9: polish + marketing.
+- Landing page at /: hero with live demo, industries grid, skills marketplace teaser, pricing toggle (INR/USD), testimonials, FAQ, footer. Dark default with toggle.
+- Docs site under /docs (Fumadocs).
+- Blog under /blog (MDX).
+- Onboarding email sequence (welcome, day-1 tip, day-3 case study).
+- In-app product tour (driver.js).
+- Lighthouse 95+ on landing, accessibility audit, fix anything axe-core reports.
+Phase 10 Prompt
+Phase 10: hardening + launch.
+- Heartbeat cron at /api/cron/heartbeat (code above) + Vercel cron entry + UptimeRobot ping.
+- Backup: nightly pg_dump to Supabase Storage; documented restore script.
+- Load test the chat endpoint with k6 (target: 200 RPS streaming).
+- Status page on BetterStack (free).
+- Pen-test checklist: OWASP API Top 10, secret scanning, dependency audit.
+- Launch: Product Hunt assets, Twitter thread, Indian SaaS communities (SaaSBoomi, IndieHackers India), Hacker News Show HN.
+14. Idea Improvements & Future Roadmap
+14.1 Refinements I'd make to your spec
+Universal skills marketplace: let any client publish their n8n skill as a public skill others can install in one click (revenue share).
+White-label tier: agencies can resell Aether AI under their own brand with their own pricing — a real money-maker.
+Bot 'memory' across conversations per end-user (opt-in) — turns the bot into a real assistant, not a goldfish.
+Per-bot A/B testing: ship two system prompts or two themes and auto-pick the winner on a chosen metric (CSAT, conversion).
+Voice channel: the same bot answers a phone number via Twilio + ElevenLabs/OpenAI Realtime. Huge for restaurants and clinics.
+Outbound mode: scheduled bot-initiated messages on WhatsApp/email (n8n-triggered). Turns the chatbot into a CRM.
+Tenant-level cost dashboard with predicted bill, so clients are never surprised.
+Edge caching of identical prompts for 60s — saves real money at scale.
+Plugin marketplace inside the dashboard, not just skills — themes, prompt packs, industry templates.
+Compliance pack: India DPDP + EU GDPR + US CCPA toggles per tenant.
+14.2 Future Tech Upgrades
+Move heavy embeddings + rerank to a dedicated Modal/Replicate worker when free-tier limits start to bite.
+Add Cloudflare in front for WAF + image resizing + R2 mirror of Supabase Storage.
+Migrate hot tenants to dedicated Supabase projects via a routing table — same code, zero rewrite.
+On-device inference for tiny tasks via WebGPU (intent classification before calling the cloud).
+Native mobile (Expo) sharing 90% of the code via tRPC + Tamagui.
+15. Appendix
+15.1 Suggested Folder Structure
+apps/
+  web/                         # Next.js 15 app
+    app/
+      (marketing)/             # public landing, /, /pricing, /docs, /blog
+      (auth)/                  # /login, /signup, /onboarding
+      admin/                   # super-admin console
+      c/[tenant]/              # client dashboard
+      b/[slug]/                # public chat page
+      api/
+        chat/[botId]/route.ts
+        webhooks/stripe/route.ts
+        webhooks/razorpay/route.ts
+        webhooks/n8n/route.ts
+        wp/connect/route.ts
+        cron/heartbeat/route.ts
+        domains/[domain]/status/route.ts
+      embed.js/route.ts        # the launcher script
+    components/
+    lib/
+      ai/                      # provider mesh + agent loop
+      supabase/
+      payments/
+      skills/
+      themes/
+    middleware.ts
+packages/
+  db/                          # SQL migrations, generated types
+  ui/                          # shared shadcn-based components
+  config/                      # tsconfig, eslint, tailwind preset
+plugins/
+  wordpress/                   # aether-ai/aether-ai.php + assets
+infra/
+  vercel.json
+  netlify.toml
+  supabase/                    # functions, seed, policies
+15.2 Definition of Done Checklist (every PR)
+Typecheck + lint + unit tests pass in CI.
+New tables have RLS policies + migration file.
+New env vars added to README + Vercel + .env.example.
+Light + dark visually verified (Storybook or screenshot diff).
+Mobile (375 px) visually verified.
+Errors surfaced to Sentry; no console.log left.
+Zod schema at every external boundary.
+15.3 Naming & Branding
+Working name in this document is 'Aether AI'. If you prefer something else, find-and-replace before handing to the AI coder. The name only appears in copy and the package.json — no architectural impact.
+15.4 Final Word
+Ship Phase 0 in a day. Ship Phase 1 in a week. Don't let the roadmap intimidate you — every phase is independently valuable. The keepalive cron is in Phase 10 but takes 15 minutes; add it the moment your Supabase project exists so you never lose data to inactivity.

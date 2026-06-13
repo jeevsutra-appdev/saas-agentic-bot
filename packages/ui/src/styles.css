@@ -1,0 +1,174 @@
+@import "tailwindcss";
+
+/* 2026-Grade Theme System */
+:root {
+  /* Default: Nimbus (SaaS/B2B Glassmorphic) */
+  --bg: #0b0f19;
+  --fg: #f3f4f6;
+  --primary: #6366f1;
+  --primary-hover: #4f46e5;
+  --accent: #a5b4fc;
+  --muted: #1f2937;
+  --muted-fg: #9ca3af;
+  --border: #374151;
+  --radius: 12px;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
+}
+
+/* Onyx Preset (Dev Tools/Neons) */
+[data-theme="onyx"] {
+  --bg: #09090b;
+  --fg: #fafafa;
+  --primary: #10b981;
+  --primary-hover: #059669;
+  --accent: #34d399;
+  --muted: #18181b;
+  --muted-fg: #a1a1aa;
+  --border: #27272a;
+  --radius: 6px;
+}
+
+/* Sakura Preset (Wellness/Warm) */
+[data-theme="sakura"] {
+  --bg: #fdf6f6;
+  --fg: #1f1a1a;
+  --primary: #ec4899;
+  --primary-hover: #db2777;
+  --accent: #f472b6;
+  --muted: #f5e1e1;
+  --muted-fg: #6b5a5a;
+  --border: #ecd5d5;
+  --radius: 20px;
+}
+
+/* Kiosk Preset (High Contrast/Retail) */
+[data-theme="kiosk"] {
+  --bg: #ffffff;
+  --fg: #000000;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --accent: #60a5fa;
+  --muted: #f3f4f6;
+  --muted-fg: #4b5563;
+  --border: #e5e7eb;
+  --radius: 16px;
+}
+
+/* Concierge Preset (Luxury/Hotel) */
+[data-theme="concierge"] {
+  --bg: #141414;
+  --fg: #f4e8d1;
+  --primary: #d4af37;
+  --primary-hover: #aa8c2c;
+  --accent: #e5c158;
+  --muted: #242424;
+  --muted-fg: #a89c85;
+  --border: #333333;
+  --radius: 0px;
+}
+
+/* Custom theme layer mapping to Tailwind v4 variables */
+@theme {
+  --color-bg: var(--bg);
+  --color-fg: var(--fg);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-accent: var(--accent);
+  --color-muted: var(--muted);
+  --color-muted-fg: var(--muted-fg);
+  --color-border: var(--border);
+  
+  --radius-theme: var(--radius);
+  
+  --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
+}
+
+/* Core premium styling and micro-animations */
+@layer base {
+  body {
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+}
+
+/* Custom micro-interactions */
+.premium-glass {
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.premium-glass-light {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.95); opacity: 0.5; }
+  50% { transform: scale(1.05); opacity: 0.8; }
+  100% { transform: scale(0.95); opacity: 0.5; }
+}
+
+.pulse-indicator {
+  animation: pulse-ring 2s infinite ease-in-out;
+}
+
+/* ─── Premium Scrollbar Styles ─── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99, 102, 241, 0.25) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.25);
+  border-radius: 100px;
+  transition: background 0.2s;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.55);
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Smooth scroll globally */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ─── Utility Animations ─── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.35s ease-out both;
+}
+
+@keyframes shimmer {
+  from { background-position: -200% center; }
+  to   { background-position: 200% center; }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.06) 50%, transparent 100%);
+  background-size: 200% auto;
+  animation: shimmer 2s linear infinite;
+}
