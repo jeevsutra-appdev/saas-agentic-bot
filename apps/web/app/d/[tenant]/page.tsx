@@ -244,7 +244,7 @@ export default function DeliveryApp() {
         <div className="max-w-md mx-auto px-5 h-20 flex items-center justify-between">
           <div className="flex items-center gap-4">
             {rider.avatarUrl ? (
-              <img src={rider.avatarUrl} alt="avatar" className="h-12 w-12 rounded-full object-cover border-2 border-emerald-500" />
+              <img loading="lazy" src={rider.avatarUrl} alt="avatar" className="h-12 w-12 rounded-full object-cover border-2 border-emerald-500" />
             ) : (
               <div className="h-12 w-12 rounded-full bg-emerald-500/20 border-2 border-emerald-500 flex items-center justify-center text-xl shadow-[0_0_15px_rgba(16,185,129,0.3)]">
                 {rider.vehicle === "scooter" ? "🛵" : rider.vehicle === "car" ? "🚗" : rider.vehicle === "van" ? "🚐" : "🚲"}

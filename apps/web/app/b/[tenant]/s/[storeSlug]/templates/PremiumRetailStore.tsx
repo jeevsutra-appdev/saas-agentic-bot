@@ -119,8 +119,7 @@ function ProductCard({
         )}
 
         {p.image ? (
-          <img
-            src={p.image}
+          <img loading="lazy" src={p.image}
             alt={p.name}
             onLoad={() => setImgLoaded(true)}
             className="w-full h-full object-contain transition-all duration-500 ease-out group-hover:scale-[1.07]"
@@ -299,8 +298,7 @@ function HeroCarousel({ banners, primary }: { banners: any[]; primary: string })
           style={{ minHeight: 180 }}
         >
           {cur.image ? (
-            <img
-              src={cur.image}
+            <img loading="lazy" src={cur.image}
               alt={cur.title}
               className="w-full object-cover"
               style={{ minHeight: 180, maxHeight: 340 }}
@@ -548,7 +546,7 @@ export default function PremiumRetailStore({ store, storefront, tenantSlug }: Pr
           {/* Logo */}
           <a href={`/b/${tenantSlug}`} className="flex items-center gap-2 shrink-0">
             {logo ? (
-              <img src={logo} alt={storeName} className="h-7 w-auto object-contain" />
+              <img loading="lazy" src={logo} alt={storeName} className="h-7 w-auto object-contain" />
             ) : (
               <div className="flex items-center gap-2">
                 <div
@@ -755,7 +753,7 @@ export default function PremiumRetailStore({ store, storefront, tenantSlug }: Pr
                     className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-sm bg-gradient-to-br ${CAT_GRADIENTS[i % CAT_GRADIENTS.length]}`}
                   >
                     {cat.image ? (
-                      <img src={cat.image} alt={cat.name} className="w-full h-full object-cover rounded-xl" />
+                      <img loading="lazy" src={cat.image} alt={cat.name} className="w-full h-full object-cover rounded-xl" />
                     ) : (
                       CAT_EMOJI[i % CAT_EMOJI.length]
                     )}
@@ -780,7 +778,7 @@ export default function PremiumRetailStore({ store, storefront, tenantSlug }: Pr
             transition={{ duration: 0.3 }}
             className="block rounded-2xl overflow-hidden relative shadow-xl"
           >
-            <img src={storefront.promoBannerImage} alt="" className="w-full object-cover" style={{ maxHeight: 160 }} />
+            <img loading="lazy" src={storefront.promoBannerImage} alt="" className="w-full object-cover" style={{ maxHeight: 160 }} />
             <div className="absolute inset-0 bg-gradient-to-r from-black/65 to-transparent flex items-center px-6 md:px-10">
               {storefront.promoBannerText && (
                 <div>
@@ -972,7 +970,7 @@ export default function PremiumRetailStore({ store, storefront, tenantSlug }: Pr
             <div>
               <div className="flex items-center gap-2 mb-2">
                 {logo ? (
-                  <img src={logo} alt={storeName} className="h-7 w-auto" />
+                  <img loading="lazy" src={logo} alt={storeName} className="h-7 w-auto" />
                 ) : (
                   <div
                     className="w-8 h-8 rounded-xl flex items-center justify-center text-white font-black"
@@ -1212,7 +1210,7 @@ export default function PremiumRetailStore({ store, storefront, tenantSlug }: Pr
                       <div key={item.id} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.05] rounded-2xl">
                         <div className="w-14 h-14 rounded-xl overflow-hidden bg-white dark:bg-[#1a1d28] shrink-0 flex items-center justify-center border border-gray-100 dark:border-white/10">
                           {item.image ? (
-                            <img src={item.image} alt={item.name} className="w-full h-full object-contain p-1" />
+                            <img loading="lazy" src={item.image} alt={item.name} className="w-full h-full object-contain p-1" />
                           ) : (
                             <Package className="w-6 h-6 text-gray-300" />
                           )}
@@ -1381,7 +1379,7 @@ export default function PremiumRetailStore({ store, storefront, tenantSlug }: Pr
               {/* Image */}
               <div className="relative bg-gray-50 dark:bg-[#161820]" style={{ aspectRatio: "1/1" }}>
                 {quickView.image ? (
-                  <img src={quickView.image} alt={quickView.name} className="w-full h-full object-contain p-4" />
+                  <img loading="lazy" src={quickView.image} alt={quickView.name} className="w-full h-full object-contain p-4" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center"><Package className="w-16 h-16 text-gray-300 dark:text-gray-700" /></div>
                 )}

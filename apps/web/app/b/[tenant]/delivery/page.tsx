@@ -575,7 +575,7 @@ export default function DeliveryApp() {
         <div className="w-full max-w-sm space-y-8">
           <div className="text-center">
             {logo ? (
-              <img src={logo} alt="Logo" className="h-20 w-auto mx-auto mb-4 rounded-xl" />
+              <img loading="lazy" src={logo} alt="Logo" className="h-20 w-auto mx-auto mb-4 rounded-xl" />
             ) : (
               <div className="h-20 w-20 mx-auto rounded-3xl mb-4 flex items-center justify-center text-3xl font-black text-white shadow-2xl" style={{ backgroundColor: primaryColor }}>
                 {storeName.charAt(0)}
@@ -620,7 +620,7 @@ export default function DeliveryApp() {
             <Menu className="w-6 h-6" />
           </button>
           {logo ? (
-            <img src={logo} alt="Logo" className="h-8 w-auto bg-white p-1 rounded-lg" />
+            <img loading="lazy" src={logo} alt="Logo" className="h-8 w-auto bg-white p-1 rounded-lg" />
           ) : (
             <span className="font-black text-lg tracking-tight">{storeName}</span>
           )}
@@ -845,7 +845,7 @@ export default function DeliveryApp() {
                   <div className="p-6 border-b border-white/5">
                     <div className="w-20 h-20 bg-white/10 rounded-3xl flex items-center justify-center shadow-xl mb-4 overflow-hidden border-2 border-white/10">
                       {rider.avatar ? (
-                        <img src={rider.avatar} alt="Rider" className="w-full h-full object-cover" />
+                        <img loading="lazy" src={rider.avatar} alt="Rider" className="w-full h-full object-cover" />
                       ) : (
                         <span className="text-4xl font-black text-white">{rider.name?.charAt(0)}</span>
                       )}

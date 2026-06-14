@@ -552,7 +552,7 @@ function ServiceForm({ service, tenantSlug, onSave, onCancel }: {
             {/* Preview */}
             <div className="w-16 h-16 rounded-xl border border-white/10 bg-black/40 overflow-hidden shrink-0 flex items-center justify-center">
               {image ? (
-                <img src={image} alt="preview" className="w-full h-full object-cover" onError={() => setImage("")} />
+                <img loading="lazy" src={image} alt="preview" className="w-full h-full object-cover" onError={() => setImage("")} />
               ) : (
                 <Star className="w-6 h-6 text-gray-700" />
               )}
@@ -1151,7 +1151,7 @@ function StorefrontEditor({ tenantSlug }: { tenantSlug: string }) {
           <p className="text-[10px] font-bold text-indigo-300 uppercase tracking-wider">Brand Logo / Icon</p>
           {brandLogo && (
             <div className="flex items-center gap-2 p-2 rounded-lg bg-black/40 border border-white/10">
-              <img src={brandLogo} alt="Logo" className="object-contain rounded-lg" style={{ height: brandLogoHeight, width: "auto", maxWidth: 80 }} />
+              <img loading="lazy" src={brandLogo} alt="Logo" className="object-contain rounded-lg" style={{ height: brandLogoHeight, width: "auto", maxWidth: 80 }} />
               <span className="text-[10px] text-gray-400 flex-1">{brandLogoHeight}px</span>
               <button onClick={() => setBrandLogo("")} className="text-red-400 text-[10px] font-bold">Remove</button>
             </div>

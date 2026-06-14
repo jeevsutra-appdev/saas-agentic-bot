@@ -56,7 +56,7 @@ const UrlPreview = ({ href, children }: { href: string, children: React.ReactNod
         <div className="flex flex-col sm:flex-row overflow-hidden rounded-xl border border-white/10 bg-black/40 shadow-lg hover:shadow-[0_0_20px_rgba(99,102,241,0.15)] transition-all hover:bg-black/60 group-hover:border-indigo-500/30">
           {meta.image && (
             <div className="sm:w-32 h-24 sm:h-auto shrink-0 overflow-hidden relative bg-black/50">
-              <img src={meta.image} alt={meta.title || "Link Preview"} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              <img loading="lazy" src={meta.image} alt={meta.title || "Link Preview"} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
             </div>
           )}
           <div className="p-3.5 flex-1 min-w-0 flex flex-col justify-center">
@@ -860,7 +860,7 @@ export default function ChatWidgetUI({ tenantSlug, agentConfig, isPreviewMode = 
                 >
                   {product.image ? (
                      <div className="relative h-32 sm:h-40 lg:h-48 w-full overflow-hidden shrink-0">
-                       <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-700 ease-out" />
+                       <img loading="lazy" src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-700 ease-out" />
                        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0c] via-transparent to-transparent"></div>
                      </div>
                   ) : (
@@ -955,7 +955,7 @@ export default function ChatWidgetUI({ tenantSlug, agentConfig, isPreviewMode = 
                         className="w-[180px] shrink-0 bg-[#060810]/80 rounded-[14px] border border-white/5 shadow-lg overflow-hidden flex items-center p-2 gap-3 cursor-pointer hover:bg-white/5 transition-colors group"
                       >
                         {product.image ? (
-                          <img src={product.image} className="w-12 h-12 rounded-lg object-cover" />
+                          <img loading="lazy" src={product.image} className="w-12 h-12 rounded-lg object-cover" />
                         ) : (
                           <div className="w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center text-[10px] font-bold text-gray-500">IMG</div>
                         )}
@@ -993,7 +993,7 @@ export default function ChatWidgetUI({ tenantSlug, agentConfig, isPreviewMode = 
                 onClick={() => handleSubmit(undefined, `Show me all products in the ${cat.name} category.`)}
               >
                 {cat.image ? (
-                   <img src={cat.image} alt={cat.name} className="h-12 w-12 rounded-lg object-cover shadow-md group-hover:scale-105 transition-transform" />
+                   <img loading="lazy" src={cat.image} alt={cat.name} className="h-12 w-12 rounded-lg object-cover shadow-md group-hover:scale-105 transition-transform" />
                 ) : (
                    <div className="h-12 w-12 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center font-bold text-indigo-300 text-xs shadow-inner">
                      {cat.name.substring(0, 2).toUpperCase()}
@@ -1365,7 +1365,7 @@ export default function ChatWidgetUI({ tenantSlug, agentConfig, isPreviewMode = 
         <div className="relative flex items-center gap-3">
           <div className="relative">
             {agentConfig.avatarUrl ? (
-              <img src={agentConfig.avatarUrl} alt={agentConfig.name}
+              <img loading="lazy" src={agentConfig.avatarUrl} alt={agentConfig.name}
                 className="h-10 w-10 rounded-full object-cover shadow-xl border-2"
                 style={{ borderColor: themeColor + "60" }}
               />
@@ -1433,7 +1433,7 @@ export default function ChatWidgetUI({ tenantSlug, agentConfig, isPreviewMode = 
               className={`flex flex-col gap-1 w-full ${msg.role === "assistant" ? "self-start items-start" : "self-end items-end"}`}
             >
               {msg.role === "user" && msg.image && (
-                <img src={msg.image} alt="Upload" className="h-28 w-auto rounded-2xl object-cover border border-white/10 shadow-xl mb-1 self-end" />
+                <img loading="lazy" src={msg.image} alt="Upload" className="h-28 w-auto rounded-2xl object-cover border border-white/10 shadow-xl mb-1 self-end" />
               )}
               {msg.role === "user" && msg.fileName && (
                 <div className="px-4 py-2.5 rounded-xl bg-white/10 backdrop-blur-md border border-white/5 shadow-lg mb-1 self-end flex items-center gap-3">

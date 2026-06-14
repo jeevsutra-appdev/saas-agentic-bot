@@ -125,8 +125,7 @@ export default function SingleProductStore({ store, tenantSlug }: Props) {
       <header className="px-5 py-4 flex items-center justify-between max-w-lg mx-auto">
         <div className="flex items-center gap-3">
           {(store.brandLogo || store.image) && (
-            <img
-              src={store.brandLogo || store.image}
+            <img loading="lazy" src={store.brandLogo || store.image}
               alt={store.name}
               className="rounded-xl object-contain"
               style={{ height: store.brandLogoHeight || 32, width: "auto", maxWidth: 80 }}
@@ -152,7 +151,7 @@ export default function SingleProductStore({ store, tenantSlug }: Props) {
             {/* Product image */}
             <div className="relative rounded-3xl overflow-hidden mb-6" style={{ aspectRatio: "1/1", background: primary + "10" }}>
               {product.image ? (
-                <img src={product.image} className="w-full h-full object-cover" />
+                <img loading="lazy" src={product.image} className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-8xl opacity-20">📦</div>
               )}
@@ -340,7 +339,7 @@ export default function SingleProductStore({ store, tenantSlug }: Props) {
                     {/* Order summary */}
                     {product && (
                       <div className="flex items-center gap-3 bg-white/[0.04] border border-white/10 rounded-2xl p-3">
-                        {product.image && <img src={product.image} className="h-14 w-14 rounded-xl object-cover shrink-0" />}
+                        {product.image && <img loading="lazy" src={product.image} className="h-14 w-14 rounded-xl object-cover shrink-0" />}
                         <div className="flex-1 min-w-0">
                           <p className="text-white font-bold text-sm truncate">{product.name}</p>
                           <p className="text-xs font-black mt-0.5" style={{ color: primary }}>Qty: {qty} × {currency}{price} = {currency}{price * qty}</p>

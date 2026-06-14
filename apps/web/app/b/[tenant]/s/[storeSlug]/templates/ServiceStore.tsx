@@ -119,14 +119,14 @@ export default function ServiceStore({ store, tenantSlug }: Props) {
           <div className="flex items-center gap-4 mb-6">
             {store.brandLogo ? (
               <div className="shrink-0 flex items-center" style={{ height: store.brandLogoHeight || 56 }}>
-                <img src={store.brandLogo} alt={store.name}
+                <img loading="lazy" src={store.brandLogo} alt={store.name}
                   className="rounded-2xl object-contain"
                   style={{ height: store.brandLogoHeight || 56, width: "auto", maxWidth: 120 }} />
               </div>
             ) : (
               <div className="h-16 w-16 rounded-2xl overflow-hidden shrink-0 border-2" style={{ borderColor: primary + "50" }}>
                 {store.image ? (
-                  <img src={store.image} className="w-full h-full object-cover" />
+                  <img loading="lazy" src={store.image} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-3xl" style={{ background: primary + "20" }}>🏥</div>
                 )}

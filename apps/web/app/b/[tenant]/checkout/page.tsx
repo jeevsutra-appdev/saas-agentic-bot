@@ -340,7 +340,7 @@ export default function StandaloneFastCheckout() {
           
           <div className="flex items-center gap-3">
             {storeData.storefront?.brandLogo ? (
-              <img src={storeData.storefront.brandLogo} className="h-8 w-8 rounded-full object-cover border border-white/10" />
+              <img loading="lazy" src={storeData.storefront.brandLogo} className="h-8 w-8 rounded-full object-cover border border-white/10" />
             ) : (
               <div className="h-8 w-8 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center">
                 <ShoppingBag className="h-4 w-4 text-indigo-400" />
@@ -523,7 +523,7 @@ export default function StandaloneFastCheckout() {
                       {checkoutItems.map((item, idx) => (
                         <div key={idx} className="flex gap-4 items-center bg-black/20 p-3 rounded-2xl border border-white/5">
                           {item.image ? (
-                            <img src={item.image} className="w-14 h-14 rounded-xl object-cover shrink-0" />
+                            <img loading="lazy" src={item.image} className="w-14 h-14 rounded-xl object-cover shrink-0" />
                           ) : (
                             <div className="w-14 h-14 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
                               <Package className="h-6 w-6 text-white/30" />

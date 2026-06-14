@@ -83,8 +83,7 @@ export const ImageElement = ({
   };
 
   const imageEl = (
-    <img
-      src={src || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop'}
+    <img loading="lazy" src={src || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop'}
       alt={alt || 'Image'}
       className={`block ${frameStyle === 'none' ? shadowClasses[currentShadow] : ''}`}
       style={{

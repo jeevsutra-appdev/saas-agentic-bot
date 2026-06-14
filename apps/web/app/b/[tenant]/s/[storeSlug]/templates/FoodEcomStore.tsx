@@ -137,8 +137,7 @@ export default function FoodEcomStore({ store, tenantSlug }: Props) {
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             {(store.brandLogo || store.image) && (
-              <img
-                src={store.brandLogo || store.image}
+              <img loading="lazy" src={store.brandLogo || store.image}
                 alt={store.name}
                 className="rounded-xl object-contain shrink-0"
                 style={{ height: store.brandLogoHeight || 36, width: "auto", maxWidth: 80 }}
@@ -181,7 +180,7 @@ export default function FoodEcomStore({ store, tenantSlug }: Props) {
       {/* Hero banner */}
       {store.settings?.heroImage && (
         <div className="relative h-40 overflow-hidden">
-          <img src={store.settings.heroImage} className="w-full h-full object-cover opacity-60" />
+          <img loading="lazy" src={store.settings.heroImage} className="w-full h-full object-cover opacity-60" />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#02040A]" />
         </div>
       )}
@@ -282,7 +281,7 @@ export default function FoodEcomStore({ store, tenantSlug }: Props) {
                       </div>
                       {product.image && (
                         <div className="relative w-28 shrink-0">
-                          <img src={product.image} className="w-full h-full object-cover" />
+                          <img loading="lazy" src={product.image} className="w-full h-full object-cover" />
                         </div>
                       )}
                     </div>
@@ -291,7 +290,7 @@ export default function FoodEcomStore({ store, tenantSlug }: Props) {
                     <div className="flex flex-col">
                       {product.image ? (
                         <div className="relative h-40 overflow-hidden">
-                          <img src={product.image} className="w-full h-full object-cover" />
+                          <img loading="lazy" src={product.image} className="w-full h-full object-cover" />
                           <button onClick={() => setWishlist(prev => { const n = new Set(prev); liked ? n.delete(product.id) : n.add(product.id); return n; })} className="absolute top-2 right-2 h-7 w-7 rounded-full bg-black/50 flex items-center justify-center cursor-pointer">
                             <Heart className={`h-3.5 w-3.5 ${liked ? "fill-red-500 text-red-500" : "text-white"}`} />
                           </button>
@@ -392,7 +391,7 @@ export default function FoodEcomStore({ store, tenantSlug }: Props) {
                       <>
                         {cart.map(item => (
                           <div key={item.id} className="flex items-center gap-3 bg-white/[0.03] border border-white/8 rounded-xl p-3">
-                            {item.image && <img src={item.image} className="h-12 w-12 rounded-xl object-cover shrink-0" />}
+                            {item.image && <img loading="lazy" src={item.image} className="h-12 w-12 rounded-xl object-cover shrink-0" />}
                             <div className="flex-1 min-w-0">
                               <p className="text-white font-bold text-sm truncate">{item.name}</p>
                               <p className="font-bold text-sm mt-0.5" style={{ color: primaryHex }}>{currency}{item.price}</p>

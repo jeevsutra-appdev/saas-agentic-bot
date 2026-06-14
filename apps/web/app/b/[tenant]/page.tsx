@@ -929,7 +929,7 @@ export default function NativeStorefront() {
               >
                 <div className="h-16 w-16 rounded-full bg-white/5 border border-white/10 group-hover:border-[#FF385C] transition flex items-center justify-center p-0.5 shadow-lg group-hover:scale-105 overflow-hidden">
                   {c.image ? (
-                    <img src={c.image} className="h-full w-full object-cover rounded-full" />
+                    <img loading="lazy" src={c.image} className="h-full w-full object-cover rounded-full" />
                   ) : (
                     <div className="h-full w-full rounded-full bg-gradient-to-tr from-white/10 to-white/5 flex items-center justify-center">
                       <Utensils className="h-6 w-6 text-white/60 group-hover:text-white group-hover:rotate-12 transition" />
@@ -953,7 +953,7 @@ export default function NativeStorefront() {
               >
                 {o.image && (
                   <>
-                    <img src={o.image} alt={o.title} className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay group-hover:scale-110 transition-transform duration-700" />
+                    <img loading="lazy" src={o.image} alt={o.title} className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay group-hover:scale-110 transition-transform duration-700" />
                     <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-black/20" />
                   </>
                 )}
@@ -980,7 +980,7 @@ export default function NativeStorefront() {
                 <div key={idx} className="w-[85vw] max-w-[320px] shrink-0 snap-center rounded-[32px] bg-black border border-white/10 overflow-hidden relative shadow-2xl flex flex-col group">
                   <div className="h-36 relative overflow-hidden bg-white/5">
                     {combo.image ? (
-                      <img src={combo.image} alt={combo.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-700" />
+                      <img loading="lazy" src={combo.image} alt={combo.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-700" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center"><Utensils className="h-10 w-10 text-white/10" /></div>
                     )}
@@ -1052,7 +1052,7 @@ export default function NativeStorefront() {
                 >
                   <div className="relative aspect-square w-full bg-white/5 cursor-pointer" onClick={() => setSelectedProduct(p)}>
                     {p.image ? (
-                      <img src={p.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                      <img loading="lazy" src={p.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center"><Utensils className="h-8 w-8 text-white/20" /></div>
                     )}
@@ -1210,7 +1210,7 @@ export default function NativeStorefront() {
               >
                 <div className="relative aspect-square w-full bg-white/5 cursor-pointer" onClick={() => setSelectedProduct(prod)}>
                   {prod.image ? (
-                    <img src={prod.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                    <img loading="lazy" src={prod.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center"><Utensils className="h-8 w-8 text-white/20" /></div>
                   )}
@@ -1294,7 +1294,7 @@ export default function NativeStorefront() {
               return (
                 <div key={item.id} className="p-4 rounded-3xl bg-[#0b0e17]/80 border border-white/5 flex gap-4 items-center shadow-xl">
                   {item.image ? (
-                    <img src={item.image} className="w-16 h-16 rounded-xl object-cover shrink-0" />
+                    <img loading="lazy" src={item.image} className="w-16 h-16 rounded-xl object-cover shrink-0" />
                   ) : (
                     <div className="w-16 h-16 rounded-xl bg-white/10 flex items-center justify-center shrink-0"><Utensils className="h-6 w-6 text-white/30" /></div>
                   )}
@@ -1705,7 +1705,7 @@ export default function NativeStorefront() {
 
                     <div className="flex gap-4 items-center border-t border-b border-white/5 py-3 mt-1">
                       {o.productImage ? (
-                        <img src={o.productImage} className="w-12 h-12 rounded-xl object-cover shrink-0" />
+                        <img loading="lazy" src={o.productImage} className="w-12 h-12 rounded-xl object-cover shrink-0" />
                       ) : (
                         <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center shrink-0"><Utensils className="h-5 w-5 text-white/20" /></div>
                       )}
@@ -1768,7 +1768,7 @@ export default function NativeStorefront() {
         <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center shadow-[0_0_20px_rgba(255,255,255,0.2)] overflow-hidden">
               {storeData.storefront?.brandLogo ? (
-                <img src={storeData.storefront.brandLogo} alt="Logo" className="w-full h-full object-cover" />
+                <img loading="lazy" src={storeData.storefront.brandLogo} alt="Logo" className="w-full h-full object-cover" />
               ) : (
                 <Sparkles className="w-5 h-5" />
               )}
@@ -1791,7 +1791,7 @@ export default function NativeStorefront() {
     const renderHero = (key: string) => (
       <div key={key} className="px-4 md:px-8">
         <div className="relative w-full aspect-[4/5] md:aspect-[21/9] rounded-[2.5rem] overflow-hidden shadow-2xl group border border-white/10 bg-black">
-          <img src={storeData.storefront?.heroImage || "https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1200"} className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-105 group-hover:opacity-100 transition-all duration-1000" alt="Hero" />
+          <img loading="lazy" src={storeData.storefront?.heroImage || "https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1200"} className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-105 group-hover:opacity-100 transition-all duration-1000" alt="Hero" />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent flex flex-col justify-end p-8 md:p-16">
             <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="max-w-2xl">
               <span className="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-widest text-white mb-4 inline-block shadow-lg border border-white/20">New Collection</span>
@@ -1819,7 +1819,7 @@ export default function NativeStorefront() {
             >
               {c.image ? (
                 <>
-                  <img src={c.image} className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-110 transition-transform duration-700" alt="" />
+                  <img loading="lazy" src={c.image} className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-110 transition-transform duration-700" alt="" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/20"></div>
                 </>
               ) : (
@@ -1837,7 +1837,7 @@ export default function NativeStorefront() {
       return (
         <div key={key} className="px-4 md:px-8 cursor-pointer" onClick={() => setActiveTab("catalog")}>
           <div className="relative w-full aspect-[21/9] md:aspect-[32/9] rounded-[2.5rem] overflow-hidden shadow-2xl group border border-rose-500/20 bg-rose-900/20">
-            <img src={storeData.storefront.promoBannerImage} className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-105 group-hover:opacity-100 transition-all duration-1000" alt="Promo" />
+            <img loading="lazy" src={storeData.storefront.promoBannerImage} className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-105 group-hover:opacity-100 transition-all duration-1000" alt="Promo" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-8">
               <span className="text-rose-400 font-black tracking-widest text-xs uppercase mb-2">Limited Time Offer</span>
               <h3 className="text-2xl md:text-4xl font-black text-white">{storeData.storefront.promoBannerText || "Special Flash Sale!"}</h3>
@@ -1860,7 +1860,7 @@ export default function NativeStorefront() {
               <div key={i} className="min-w-[220px] md:min-w-[280px] snap-start group cursor-pointer bg-[#0c0e14] rounded-3xl overflow-hidden border border-white/5 shadow-2xl flex flex-col" onClick={() => setSelectedProduct(p)}>
                 <div className="relative w-full aspect-[4/5] bg-white flex items-center justify-center overflow-hidden">
                   {p.image ? (
-                    <img src={p.image} className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-700" alt={p.name} />
+                    <img loading="lazy" src={p.image} className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-700" alt={p.name} />
                   ) : (
                     <ShoppingBag className="w-10 h-10 text-gray-300" />
                   )}
@@ -1980,7 +1980,7 @@ export default function NativeStorefront() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} key={i} className="group cursor-pointer flex flex-col bg-[#0c0e14] rounded-3xl overflow-hidden border border-white/5 shadow-2xl" onClick={() => setSelectedProduct(p)}>
             <div className="relative w-full aspect-[4/5] bg-white flex items-center justify-center overflow-hidden">
               {p.image ? (
-                <img src={p.image} className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-700" alt={p.name} />
+                <img loading="lazy" src={p.image} className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-700" alt={p.name} />
               ) : (
                 <ShoppingBag className="w-8 h-8 text-gray-300" />
               )}
@@ -2051,7 +2051,7 @@ export default function NativeStorefront() {
                 <div key={item.id} className="p-5 rounded-3xl bg-[#0b0e17] border border-white/10 flex gap-5 shadow-xl relative overflow-hidden group">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none group-hover:bg-white/10 transition-colors"></div>
                   {item.image ? (
-                    <img src={item.image} className="w-24 h-28 rounded-2xl object-cover bg-white" alt={item.name} />
+                    <img loading="lazy" src={item.image} className="w-24 h-28 rounded-2xl object-cover bg-white" alt={item.name} />
                   ) : (
                     <div className="w-24 h-28 rounded-2xl bg-white/5 flex items-center justify-center"><Package className="h-8 w-8 text-white/20" /></div>
                   )}
@@ -2282,7 +2282,7 @@ export default function NativeStorefront() {
               <div key={i} className="flex flex-col gap-3 group cursor-pointer" onClick={() => setSelectedProduct(p)}>
                 <div className="w-full h-48 rounded-3xl bg-white/5 overflow-hidden relative shadow-md">
                   {p.image ? (
-                    <img src={p.image} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <img loading="lazy" src={p.image} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center"><Utensils className="w-8 h-8 text-white/10" /></div>
                   )}
@@ -2355,7 +2355,7 @@ export default function NativeStorefront() {
               <div key={i} className="bg-white/5 rounded-3xl p-3 flex gap-4 cursor-pointer hover:bg-white/10 transition-colors border border-white/5" onClick={() => setSelectedProduct(p)}>
                 <div className="w-28 h-28 rounded-2xl bg-black/40 overflow-hidden relative shrink-0">
                    {p.image ? (
-                    <img src={p.image} className="w-full h-full object-cover" alt={p.name} />
+                    <img loading="lazy" src={p.image} className="w-full h-full object-cover" alt={p.name} />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center"><Utensils className="w-6 h-6 text-white/10" /></div>
                   )}
@@ -2792,7 +2792,7 @@ export default function NativeStorefront() {
                 {/* Left image area */}
                 <div className={`w-full lg:w-1/2 relative shrink-0 ${isLightMode ? 'bg-gray-50' : 'bg-white/5'} flex items-center justify-center p-6 lg:p-10`}>
                   {selectedProduct.image ? (
-                    <img src={selectedProduct.image} className="w-full aspect-square object-cover rounded-3xl shadow-lg border border-black/5" />
+                    <img loading="lazy" src={selectedProduct.image} className="w-full aspect-square object-cover rounded-3xl shadow-lg border border-black/5" />
                   ) : (
                     <Package className="h-20 w-20 text-gray-400 opacity-50" />
                   )}

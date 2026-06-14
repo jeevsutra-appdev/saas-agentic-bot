@@ -358,7 +358,7 @@ const ProductCardSelector = ({ value, onChange, products }: any) => {
       <div onClick={() => setOpen(!open)} className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white flex justify-between items-center cursor-pointer hover:border-white/30 transition-colors">
         {selectedProd ? (
           <div className="flex items-center gap-2">
-            {selectedProd.image ? <img src={selectedProd.image} className="w-5 h-5 rounded object-cover" /> : <div className="w-5 h-5 rounded bg-white/10 flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white/40"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg></div>}
+            {selectedProd.image ? <img loading="lazy" src={selectedProd.image} className="w-5 h-5 rounded object-cover" /> : <div className="w-5 h-5 rounded bg-white/10 flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white/40"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg></div>}
             <span className="font-bold truncate max-w-[120px]">{selectedProd.name}</span>
             <span className="text-emerald-400">${(selectedProd.price/100).toFixed(2)}</span>
           </div>
@@ -391,7 +391,7 @@ const ProductCardSelector = ({ value, onChange, products }: any) => {
               </div>
             ) : filteredProds.map((p: any) => (
               <div key={p.id} onClick={() => { onChange(p.id); setOpen(false); setSearch(""); }} className={`p-2 rounded-lg cursor-pointer transition-colors flex items-center gap-3 ${value === p.id ? 'bg-orange-500/20 border border-orange-500/30' : 'bg-black/20 hover:bg-white/5 border border-transparent'}`}>
-                {p.image ? <img src={p.image} className="w-10 h-10 rounded-md object-cover" /> : <div className="w-10 h-10 rounded-md bg-white/5 flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white/20"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg></div>}
+                {p.image ? <img loading="lazy" src={p.image} className="w-10 h-10 rounded-md object-cover" /> : <div className="w-10 h-10 rounded-md bg-white/5 flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white/20"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg></div>}
                 <div className="flex flex-col min-w-0">
                   <span className="text-xs font-bold text-white truncate">{p.name}</span>
                   <span className="text-[10px] text-gray-400 truncate">{p.tags || "No tags"}</span>
@@ -407,6 +407,19 @@ const ProductCardSelector = ({ value, onChange, products }: any) => {
 };
 
 export default function TenantDashboard() {
+  const uploadImageToSupabase = async (fileOrBlob: Blob, filename: string = "image.jpg") => {
+    try {
+      const formData = new FormData();
+      formData.append("file", fileOrBlob, filename);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      return data.url || "";
+    } catch (err) {
+      console.error("Upload failed", err);
+      return "";
+    }
+  };
+
   const params = useParams();
   const tenantSlug = params.tenant as string;
 
@@ -2867,7 +2880,7 @@ export default function TenantDashboard() {
             {matchedCategories.map((cat) => (
               <div key={cat.id} className="p-4 rounded-xl bg-gradient-to-br from-[#0a1128] to-[#161a38] border border-indigo-500/20 shadow-lg flex gap-4 max-w-sm animate-fadeIn transition hover:border-indigo-500/40 select-none text-gray-200">
                 {cat.image ? (
-                  <img src={cat.image} alt={cat.name} className="h-16 w-16 rounded-lg object-cover border border-white/10 shrink-0 bg-[#070913]" />
+                  <img loading="lazy" src={cat.image} alt={cat.name} className="h-16 w-16 rounded-lg object-cover border border-white/10 shrink-0 bg-[#070913]" />
                 ) : (
                   <div className="h-16 w-16 rounded-lg bg-gradient-to-tr from-purple-500/20 to-indigo-500/20 border border-indigo-500/30 flex items-center justify-center font-bold text-indigo-400 text-sm shrink-0 uppercase shadow-inner">
                     {cat.name.substring(0, 2)}
@@ -2903,7 +2916,7 @@ export default function TenantDashboard() {
               <div key={prod.id} className="my-2 rounded-2xl overflow-hidden border border-white/10 bg-[#161827] shadow-xl group hover:border-emerald-500/30 transition-all duration-300 max-w-sm">
                 {prod.image ? (
                    <div className="relative h-36 w-full overflow-hidden">
-                     <img src={prod.image} alt={prod.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                     <img loading="lazy" src={prod.image} alt={prod.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                      <div className="absolute inset-0 bg-gradient-to-t from-[#161827] via-transparent to-transparent"></div>
                    </div>
                 ) : (
@@ -3055,7 +3068,7 @@ export default function TenantDashboard() {
           <div class="half top-half">
             <div class="header">
               <div>
-                ${orderStore?.brandLogo ? `<img src="${orderStore?.brandLogo}" />` : `<h2>${orderStore?.companyName || 'Store'}</h2>`}
+                ${orderStore?.brandLogo ? `<img loading="lazy" src="${orderStore?.brandLogo}" />` : `<h2>${orderStore?.companyName || 'Store'}</h2>`}
               </div>
               <div class="header-right">
                 <h1 class="title">Invoice</h1>
@@ -3432,7 +3445,7 @@ export default function TenantDashboard() {
           <div class="half top-half">
             <div class="header">
               <div>
-                ${orderStore?.brandLogo ? `<img src="${orderStore?.brandLogo}" />` : `<h2>${orderStore?.companyName || 'Store'}</h2>`}
+                ${orderStore?.brandLogo ? `<img loading="lazy" src="${orderStore?.brandLogo}" />` : `<h2>${orderStore?.companyName || 'Store'}</h2>`}
               </div>
               <div class="header-right">
                 <h1 class="title">Invoice</h1>
@@ -3823,7 +3836,7 @@ export default function TenantDashboard() {
                             {/* Hero image */}
                             <div className="relative h-36 bg-gradient-to-br from-indigo-900/30 to-purple-900/20 overflow-hidden">
                               {store.image ? (
-                                <img src={store.image} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition" />
+                                <img loading="lazy" src={store.image} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition" />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center text-5xl opacity-25">{tc.icon}</div>
                               )}
@@ -3998,7 +4011,7 @@ export default function TenantDashboard() {
                         productsList.slice(0, 5).map(prod => (
                           <div key={prod.id} className="p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.05] border border-white/5 transition-colors flex items-center gap-3">
                             {prod.image ? (
-                              <img src={prod.image} className="w-10 h-10 rounded-lg object-cover border border-white/10 shrink-0" />
+                              <img loading="lazy" src={prod.image} className="w-10 h-10 rounded-lg object-cover border border-white/10 shrink-0" />
                             ) : (
                               <div className="w-10 h-10 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center shrink-0"><Package className="h-4 w-4 text-indigo-400" /></div>
                             )}
@@ -4048,7 +4061,7 @@ export default function TenantDashboard() {
                         >
                           <div className="h-48 w-full bg-[#0a0d1a] relative">
                             {prod.image ? (
-                              <img src={prod.image} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500 group-hover:scale-105" />
+                              <img loading="lazy" src={prod.image} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500 group-hover:scale-105" />
                             ) : (
                               <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-indigo-500/10 to-purple-500/5">
                                 <Package className="h-12 w-12 text-indigo-500/40" />
@@ -4285,7 +4298,7 @@ export default function TenantDashboard() {
                     {categoriesList.map(cat => (
                       <div key={cat.id} className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 flex gap-4 items-center group relative">
                         {cat.image ? (
-                          <img src={cat.image} className="w-16 h-16 rounded-xl object-cover shrink-0" />
+                          <img loading="lazy" src={cat.image} className="w-16 h-16 rounded-xl object-cover shrink-0" />
                         ) : (
                           <div className="w-16 h-16 rounded-xl bg-gray-800 flex items-center justify-center shrink-0"><FolderTree className="h-6 w-6 text-gray-500" /></div>
                         )}
@@ -4533,7 +4546,7 @@ export default function TenantDashboard() {
                                     <div className="flex flex-col gap-2 mt-2 pt-2 border-t border-white/5">
                                       {items.map((it: any, i: number) => (
                                         <div key={i} className="flex items-center gap-3 bg-black/20 p-2 rounded-xl">
-                                          {it.image ? <img src={it.image} className="w-10 h-10 rounded-lg object-cover bg-black/50" /> : <div className="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400 text-xs">🍽️</div>}
+                                          {it.image ? <img loading="lazy" src={it.image} className="w-10 h-10 rounded-lg object-cover bg-black/50" /> : <div className="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400 text-xs">🍽️</div>}
                                           <div className="flex-1 min-w-0">
                                             <p className="text-white text-[11px] font-semibold truncate">{it.name}</p>
                                             <p className="text-gray-500 text-[9px]">Qty: {it.quantity}</p>
@@ -5274,7 +5287,7 @@ export default function TenantDashboard() {
                       {/* Preview */}
                       {storeBrandLogo && (
                         <div className="flex items-center gap-3 p-3 rounded-xl bg-black/40 border border-white/10">
-                          <img src={storeBrandLogo} alt="Brand logo" style={{ height: storeBrandLogoHeight }} className="object-contain rounded-lg" />
+                          <img loading="lazy" src={storeBrandLogo} alt="Brand logo" style={{ height: storeBrandLogoHeight }} className="object-contain rounded-lg" />
                           <div className="flex-1 min-w-0">
                             <p className="text-[10px] text-gray-400">Preview at {storeBrandLogoHeight}px height</p>
                           </div>
@@ -6423,7 +6436,7 @@ export default function TenantDashboard() {
                   <div className="flex flex-col gap-2 justify-between">
                     {editProdImage ? (
                       <div className="relative h-[110px] rounded-xl overflow-hidden border border-white/10 bg-[#070913] flex items-center justify-center group shadow-inner">
-                        <img src={editProdImage} alt="Current Product" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                        <img loading="lazy" src={editProdImage} alt="Current Product" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                           <button
                             type="button"
@@ -6690,7 +6703,7 @@ export default function TenantDashboard() {
                   <div className="flex flex-col gap-2 justify-between">
                     {editCatImage ? (
                       <div className="relative h-[90px] rounded-xl overflow-hidden border border-white/10 bg-[#070913] flex items-center justify-center group shadow-inner">
-                        <img src={editCatImage} alt="Category Cover" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                        <img loading="lazy" src={editCatImage} alt="Category Cover" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                           <button
                             type="button"
@@ -6983,7 +6996,7 @@ export default function TenantDashboard() {
                       <div className="grid grid-cols-2 gap-2.5">
                         {modalItems.map((item:any,i:number)=>(
                           <div key={i} className="bg-white/[0.04] border border-white/10 rounded-2xl overflow-hidden flex flex-col">
-                            {item.image?<img src={item.image} className="w-full h-24 object-cover"/>:<div className="w-full h-24 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 flex items-center justify-center text-3xl">🍽️</div>}
+                            {item.image?<img loading="lazy" src={item.image} className="w-full h-24 object-cover"/>:<div className="w-full h-24 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 flex items-center justify-center text-3xl">🍽️</div>}
                             <div className="p-2.5">
                               <p className="text-white font-bold text-xs leading-tight line-clamp-2">{item.name}</p>
                               <div className="flex items-center justify-between mt-1.5">
@@ -7527,8 +7540,7 @@ export default function TenantDashboard() {
                           )}
                           <p className="whitespace-pre-wrap">{msg.content}</p>
                           {msg.image && (
-                            <img 
-                              src={msg.image} 
+                            <img loading="lazy" src={msg.image} 
                               alt="User attachment" 
                               className="mt-2 max-w-[200px] max-h-[150px] rounded-lg object-cover border border-white/10 bg-[#070913] select-none"
                             />
@@ -7563,7 +7575,7 @@ export default function TenantDashboard() {
                   <div className="flex items-center gap-3 p-2 bg-[#070913]/60 border border-white/10 rounded-xl animate-fadeIn max-w-md select-none">
                     {uploadedFile.startsWith("data:image/") ? (
                       <div className="relative h-12 w-12 rounded-lg overflow-hidden border border-white/10 shrink-0 bg-[#070913]">
-                        <img src={uploadedFile} alt="Preview Attachment" className="h-full w-full object-cover" />
+                        <img loading="lazy" src={uploadedFile} alt="Preview Attachment" className="h-full w-full object-cover" />
                         <button
                           type="button"
                           onClick={() => { setUploadedFile(null); setUploadedFileName(""); }}
@@ -7781,7 +7793,7 @@ export default function TenantDashboard() {
 
                     <div className="flex justify-between items-start">
                       {store.brandLogo ? (
-                        <img src={store.brandLogo} className="h-12 w-12 rounded-xl object-cover border border-white/10" />
+                        <img loading="lazy" src={store.brandLogo} className="h-12 w-12 rounded-xl object-cover border border-white/10" />
                       ) : (
                         <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 flex items-center justify-center font-extrabold text-indigo-400 font-heading uppercase text-md">
                           {store.companyName ? store.companyName.substring(0, 2) : "SH"}
@@ -7993,7 +8005,7 @@ export default function TenantDashboard() {
                             <tr key={cat.id} className="hover:bg-white/[0.02] transition-colors group">
                               <td className="px-4 sm:px-5 py-4 flex items-center gap-3">
                                 {cat.image ? (
-                                  <img src={cat.image} className="w-8 h-8 rounded-lg object-cover border border-white/10 shrink-0" />
+                                  <img loading="lazy" src={cat.image} className="w-8 h-8 rounded-lg object-cover border border-white/10 shrink-0" />
                                 ) : (
                                   <div className="w-8 h-8 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center font-bold text-indigo-300 shrink-0">{cat.name.substring(0,2)}</div>
                                 )}
@@ -8046,7 +8058,7 @@ export default function TenantDashboard() {
                               <tr key={prod.id} className="hover:bg-white/[0.02] transition-colors group">
                                 <td className="px-4 sm:px-5 py-4 flex items-center gap-3">
                                   {prod.image ? (
-                                    <img src={prod.image} className="w-8 h-8 rounded-lg object-cover border border-white/10 shrink-0" />
+                                    <img loading="lazy" src={prod.image} className="w-8 h-8 rounded-lg object-cover border border-white/10 shrink-0" />
                                   ) : (
                                     <div className="w-8 h-8 rounded-lg bg-purple-500/20 border border-purple-500/30 flex items-center justify-center font-bold text-purple-300 shrink-0"><ShoppingBag className="h-3.5 w-3.5" /></div>
                                   )}
@@ -8486,7 +8498,7 @@ export default function TenantDashboard() {
                         </label>
                         {newProdImage && (
                           <div className="relative h-20 w-20 rounded-xl overflow-hidden border border-white/10 shrink-0 bg-[#070913]">
-                            <img src={newProdImage} alt="Preview" className="h-full w-full object-cover" />
+                            <img loading="lazy" src={newProdImage} alt="Preview" className="h-full w-full object-cover" />
                             <button
                               type="button"
                               onClick={() => setNewProdImage("")}
@@ -8523,7 +8535,7 @@ export default function TenantDashboard() {
                         <div key={prod.id} className="p-3 bg-white/[0.02] border border-white/5 rounded-xl text-xs flex items-center justify-between gap-4">
                           <div className="flex items-center gap-3">
                             {prod.image ? (
-                              <img src={prod.image} alt={prod.name} className="h-9 w-9 rounded-lg object-cover border border-white/5 shrink-0 bg-[#070913]" />
+                              <img loading="lazy" src={prod.image} alt={prod.name} className="h-9 w-9 rounded-lg object-cover border border-white/5 shrink-0 bg-[#070913]" />
                             ) : (
                               <div className="h-9 w-9 rounded-lg bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-[10px] font-bold text-indigo-400 shrink-0 uppercase font-heading">
                                 {prod.name.substring(0, 2)}
@@ -8673,7 +8685,7 @@ export default function TenantDashboard() {
                     >
                       <div className="flex items-start justify-between mb-3">
                         {a.avatarUrl ? (
-                          <img src={a.avatarUrl} alt={a.name} className="h-10 w-10 rounded-full object-cover border border-white/10 shadow-lg" />
+                          <img loading="lazy" src={a.avatarUrl} alt={a.name} className="h-10 w-10 rounded-full object-cover border border-white/10 shadow-lg" />
                         ) : (
                           <div className="h-10 w-10 rounded-full flex items-center justify-center border border-white/10 shadow-lg" style={{ backgroundColor: a.themeColor || '#6366f1' }}>
                             <Sparkles className="h-5 w-5 text-white" />
@@ -8847,7 +8859,7 @@ export default function TenantDashboard() {
                     <label className="text-xs font-bold text-gray-400">Avatar Image (512x512 PNG/JPG)</label>
                     <div className="flex items-center gap-3">
                       {botAvatar ? (
-                        <img src={botAvatar} className="h-10 w-10 rounded-full object-cover border border-white/10" />
+                        <img loading="lazy" src={botAvatar} className="h-10 w-10 rounded-full object-cover border border-white/10" />
                       ) : (
                         <div className="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
                           <User className="h-4 w-4 text-gray-500" />
@@ -9601,7 +9613,7 @@ export default function TenantDashboard() {
                                     <div className="flex items-center justify-between gap-2">
                                       {p.image ? (
                                         <div className="h-6 w-6 rounded overflow-hidden border border-white/10 shadow-sm shrink-0">
-                                          <img src={p.image} alt={p.name} className="h-full w-full object-cover" />
+                                          <img loading="lazy" src={p.image} alt={p.name} className="h-full w-full object-cover" />
                                         </div>
                                       ) : (
                                         <div className={`p-1.5 rounded-lg border transition-colors ${isSelected ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-300' : 'bg-white/5 border-white/5 text-gray-400 group-hover:text-white'}`}>
@@ -9777,7 +9789,7 @@ export default function TenantDashboard() {
                       </div>
                       {metaImage && (
                         <div className="mt-2 rounded-xl overflow-hidden border border-white/10 aspect-[1200/630] bg-black flex items-center justify-center relative">
-                          <img src={metaImage} alt="Meta Preview" className="w-full h-full object-cover" />
+                          <img loading="lazy" src={metaImage} alt="Meta Preview" className="w-full h-full object-cover" />
                           <div className="absolute inset-0 ring-1 ring-inset ring-white/10 rounded-xl pointer-events-none"></div>
                         </div>
                       )}
@@ -11088,7 +11100,7 @@ export default function TenantDashboard() {
                   <div className="flex flex-col gap-2 justify-between">
                     {editProdImage ? (
                       <div className="relative h-[110px] rounded-xl overflow-hidden border border-white/10 bg-[#070913] flex items-center justify-center group shadow-inner">
-                        <img src={editProdImage} alt="Current Product" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                        <img loading="lazy" src={editProdImage} alt="Current Product" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                           <button
                             type="button"
@@ -11774,7 +11786,7 @@ export default function TenantDashboard() {
                         {modalItems.map((item: any, i: number) => (
                           <div key={i} className="bg-white/[0.04] border border-white/10 rounded-2xl overflow-hidden flex flex-col">
                             {item.image ? (
-                              <img src={item.image} className="w-full h-24 object-cover" />
+                              <img loading="lazy" src={item.image} className="w-full h-24 object-cover" />
                             ) : (
                               <div className="w-full h-24 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 flex items-center justify-center text-3xl">
                                 🍽️
@@ -12202,7 +12214,7 @@ export default function TenantDashboard() {
                       {parsedItems.map((item: any, idx: number) => (
                         <div key={idx} className="flex items-center gap-3 bg-white/[0.01] border border-white/5 p-3 rounded-xl">
                           {item.image ? (
-                            <img src={item.image} className="h-10 w-10 rounded-lg object-cover border border-white/10 shrink-0" />
+                            <img loading="lazy" src={item.image} className="h-10 w-10 rounded-lg object-cover border border-white/10 shrink-0" />
                           ) : (
                             <div className="h-10 w-10 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shrink-0 text-indigo-400"><ShoppingBag className="h-4 w-4" /></div>
                           )}

@@ -1921,8 +1921,7 @@ export default function SuperAdminConsole() {
 
                           {msg.imageUrl && (
                             <div className="mt-3.5 flex flex-col gap-1.5">
-                              <img 
-                                src={msg.imageUrl} 
+                              <img loading="lazy" src={msg.imageUrl} 
                                 alt="Skill Return" 
                                 className="w-64 h-auto max-h-48 object-cover rounded-lg border border-white/15"
                               />
@@ -2588,8 +2587,7 @@ export default function SuperAdminConsole() {
                       <span className="text-[9px] uppercase font-mono text-green-400 border border-green-500/20 px-2 py-0.5 rounded bg-green-500/10 self-start">
                         Tool Return URL (200 OK)
                       </span>
-                      <img 
-                        src={simulatedImageUrl} 
+                      <img loading="lazy" src={simulatedImageUrl} 
                         alt="Simulated result" 
                         className="w-full h-36 object-cover rounded-lg border border-white/10 hover:scale-105 transition duration-300"
                       />

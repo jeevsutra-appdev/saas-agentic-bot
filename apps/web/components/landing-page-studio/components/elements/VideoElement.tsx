@@ -145,8 +145,7 @@ export const VideoElement = ({
           style={{ borderRadius: frameStyle === 'none' ? currentBorderRadius : '0px' }}
           onClick={() => setHasStarted(true)}
         >
-          <img 
-            src={customThumbnail} 
+          <img loading="lazy" src={customThumbnail} 
             alt="Video Cover" 
             className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" 
           />

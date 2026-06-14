@@ -331,7 +331,7 @@ function BookingNav({ t, businessName, brandLogo, brandLogoHeight, onBook, scrol
       <div className="max-w-6xl mx-auto px-4 sm:px-8 h-16 flex items-center justify-between gap-4">
         <div className="flex items-center gap-2.5">
           {brandLogo ? (
-            <img src={brandLogo} alt={businessName}
+            <img loading="lazy" src={brandLogo} alt={businessName}
               className="object-contain shrink-0 rounded-xl"
               style={{ height: brandLogoHeight || 36, width: "auto", maxWidth: 120 }} />
           ) : (
@@ -661,7 +661,7 @@ function AboutSection({ t, config }: { t: Theme; config: StorefrontConfig }) {
                 className="w-28 h-28 sm:w-32 sm:h-32 rounded-3xl overflow-hidden"
               >
                 {config.businessAvatar ? (
-                  <img src={config.businessAvatar} alt={name} className="w-full h-full object-cover" />
+                  <img loading="lazy" src={config.businessAvatar} alt={name} className="w-full h-full object-cover" />
                 ) : (
                   <div style={{ background: `linear-gradient(135deg,${t.primary}30,${t.accent}20)` }}
                     className="w-full h-full flex items-center justify-center text-5xl">🌟</div>
@@ -741,7 +741,7 @@ function Footer({ t, config, tenantSlug }: { t: Theme; config: StorefrontConfig;
       <div className="max-w-6xl mx-auto px-4 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-2.5">
           {config.brandLogo ? (
-            <img src={config.brandLogo} alt={config.businessName || tenantSlug}
+            <img loading="lazy" src={config.brandLogo} alt={config.businessName || tenantSlug}
               className="object-contain rounded-lg"
               style={{ height: logoH, width: "auto", maxWidth: 80 }} />
           ) : (

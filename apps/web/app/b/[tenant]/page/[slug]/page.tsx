@@ -40,7 +40,7 @@ export default async function StorePage({
             className="flex items-center gap-2 shrink-0"
           >
             {logo ? (
-              <img src={logo} alt={storeName} className="h-7 w-auto object-contain" />
+              <img loading="lazy" src={logo} alt={storeName} className="h-7 w-auto object-contain" />
             ) : (
               <div
                 className="w-7 h-7 rounded-lg flex items-center justify-center text-white font-black text-sm"

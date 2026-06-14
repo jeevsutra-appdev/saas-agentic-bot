@@ -366,7 +366,7 @@ export default function POSTerminal() {
         <div class="page">
             <div class="header">
               <div>
-                ${store?.brandLogo ? `<img src="${store.brandLogo}" />` : `<h2>${store?.companyName || 'Store'}</h2>`}
+                ${store?.brandLogo ? `<img loading="lazy" src="${store.brandLogo}" />` : `<h2>${store?.companyName || 'Store'}</h2>`}
                 <p style="color:#666; font-size: 14px; margin-top:5px;">${store?.storeDescription || ""}</p>
               </div>
               <div class="header-right">
@@ -453,7 +453,7 @@ export default function POSTerminal() {
       <body>
         <div class="thermal">
           <div class="header">
-            ${store?.brandLogo ? `<img src="${store.brandLogo}" />` : ''}
+            ${store?.brandLogo ? `<img loading="lazy" src="${store.brandLogo}" />` : ''}
             <h1>${store?.companyName || "Store"}</h1>
             <p>${store?.storeDescription || ""}</p>
             <p>Receipt / Invoice #: ${invNo || Math.floor(Math.random() * 1000000)}</p>
@@ -853,9 +853,9 @@ const renderCartSidebar = (isMobile: boolean = false) => (
             <div key={item.id} className="flex gap-3 items-center group">
               <div className="h-12 w-12 rounded-xl overflow-hidden bg-gray-50 shrink-0 shadow-sm border border-gray-100">
                 {item.images && item.images[0] ? (
-                  <img src={item.images[0]} className="w-full h-full object-cover" />
+                  <img loading="lazy" src={item.images[0]} className="w-full h-full object-cover" />
                 ) : item.image ? (
-                  <img src={item.image} className="w-full h-full object-cover" />
+                  <img loading="lazy" src={item.image} className="w-full h-full object-cover" />
                 ) : null}
               </div>
               <div className="flex flex-col flex-1 min-w-0">
@@ -960,7 +960,7 @@ const renderCartSidebar = (isMobile: boolean = false) => (
       {/* Sidebar Navigation (Hidden on mobile, bottom bar instead) */}
       <div className="hidden md:flex w-[72px] bg-white border-r border-gray-100 flex-col items-center py-6 gap-6 z-20 no-print relative shrink-0">
         <div className="h-10 w-10 rounded-full flex items-center justify-center text-white font-black shadow-lg overflow-hidden shrink-0" style={{backgroundColor: posThemeColor}}>
-          {store?.brandLogo ? <img src={store.brandLogo} alt="Logo" className="w-full h-full object-cover" /> : <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>}
+          {store?.brandLogo ? <img loading="lazy" src={store.brandLogo} alt="Logo" className="w-full h-full object-cover" /> : <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>}
         </div>
         
         <div className="flex flex-col gap-4 w-full px-2 mt-2">
@@ -991,7 +991,7 @@ const renderCartSidebar = (isMobile: boolean = false) => (
         <header className="px-3 md:px-6 pt-4 md:pt-6 pb-2 md:pb-3 flex items-center justify-between gap-3 md:gap-4 shrink-0">
           <div className="flex items-center gap-2 md:hidden">
              <div className="h-8 w-8 rounded-full flex items-center justify-center text-white font-black shadow-sm overflow-hidden shrink-0" style={{backgroundColor: posThemeColor}}>
-               {store?.brandLogo ? <img src={store.brandLogo} alt="Logo" className="w-full h-full object-cover" /> : <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>}
+               {store?.brandLogo ? <img loading="lazy" src={store.brandLogo} alt="Logo" className="w-full h-full object-cover" /> : <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>}
              </div>
              <button onClick={() => setIsSettingsOpen(true)} className="p-1.5 text-gray-400"><Settings className="h-5 w-5"/></button>
           </div>
@@ -1008,7 +1008,7 @@ const renderCartSidebar = (isMobile: boolean = false) => (
           </div>
           <div className="hidden md:flex items-center gap-2.5 bg-white pr-3 pl-1.5 py-1.5 rounded-full border border-gray-200 shadow-sm shrink-0">
             {loggedInManager?.avatar ? (
-               <img src={loggedInManager.avatar} alt="Cashier" className="h-8 w-8 rounded-full object-cover" />
+               <img loading="lazy" src={loggedInManager.avatar} alt="Cashier" className="h-8 w-8 rounded-full object-cover" />
             ) : (
                <div className="h-8 w-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold text-xs">{loggedInManager?.name?.[0] || 'A'}</div>
             )}
@@ -1051,9 +1051,9 @@ const renderCartSidebar = (isMobile: boolean = false) => (
               >
                 <div className="w-full aspect-square rounded-xl overflow-hidden bg-gray-50 mb-2 relative">
                   {product.images && product.images[0] ? (
-                    <img src={product.images[0]} className="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
+                    <img loading="lazy" src={product.images[0]} className="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
                   ) : product.image ? (
-                    <img src={product.image} className="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
+                    <img loading="lazy" src={product.image} className="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-300 text-[9px] font-medium">No Img</div>
                   )}
@@ -1222,7 +1222,7 @@ const renderCartSidebar = (isMobile: boolean = false) => (
                   <div className="bg-emerald-50 border border-emerald-100 p-4 rounded-xl flex flex-col items-center gap-3">
                     <p className="text-xs text-emerald-800 text-center font-medium">Scan this code from your mobile device to open the POS Barcode Scanner App. It connects to your current session.</p>
                     <div className="bg-white p-2 rounded-xl shadow-sm border border-emerald-200">
-                      <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(typeof window !== 'undefined' ? `${window.location.origin}/b/${tenantSlug}/scanner?storeId=${storeId}` : '')}`} alt="Scanner QR" className="w-32 h-32" />
+                      <img loading="lazy" src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(typeof window !== 'undefined' ? `${window.location.origin}/b/${tenantSlug}/scanner?storeId=${storeId}` : '')}`} alt="Scanner QR" className="w-32 h-32" />
                     </div>
                     <a 
                       href={`/b/${tenantSlug}/scanner?storeId=${storeId}`} 

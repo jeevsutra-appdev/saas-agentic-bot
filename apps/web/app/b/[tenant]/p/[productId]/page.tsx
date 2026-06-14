@@ -492,7 +492,7 @@ export default function SingleProductLandingPage() {
         ) : (
           <div className="flex items-center gap-3">
             {storeData.storefront?.brandLogo ? (
-              <img src={storeData.storefront.brandLogo} className="h-9 w-9 rounded-full object-cover border border-white/10 shadow" />
+              <img loading="lazy" src={storeData.storefront.brandLogo} className="h-9 w-9 rounded-full object-cover border border-white/10 shadow" />
             ) : (
               <ShoppingBag className="h-5 w-5 text-white" />
             )}
@@ -517,8 +517,7 @@ export default function SingleProductLandingPage() {
             className="w-full aspect-square rounded-[2.5rem] bg-white border border-white/10 overflow-hidden flex items-center justify-center relative shadow-2xl group cursor-crosshair"
           >
             {product.image ? (
-              <img 
-                src={product.image} 
+              <img loading="lazy" src={product.image} 
                 alt={product.name}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
               />
@@ -922,7 +921,7 @@ export default function SingleProductLandingPage() {
               <div className="w-full bg-white/5 border border-white/10 rounded-[2.5rem] p-6 mb-8 flex flex-col items-center relative overflow-hidden">
                 <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
                 {upsellProduct.image ? (
-                  <img src={upsellProduct.image} className="h-44 w-44 object-cover rounded-3xl mb-6 shadow-2xl" />
+                  <img loading="lazy" src={upsellProduct.image} className="h-44 w-44 object-cover rounded-3xl mb-6 shadow-2xl" />
                 ) : (
                   <Package className="h-32 w-32 text-white/10 mb-6" />
                 )}
@@ -955,7 +954,7 @@ export default function SingleProductLandingPage() {
               <div className="w-full bg-white/5 border border-white/10 rounded-[2.5rem] p-6 mb-8 flex flex-col items-center relative overflow-hidden">
                 <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
                 {downsellProduct.image ? (
-                  <img src={downsellProduct.image} className="h-32 w-32 object-cover rounded-3xl mb-6 shadow-2xl" />
+                  <img loading="lazy" src={downsellProduct.image} className="h-32 w-32 object-cover rounded-3xl mb-6 shadow-2xl" />
                 ) : (
                   <Package className="h-24 w-24 text-white/10 mb-6" />
                 )}
