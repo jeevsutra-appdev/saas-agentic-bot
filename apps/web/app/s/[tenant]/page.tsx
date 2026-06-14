@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { Metadata } from "next";
 import { LocalDbController } from "@aether/db";
 import BookingStorefront, { StorefrontConfig } from "@/components/BookingStorefront";

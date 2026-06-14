@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { NextResponse } from "next/server";
 import { LocalDbController } from "@aether/db";
 import { triggerConfirmationEmails, triggerCancellationEmails, triggerRescheduleEmails } from "../email";

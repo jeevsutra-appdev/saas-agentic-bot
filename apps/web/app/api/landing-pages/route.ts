@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { NextResponse } from "next/server";
 import { LocalDbController } from "../../../../../packages/db/src/localDb";
 import { LANDING_PAGE_TEMPLATES } from "../../../components/landing-page-studio/templates/templateData";

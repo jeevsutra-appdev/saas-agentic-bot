@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { NextResponse } from "next/server";
 import { stripe } from "../../../../lib/payments/stripe";
 import { LocalDbController } from "@aether/db";
