@@ -439,7 +439,7 @@ Please make sure you have:
         isRealSuccess = true;
       }
     } 
-    else if (activeProvider === "gemini") {
+    else if (activeProvider === "gemini" || activeProvider === "google") {
       if (hasKey) {
         console.log(`[Mesh] Calling direct Gemini model "${model}"`);
         const targetModel = model.includes("pro") ? "gemini-2.5-pro" : "gemini-2.5-flash";

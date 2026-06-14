@@ -3,14 +3,15 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { provider, apiKey } = await req.json();
+    const { provider, apiKey, key } = await req.json();
+    const actualKey = apiKey || key;
 
-    if (!apiKey) {
+    if (!actualKey) {
       return NextResponse.json({ valid: false, error: "API key is required" }, { status: 400 });
     }
 
     // Skip masked keys
-    if (apiKey.includes('*')) {
+    if (actualKey.includes('*')) {
       return NextResponse.json({ valid: true, masked: true });
     }
 
@@ -20,14 +21,14 @@ export async function POST(req: Request) {
       case "openrouter":
         // Test OpenRouter key by fetching auth/key
         const orRes = await fetch("https://openrouter.ai/api/v1/auth/key", {
-          headers: { "Authorization": `Bearer ${apiKey}` }
+          headers: { "Authorization": `Bearer ${actualKey}` }
         });
         isValid = orRes.ok;
         break;
       
       case "openai":
         const oaRes = await fetch("https://api.openai.com/v1/models", {
-          headers: { "Authorization": `Bearer ${apiKey}` }
+          headers: { "Authorization": `Bearer ${actualKey}` }
         });
         isValid = oaRes.ok;
         break;
@@ -39,7 +40,7 @@ export async function POST(req: Request) {
         const antRes = await fetch("https://api.anthropic.com/v1/messages", {
           method: "POST",
           headers: { 
-            "x-api-key": apiKey,
+            "x-api-key": actualKey,
             "anthropic-version": "2023-06-01",
             "content-type": "application/json"
           },
@@ -51,13 +52,13 @@ export async function POST(req: Request) {
 
       case "gemini":
         // Gemini URL includes key
-        const gemRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+        const gemRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${actualKey}`);
         isValid = gemRes.ok;
         break;
 
       case "groq":
         const groqRes = await fetch("https://api.groq.com/openai/v1/models", {
-          headers: { "Authorization": `Bearer ${apiKey}` }
+          headers: { "Authorization": `Bearer ${actualKey}` }
         });
         isValid = groqRes.ok;
         break;

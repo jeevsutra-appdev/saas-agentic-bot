@@ -187,8 +187,10 @@ You are equipped with advanced conversational marketing psychology. Your goal is
       augmentedSystemPrompt += toolSection;
     }
 
+    const resolvedSimulateNonAI = bodySimulateNonAI !== undefined ? bodySimulateNonAI : agentConfig?.simulateNonAI;
+
     // 1. pgvector RAG Semantic Prompt Augmentation
-    if (userQuery) {
+    if (userQuery && !resolvedSimulateNonAI) {
       // Auto-detect embedding provider from configured API keys if not explicitly set
       const tenantSettings = tenantRawSettings ? {
         ...tenantRawSettings,
@@ -302,7 +304,7 @@ You are equipped with advanced conversational marketing psychology. Your goal is
       systemPrompt: augmentedSystemPrompt,
       temperature,
       tenantSlug,
-      simulateNonAI: bodySimulateNonAI !== undefined ? bodySimulateNonAI : agentConfig?.simulateNonAI,
+      simulateNonAI: resolvedSimulateNonAI,
       useOwnModels: agentConfig?.useOwnModels !== undefined ? agentConfig.useOwnModels : useOwnModels,
     };
 

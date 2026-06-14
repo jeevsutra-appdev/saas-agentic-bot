@@ -6534,7 +6534,7 @@ export default function TenantDashboard() {
                 {editIsLanding && (
                   <div className="bg-black/40 border border-emerald-500/20 rounded-xl p-3 flex justify-between items-center">
                     <span className="text-[10px] font-mono text-emerald-400/70 truncate flex-1">/b/{tenantSlug}/p/{editingProduct.id}</span>
-                    <button type="button" onClick={() => { navigator.clipboard.writeText(`http://localhost:4022/b/${tenantSlug}/p/${editingProduct.id}`); showToast("Landing Page Link Copied!"); }} className="text-[10px] font-bold bg-emerald-500/20 hover:bg-emerald-500/40 text-emerald-300 px-3 py-1.5 rounded-lg transition">
+                    <button type="button" onClick={() => { navigator.clipboard.writeText(`${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:4022'}/b/${tenantSlug}/p/${editingProduct.id}`); showToast("Landing Page Link Copied!"); }} className="text-[10px] font-bold bg-emerald-500/20 hover:bg-emerald-500/40 text-emerald-300 px-3 py-1.5 rounded-lg transition">
                       COPY LINK
                     </button>
                   </div>
@@ -9772,8 +9772,10 @@ export default function TenantDashboard() {
                       <Share2 className="h-4 w-4" /> Public Chat Link
                     </p>
                     <div className="flex gap-2">
-                      <input type="text" readOnly value={`http://localhost:4022/b/${tenantSlug}/${selectedAgentId}`} className="flex-grow bg-black/60 border border-white/10 rounded-xl px-3 py-2.5 text-[11px] text-gray-300 font-mono" />
-                      <button type="button" onClick={() => { navigator.clipboard.writeText(`http://localhost:4022/b/${tenantSlug}/${selectedAgentId}`); showToast("Public Link Copied!"); }} className="bg-indigo-600 hover:bg-indigo-500 px-3.5 rounded-xl text-white flex items-center justify-center cursor-pointer transition shadow-lg shadow-indigo-600/20 active:scale-95">
+                      <div className="flex-1 bg-black/40 border border-white/10 rounded-xl px-3 py-2.5 text-[11px] text-gray-300 font-mono truncate select-all">
+                        {`${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:4022'}/b/${tenantSlug}/${selectedAgentId}`}
+                      </div>
+                      <button type="button" onClick={() => { navigator.clipboard.writeText(`${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:4022'}/b/${tenantSlug}/${selectedAgentId}`); showToast("Public Link Copied!"); }} className="bg-indigo-600 hover:bg-indigo-500 px-3.5 rounded-xl text-white flex items-center justify-center cursor-pointer transition shadow-lg shadow-indigo-600/20 active:scale-95">
                         <Copy className="h-4 w-4" />
                       </button>
                     </div>
@@ -11190,7 +11192,7 @@ export default function TenantDashboard() {
                 {editIsLanding && (
                   <div className="bg-black/40 border border-emerald-500/20 rounded-xl p-3 flex justify-between items-center">
                     <span className="text-[10px] font-mono text-emerald-400/70 truncate flex-1">/b/{tenantSlug}/p/{editingProduct.id}</span>
-                    <button type="button" onClick={() => { navigator.clipboard.writeText(`http://localhost:4022/b/${tenantSlug}/p/${editingProduct.id}`); showToast("Landing Page Link Copied!"); }} className="text-[10px] font-bold bg-emerald-500/20 hover:bg-emerald-500/40 text-emerald-300 px-3 py-1.5 rounded-lg transition">
+                    <button type="button" onClick={() => { navigator.clipboard.writeText(`${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:4022'}/b/${tenantSlug}/p/${editingProduct.id}`); showToast("Landing Page Link Copied!"); }} className="text-[10px] font-bold bg-emerald-500/20 hover:bg-emerald-500/40 text-emerald-300 px-3 py-1.5 rounded-lg transition">
                       COPY LINK
                     </button>
                   </div>

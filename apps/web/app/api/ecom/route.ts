@@ -86,10 +86,7 @@ export async function POST(request: Request) {
       const storefront = await LocalDbController.upsertStorefront({
         tenantSlug,
         id: data.id || undefined,
-        brandLogo: data.brandLogo,
-        heroImage: data.heroImage,
-        heroText: data.heroText,
-        featuredProductIds: data.featuredProductIds
+        ...data
       });
       return NextResponse.json({ success: true, storefront });
     }

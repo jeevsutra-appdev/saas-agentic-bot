@@ -35,7 +35,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, storefront });
     }
 
-    const storefront = await LocalDbController.updateStorefront(tenantSlug, {
+    const rawUpdates: any = {
       companyName,
       storeLanguage,
       storeDescription,
@@ -68,8 +68,17 @@ export async function POST(request: Request) {
       storeType,
       posEnabled,
       posThemeColor,
-      posUpiId
-    }, activeStoreId);
+      posUpiId,
+      posPrinterType,
+      posPaperSize
+    };
+
+    // Remove undefined properties so they don't overwrite existing db fields
+    const cleanUpdates = Object.fromEntries(
+      Object.entries(rawUpdates).filter(([_, v]) => v !== undefined)
+    );
+
+    const storefront = await LocalDbController.updateStorefront(tenantSlug, cleanUpdates, activeStoreId);
 
     return NextResponse.json({ success: true, storefront });
   } catch (error: any) {

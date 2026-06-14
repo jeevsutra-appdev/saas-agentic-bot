@@ -47,7 +47,10 @@ export async function POST(request: Request) {
       rateLimitConfig,
       metaTitle,
       metaDescription,
-      metaImage
+      metaImage,
+      simulateNonAI: body.simulateNonAI,
+      useOwnModels: body.useOwnModels,
+      ecommerceConfig: body.ecommerceConfig
     });
 
     return NextResponse.json({ success: true, agent: newAgent });
