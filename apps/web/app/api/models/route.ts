@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { LocalDbController } from "@aether/db";
 
+export const dynamic = "force-dynamic";
+
 // Hardcoded list of working 2026 models to ensure high-quality, relevant results.
 // In a fully dynamic setup, we could call each provider's models endpoint, 
 // but this ensures a clean UI with only the best models.
