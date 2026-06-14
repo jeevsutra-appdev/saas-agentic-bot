@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { renderToBuffer, Document, Page, Text, View, StyleSheet, Image, Link } from '@react-pdf/renderer';
 import { LocalDbController } from "@aether/db";
 
+export const dynamic = "force-dynamic";
+
 // Define PDF styles
 const styles = StyleSheet.create({
   page: { padding: 40, backgroundColor: '#ffffff', fontFamily: 'Helvetica' },
@@ -100,6 +102,7 @@ export async function GET(request: Request) {
       },
     });
   } catch (error: any) {
+    if (error.digest === 'DYNAMIC_SERVER_USAGE') throw error;
     console.error("PDF Generation Error:", error);
     return NextResponse.json({ error: "Failed to generate PDF" }, { status: 500 });
   }

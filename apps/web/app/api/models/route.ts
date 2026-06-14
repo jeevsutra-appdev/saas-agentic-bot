@@ -89,7 +89,8 @@ export async function GET(req: Request) {
     availableGroups.push({ provider: "groq", label: "Groq", models: PROVIDER_MODELS.groq });
 
     return NextResponse.json({ groups: availableGroups });
-  } catch (error) {
+  } catch (error: any) {
+    if (error.digest === 'DYNAMIC_SERVER_USAGE') throw error;
     console.error("Error fetching models:", error);
     return NextResponse.json({ error: "Failed to fetch models" }, { status: 500 });
   }
