@@ -6,8 +6,8 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { tenantSlug, listId, name, email, phone } = body;
 
-    if (!tenantSlug || !listId || !email) {
-      return NextResponse.json({ error: 'Missing required fields: tenantSlug, listId, email.' }, { status: 400 });
+    if (!tenantSlug || !listId) {
+      return NextResponse.json({ error: 'Missing required fields: tenantSlug, listId.' }, { status: 400 });
     }
 
     const newLead = await LocalDbController.addLead({

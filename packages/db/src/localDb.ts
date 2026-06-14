@@ -947,9 +947,14 @@ export class LocalDbController {
       }
       
       if (data && data.length > 0) {
-        const db = { ...(this.cachedDb || this.readFromDisk()) } as any;
+        const defaults = this.readFromDisk() as any;
+        const db = { ...(this.cachedDb || defaults) } as any;
         for (const row of data) {
-          db[row.key] = row.data;
+          db[row.key] = row.data || defaults[row.key] || [];
+        }
+        // Ensure no undefined properties
+        for (const k of Object.keys(defaults)) {
+          if (!db[k]) db[k] = defaults[k] || [];
         }
         this.cachedDb = db;
         this.lastFetchTime = Date.now();
@@ -984,13 +989,15 @@ export class LocalDbController {
 
     if (url && (serviceKey || anonKey)) {
       const supabase = createAetherClient({ serviceRole: !!serviceKey });
-      for (const key of Object.keys(schema)) {
-        try {
-          const { error } = await supabase.from("local_db_store").upsert({ key, data: (schema as any)[key] } as any);
-          if (error) console.error(`[Supabase Sync] Write error for key ${key}:`, error.message);
-        } catch (e) {
-          console.error(`[Supabase Sync] Write rejected for key ${key}:`, e);
-        }
+      try {
+        const upserts = Object.keys(schema).map(key => ({
+          key,
+          data: (schema as any)[key]
+        }));
+        const { error } = await supabase.from("local_db_store").upsert(upserts as any);
+        if (error) console.error(`[Supabase Sync] Bulk write error:`, error.message);
+      } catch (e) {
+        console.error(`[Supabase Sync] Bulk write rejected:`, e);
       }
     }
   }
