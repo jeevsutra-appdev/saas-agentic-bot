@@ -293,7 +293,16 @@
       "id": "store_1779364449161_umkad",
       "tenantSlug": "imran-ai",
       "createdAt": "2026-05-21T11:54:09.161Z",
-      "assignedAgentId": "agent_1779540553651_x0jf"
+      "assignedAgentId": "agent_1779540553651_x0jf",
+      "companyName": "Aether Client",
+      "storeLanguage": "en",
+      "globalCurrency": "USD",
+      "primaryColor": "#6366f1",
+      "accentColor": "#10b981",
+      "template": "retail",
+      "themePreset": "nimbus",
+      "enableFooterNav": true,
+      "heroType": "banner"
     }
   ],
   "appointments": [

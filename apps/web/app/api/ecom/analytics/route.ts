@@ -10,7 +10,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Missing tenantSlug" }, { status: 400 });
     }
 
-    const events = LocalDbController.getAnalytics(tenantSlug);
+    const events = await LocalDbController.getAnalytics(tenantSlug);
     return NextResponse.json({ success: true, events });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing tenantSlug or eventType" }, { status: 400 });
     }
 
-    const event = LocalDbController.logAnalyticsEvent(tenantSlug, {
+    const event = await LocalDbController.logAnalyticsEvent(tenantSlug, {
       eventType,
       productId,
       country,

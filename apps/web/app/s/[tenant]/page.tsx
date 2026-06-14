@@ -7,7 +7,7 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const settings = LocalDbController.getTenantSettings(params.tenant);
+  const settings = await LocalDbController.getTenantSettings(params.tenant);
   let config: StorefrontConfig | null = null;
   if (settings?.bookingStorefrontConfig) {
     try { config = JSON.parse(settings.bookingStorefrontConfig); } catch {}
@@ -33,9 +33,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default function BookingPage({ params }: Props) {
-  const settings = LocalDbController.getTenantSettings(params.tenant);
-  const allServices = LocalDbController.getBookingServices(params.tenant);
+export default async function BookingPage({ params }: Props) {
+  const settings = await LocalDbController.getTenantSettings(params.tenant);
+  const allServices = await LocalDbController.getBookingServices(params.tenant);
   const services = allServices.filter(s => s.isActive);
 
   let config: StorefrontConfig | null = null;

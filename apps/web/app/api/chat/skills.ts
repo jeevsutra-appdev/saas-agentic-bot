@@ -27,7 +27,7 @@ export async function executeLeadCapture(name: string, email: string, details: s
   
   // Persist directly inside the local file-based database!
   const targetSlug = tenantSlug || "imran-ai";
-  const newLead = LocalDbController.addLead({
+  const newLead = await LocalDbController.addLead({
     tenantSlug: targetSlug,
     name,
     email,
@@ -37,7 +37,7 @@ export async function executeLeadCapture(name: string, email: string, details: s
   const latency = Date.now() - startTime + 12; // Add realistic processing overhead
   
   // Log execution
-  LocalDbController.addSkillRun({
+  await LocalDbController.addSkillRun({
     tenantSlug: targetSlug,
     skillName: "lead_capture",
     status: "success",
@@ -54,7 +54,7 @@ export async function executeHumanHandoff(context: string, tenantSlug: string): 
   const latency = Date.now() - startTime + 8;
   const targetSlug = tenantSlug || "imran-ai";
 
-  LocalDbController.addSkillRun({
+  await LocalDbController.addSkillRun({
     tenantSlug: targetSlug,
     skillName: "human_handoff",
     status: "success",
@@ -81,7 +81,7 @@ export async function executeN8nWebhook(payload: Record<string, any>, tenantSlug
   
   const success = true; // Simulating success response from n8n automation loop
 
-  LocalDbController.addSkillRun({
+  await LocalDbController.addSkillRun({
     tenantSlug: targetSlug,
     skillName: "n8n_webhook",
     status: success ? "success" : "failed",
@@ -98,8 +98,8 @@ export async function executeCatalogQuery(tenantSlug: string, allowedCategoryIds
   const startTime = Date.now();
   const targetSlug = tenantSlug || "imran-ai";
   
-  let scopedProducts = LocalDbController.getProductsByTenant(targetSlug);
-  let scopedCategories = LocalDbController.getCategoriesByTenant(targetSlug);
+  let scopedProducts = await LocalDbController.getProductsByTenant(targetSlug);
+  let scopedCategories = await LocalDbController.getCategoriesByTenant(targetSlug);
   
   if (allowedCategoryIds && allowedCategoryIds.length > 0) {
     scopedCategories = scopedCategories.filter((c: any) => allowedCategoryIds.includes(c.id));
@@ -112,7 +112,7 @@ export async function executeCatalogQuery(tenantSlug: string, allowedCategoryIds
 
   const latency = Date.now() - startTime + 15;
 
-  LocalDbController.addSkillRun({
+  await LocalDbController.addSkillRun({
     tenantSlug: targetSlug,
     skillName: "catalog_query",
     status: "success",
@@ -142,13 +142,13 @@ export async function executeProductCheckout(productName: string, tenantSlug: st
   const startTime = Date.now();
   const targetSlug = tenantSlug || "imran-ai";
   
-  const scopedProducts = LocalDbController.getProductsByTenant(targetSlug);
+  const scopedProducts = await LocalDbController.getProductsByTenant(targetSlug);
   const product = scopedProducts.find((p: any) => p.name.toLowerCase().includes(productName.toLowerCase())) || scopedProducts[0];
   const latency = Date.now() - startTime + 25;
 
   const id = newDocId();
 
-  LocalDbController.addSkillRun({
+  await LocalDbController.addSkillRun({
     tenantSlug: targetSlug,
     skillName: "ecommerce_checkout",
     status: "success",
@@ -164,7 +164,7 @@ export async function executeAppointmentBooking(name: string, email: string, slo
   const startTime = Date.now();
   const targetSlug = tenantSlug || "imran-ai";
 
-  const newAppointment = LocalDbController.addAppointment({
+  const newAppointment = await LocalDbController.addAppointment({
     tenantSlug: targetSlug,
     clientName: name,
     clientEmail: email,
@@ -174,7 +174,7 @@ export async function executeAppointmentBooking(name: string, email: string, slo
 
   const latency = Date.now() - startTime + 20;
 
-  LocalDbController.addSkillRun({
+  await LocalDbController.addSkillRun({
     tenantSlug: targetSlug,
     skillName: "calendar_booking",
     status: "success",
@@ -189,10 +189,10 @@ export async function executeAppointmentBooking(name: string, email: string, slo
 export async function executeBookingServicesList(tenantSlug: string): Promise<string> {
   const startTime = Date.now();
   const targetSlug = tenantSlug || "imran-ai";
-  const services = LocalDbController.getBookingServices(targetSlug).filter((s: any) => s.isActive);
+  const services = (await LocalDbController.getBookingServices(targetSlug)).filter((s: any) => s.isActive);
 
   const latency = Date.now() - startTime + 5;
-  LocalDbController.addSkillRun({
+  await LocalDbController.addSkillRun({
     tenantSlug: targetSlug,
     skillName: "calendar_booking",
     status: "success",
@@ -241,7 +241,7 @@ export async function executeTelegramMessage(
     });
     const data = await res.json();
     const latency = Date.now() - startTime;
-    LocalDbController.addSkillRun({
+    await LocalDbController.addSkillRun({
       tenantSlug,
       skillName: "telegram_tool",
       status: res.ok ? "success" : "failed",
@@ -274,7 +274,7 @@ export async function executeGoogleSheetsWebhook(
     });
     const latency = Date.now() - startTime;
     const responseText = await res.text().catch(() => "");
-    LocalDbController.addSkillRun({
+    await LocalDbController.addSkillRun({
       tenantSlug,
       skillName: "google_sheets_tool",
       status: res.ok ? "success" : "failed",
@@ -319,7 +319,7 @@ export async function executeWebSearch(query: string, tenantSlug: string = "demo
 
   const latency = Date.now() - startTime;
   
-  LocalDbController.addSkillRun({
+  await LocalDbController.addSkillRun({
     tenantSlug,
     skillName: "web_search",
     status: "success",

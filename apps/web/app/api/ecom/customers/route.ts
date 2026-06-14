@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "tenantSlug is required" }, { status: 400 });
   }
 
-  const customers = LocalDbController.getCustomers(tenantSlug, storeId || undefined);
+  const customers = await LocalDbController.getCustomers(tenantSlug, storeId || undefined);
   return NextResponse.json({ customers });
 }
 
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const newCustomer = LocalDbController.addCustomer({
+    const newCustomer = await LocalDbController.addCustomer({
       tenantSlug,
       storeId,
       name,

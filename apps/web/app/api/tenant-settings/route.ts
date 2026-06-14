@@ -17,7 +17,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Missing tenantSlug" }, { status: 400 });
     }
 
-    const settings = LocalDbController.getTenantSettings(tenantSlug);
+    const settings = await LocalDbController.getTenantSettings(tenantSlug);
 
     // Auto-detect embedding provider from configured API keys if not explicitly set.
     // Priority: openrouter > openai > gemini > local
@@ -96,7 +96,7 @@ export async function POST(req: Request) {
     }
 
     if (Object.keys(updateData).length > 0) {
-      LocalDbController.upsertTenantSettings(tenantSlug, updateData);
+      await LocalDbController.upsertTenantSettings(tenantSlug, updateData);
     }
 
     return NextResponse.json({ success: true });

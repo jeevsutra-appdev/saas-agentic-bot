@@ -43,17 +43,17 @@ export async function POST(request: Request) {
         const planId = notes.planId;
 
         if (tenantSlug && creditsToAdd > 0) {
-          const user = LocalDbController.getUserByTenant(tenantSlug);
+          const user = await LocalDbController.getUserByTenant(tenantSlug);
           
           if (user) {
             // Update User Credits
             const newBalance = (user.creditsBalance || 0) + creditsToAdd;
             user.creditsBalance = newBalance;
             user.planId = planId;
-            LocalDbController.saveUser(user);
+            await LocalDbController.saveUser(user);
 
             // Record to Ledger
-            LocalDbController.addCreditLedgerEntry({
+            await LocalDbController.addCreditLedgerEntry({
               id: uuidv4(),
               tenantSlug,
               delta: creditsToAdd,

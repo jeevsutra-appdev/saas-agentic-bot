@@ -4,11 +4,18 @@ import { LocalDbController, createAetherClient } from "@aether/db";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
-  // Protect with a shared secret
-  const auth = req.headers.get("x-cron-secret");
+  const authHeader = req.headers.get("authorization");
+  const xCronSecret = req.headers.get("x-cron-secret");
+  
   // For local dev, bypass if secret is not set, else strictly enforce
-  if (process.env.CRON_SECRET && auth !== process.env.CRON_SECRET) {
-    return NextResponse.json({ ok: false }, { status: 401 });
+  if (process.env.CRON_SECRET) {
+    const expectedBearer = `Bearer ${process.env.CRON_SECRET}`;
+    const isValidBearer = authHeader === expectedBearer;
+    const isValidXCron = xCronSecret === process.env.CRON_SECRET;
+    
+    if (!isValidBearer && !isValidXCron) {
+      return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+    }
   }
 
   // If Supabase URL is configured, run query on Supabase database to keep it active
@@ -35,7 +42,7 @@ export async function GET(req: Request) {
   try {
     console.log("[Keepalive] Simulating Heartbeat to Local Database instance.");
     // Simulate updating the heartbeat table to prevent Free-Tier pausing
-    LocalDbController.addSkillRun({
+    await LocalDbController.addSkillRun({
       tenantSlug: "system",
       skillName: "keepalive_heartbeat",
       status: "success",

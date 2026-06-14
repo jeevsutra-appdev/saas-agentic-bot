@@ -25,7 +25,7 @@ export async function POST(request: Request) {
     const status = paymentMethod === "cod" ? "pending" : "paid";
 
     // Create the order in the database
-    const order = LocalDbController.createOrder(tenantSlug, {
+    const order = await LocalDbController.createOrder(tenantSlug, {
       buyerName: buyerName || "Guest",
       buyerEmail,
       buyerPhone,

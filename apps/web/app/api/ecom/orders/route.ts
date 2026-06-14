@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "tenantSlug is required" }, { status: 400 });
   }
 
-  const orders = LocalDbController.getOrders(tenantSlug, storeId || undefined);
+  const orders = await LocalDbController.getOrders(tenantSlug, storeId || undefined);
   return NextResponse.json({ orders });
 }
 
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "tenantSlug is required" }, { status: 400 });
     }
 
-    const newOrder = LocalDbController.createOrder(tenantSlug, orderData);
+    const newOrder = await LocalDbController.createOrder(tenantSlug, orderData);
     return NextResponse.json({ success: true, order: newOrder });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -39,7 +39,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "tenantSlug and orderId are required" }, { status: 400 });
     }
 
-    const updatedOrder = LocalDbController.updateOrder(tenantSlug, orderId, updates);
+    const updatedOrder = await LocalDbController.updateOrder(tenantSlug, orderId, updates);
     return NextResponse.json({ success: true, order: updatedOrder });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });

@@ -25,14 +25,14 @@ export async function POST(request: Request) {
     console.log(`[Billing Webhook] Processing ${eventType} from ${webhookSource.toUpperCase()} for tenant "${tenantSlug}" → +${creditsToAdd} credits`);
 
     // Atomically update user credits + write to ledger
-    const user = LocalDbController.getUserByTenant(tenantSlug);
+    const user = await LocalDbController.getUserByTenant(tenantSlug);
 
     if (user) {
       const newBalance = (user.creditsBalance ?? 0) + creditsToAdd;
       user.creditsBalance = newBalance;
-      LocalDbController.saveUser(user);
+      await LocalDbController.saveUser(user);
 
-      LocalDbController.addCreditLedgerEntry({
+      await LocalDbController.addCreditLedgerEntry({
         id: uuidv4(),
         tenantSlug,
         delta: creditsToAdd,

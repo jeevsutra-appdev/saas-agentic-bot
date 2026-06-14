@@ -12,7 +12,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ success: false, error: "Missing parameters" }, { status: 400 });
     }
 
-    const orders = LocalDbController.getOrders(tenantSlug);
+    const orders = await LocalDbController.getOrders(tenantSlug);
     const riderOrders = orders.filter((o: any) => o.deliveryBoyId === riderId);
 
     if (action === "get_history") {
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
 
     if (action === "login") {
       const { phone, password } = body;
-      const riders = LocalDbController.getDeliveryBoys(tenantSlug);
+      const riders = await LocalDbController.getDeliveryBoys(tenantSlug);
       const rider = riders.find(
         (s: any) => s.phone === phone || s.id === phone || s.email === phone
       );
@@ -58,7 +58,7 @@ export async function POST(request: Request) {
 
     if (action === "update_status") {
       const { orderId, status } = body;
-      const orders = LocalDbController.getOrders(tenantSlug);
+      const orders = await LocalDbController.getOrders(tenantSlug);
       const order = orders.find((o: any) => o.id === orderId);
 
       if (order) {
@@ -67,7 +67,7 @@ export async function POST(request: Request) {
           updates.status = "delivered";
           updates.deliveredAt = new Date().toISOString();
         }
-        LocalDbController.updateOrder(tenantSlug, orderId, updates);
+        await LocalDbController.updateOrder(tenantSlug, orderId, updates);
         return NextResponse.json({ success: true });
       }
       return NextResponse.json({ success: false, error: "Order not found" });
@@ -78,14 +78,14 @@ export async function POST(request: Request) {
       if (!orderId || !extraMinutes) {
         return NextResponse.json({ success: false, error: "Missing orderId or extraMinutes" });
       }
-      const orders = LocalDbController.getOrders(tenantSlug);
+      const orders = await LocalDbController.getOrders(tenantSlug);
       const order = orders.find((o: any) => o.id === orderId);
       if (!order) {
         return NextResponse.json({ success: false, error: "Order not found" });
       }
       const currentDeadline = order.deliveryDeadlineMinutes || order.prepTimeMinutes || 30;
       const newDeadline = currentDeadline + extraMinutes;
-      LocalDbController.updateOrder(tenantSlug, orderId, {
+      await LocalDbController.updateOrder(tenantSlug, orderId, {
         deliveryDeadlineMinutes: newDeadline
       });
       return NextResponse.json({ success: true, newDeadlineMinutes: newDeadline });

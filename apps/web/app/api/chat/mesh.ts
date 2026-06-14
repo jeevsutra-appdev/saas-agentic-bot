@@ -139,7 +139,7 @@ Please make sure you have:
   }
 
   // Retrieve tenant keys
-  const tenantSettings = LocalDbController.getTenantSettings(tenantSlug);
+  const tenantSettings = await LocalDbController.getTenantSettings(tenantSlug);
   
   // Provide fallbacks to process.env if the tenant hasn't provided custom keys
   const keys: Record<string, string | undefined> = {

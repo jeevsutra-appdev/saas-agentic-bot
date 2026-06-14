@@ -62,7 +62,7 @@ export async function GET(request: Request) {
 
     if (!tenantSlug) return NextResponse.json({ error: "Missing tenant" }, { status: 400 });
 
-    const storefront = LocalDbController.getStorefrontByTenant(tenantSlug, storeId);
+    const storefront = await LocalDbController.getStorefrontByTenant(tenantSlug, storeId);
     const storedPages: LocalStorePage[] = storefront?.pages || [];
 
     // Merge stored pages with defaults (stored takes priority)
@@ -95,7 +95,7 @@ export async function POST(request: Request) {
       updatedAt: new Date().toISOString(),
     };
 
-    const storefront = LocalDbController.updateStorePage(tenantSlug, page, storeId);
+    const storefront = await LocalDbController.updateStorePage(tenantSlug, page, storeId);
     if (!storefront) return NextResponse.json({ error: "Store not found" }, { status: 404 });
 
     return NextResponse.json({ success: true, page });

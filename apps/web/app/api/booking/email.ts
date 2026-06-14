@@ -289,7 +289,7 @@ export async function sendBookingEmail(
   html: string,
   icsContent?: string
 ) {
-  const settings = LocalDbController.getTenantSettings(tenantSlug);
+  const settings = await LocalDbController.getTenantSettings(tenantSlug);
   if (!settings?.smtpHost || !settings?.smtpUser || !settings?.smtpPass) {
     console.log(`[Email] SMTP not configured for ${tenantSlug}. Skipping send to ${to}.`);
     console.log(`[Email] Subject: ${subject}`);

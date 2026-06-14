@@ -9,12 +9,12 @@ export async function GET(request: Request) {
     if (!tenantSlug) return NextResponse.json({ error: "Missing tenantSlug" }, { status: 400 });
 
     if (storeSlug) {
-      const store = LocalDbController.getStoreBySlug(tenantSlug, storeSlug);
+      const store = await LocalDbController.getStoreBySlug(tenantSlug, storeSlug);
       if (!store) return NextResponse.json({ error: "Store not found" }, { status: 404 });
       return NextResponse.json({ success: true, store });
     }
 
-    const stores = LocalDbController.getStores(tenantSlug);
+    const stores = await LocalDbController.getStores(tenantSlug);
     return NextResponse.json({ success: true, stores });
   } catch (e: any) {
     return NextResponse.json({ success: false, error: e.message }, { status: 500 });
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
 
     const slug = storeSlug || name.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-").slice(0, 40);
 
-    const store = LocalDbController.createStore({
+    const store = await LocalDbController.createStore({
       tenantSlug,
       storeSlug: slug,
       name,
@@ -60,7 +60,7 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: "tenantSlug and storeId are required" }, { status: 400 });
     }
 
-    const store = LocalDbController.updateStore(tenantSlug, storeId, updates);
+    const store = await LocalDbController.updateStore(tenantSlug, storeId, updates);
     if (!store) return NextResponse.json({ error: "Store not found" }, { status: 404 });
 
     return NextResponse.json({ success: true, store });
@@ -79,7 +79,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "tenantSlug and storeId are required" }, { status: 400 });
     }
 
-    const ok = LocalDbController.deleteStore(tenantSlug, storeId);
+    const ok = await LocalDbController.deleteStore(tenantSlug, storeId);
     return NextResponse.json({ success: ok });
   } catch (e: any) {
     return NextResponse.json({ success: false, error: e.message }, { status: 500 });

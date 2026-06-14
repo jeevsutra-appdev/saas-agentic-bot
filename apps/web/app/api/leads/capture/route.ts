@@ -10,7 +10,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing required fields: tenantSlug, listId, email.' }, { status: 400 });
     }
 
-    const newLead = LocalDbController.addLead({
+    const newLead = await LocalDbController.addLead({
       tenantSlug,
       name: name || 'Anonymous User',
       email,

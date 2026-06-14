@@ -16,8 +16,8 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Missing identifier (email or phone)" }, { status: 400 });
     }
 
-    const allOrders = LocalDbController.getOrders(tenantSlug);
-    const products = LocalDbController.getProductsByTenant(tenantSlug);
+    const allOrders = await LocalDbController.getOrders(tenantSlug);
+    const products = await LocalDbController.getProductsByTenant(tenantSlug);
 
     const buyerOrders = allOrders.filter(order => {
       const matchEmail = email && order.buyerEmail?.toLowerCase() === email.toLowerCase();
@@ -72,8 +72,8 @@ export async function POST(request: Request) {
       }
 
       // Check if user already exists
-      const existingEmail = email ? LocalDbController.getUserByEmail(email) : null;
-      const existingPhone = phone ? LocalDbController.getUserByPhone(phone) : null;
+      const existingEmail = email ? await LocalDbController.getUserByEmail(email) : null;
+      const existingPhone = phone ? await LocalDbController.getUserByPhone(phone) : null;
 
       if (existingEmail || existingPhone) {
         return NextResponse.json({ error: "Account already exists with this email or phone number" }, { status: 400 });
@@ -88,7 +88,7 @@ export async function POST(request: Request) {
         name
       };
 
-      LocalDbController.saveUser(newUser);
+      await LocalDbController.saveUser(newUser);
       return NextResponse.json({ 
         success: true, 
         user: { email: newUser.email, phone: newUser.phone, name: newUser.name } 
@@ -100,9 +100,9 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "Email or Phone required for login" }, { status: 400 });
       }
 
-      let user = email ? LocalDbController.getUserByEmail(email) : null;
+      let user = email ? await LocalDbController.getUserByEmail(email) : null;
       if (!user && phone) {
-        user = LocalDbController.getUserByPhone(phone);
+        user = await LocalDbController.getUserByPhone(phone);
       }
 
       // If user doesn't exist, auto-register for OTP logs to keep client checkout frictionless!
@@ -116,7 +116,7 @@ export async function POST(request: Request) {
             phone,
             name: email ? email.split("@")[0] : `Guest Customer`
           };
-          LocalDbController.saveUser(newUser);
+          await LocalDbController.saveUser(newUser);
           user = newUser;
         } else {
           return NextResponse.json({ error: "User not found. Check credentials or request OTP." }, { status: 400 });

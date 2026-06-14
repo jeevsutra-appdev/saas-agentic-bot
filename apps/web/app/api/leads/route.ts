@@ -10,7 +10,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Missing tenantSlug" }, { status: 400 });
     }
 
-    const leads = LocalDbController.getLeadsByTenant(tenantSlug);
+    const leads = await LocalDbController.getLeadsByTenant(tenantSlug);
     return NextResponse.json({ success: true, leads });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
@@ -28,11 +28,11 @@ export async function POST(request: Request) {
 
     // Check if lead exists to update instead of duplicate
     let lead = null;
-    const existingLeads = LocalDbController.getLeadsByTenant(tenantSlug);
+    const existingLeads = await LocalDbController.getLeadsByTenant(tenantSlug);
     const existing = existingLeads.find(l => l.phone === phone);
     
     if (existing) {
-      lead = LocalDbController.updateLead(tenantSlug, phone, {
+      lead = await LocalDbController.updateLead(tenantSlug, phone, {
         name,
         email: email || existing.email,
         countryCode: countryCode || existing.countryCode,
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
         status: existing.status === "new" ? "interested" : existing.status
       });
     } else {
-      lead = LocalDbController.addLead({
+      lead = await LocalDbController.addLead({
         tenantSlug,
         name,
         email: email || "",

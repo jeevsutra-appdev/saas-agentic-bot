@@ -13,7 +13,7 @@ interface FunnelPageProps {
 
 export async function generateMetadata({ params }: FunnelPageProps): Promise<Metadata> {
   const { tenant, funnelSlug } = await params;
-  const page = LocalDbController.getLandingPageBySlug(tenant, funnelSlug);
+  const page = await LocalDbController.getLandingPageBySlug(tenant, funnelSlug);
 
   if (!page) {
     return { title: 'Page Not Found' };
@@ -39,7 +39,7 @@ export default async function LiveFunnelPage({ params }: FunnelPageProps) {
   const { tenant, funnelSlug } = await params;
   
   // Note: We use the local JSON DB for this architecture.
-  const page = LocalDbController.getLandingPageBySlug(tenant, funnelSlug);
+  const page = await LocalDbController.getLandingPageBySlug(tenant, funnelSlug);
 
   if (!page) {
     notFound();
@@ -49,7 +49,7 @@ export default async function LiveFunnelPage({ params }: FunnelPageProps) {
   // but for local DB architecture we can increment it directly if thread safety allows, 
   // or handle via client-side analytics ping)
   try {
-    LocalDbController.updateLandingPage(page.id, tenant, {
+    await LocalDbController.updateLandingPage(page.id, tenant, {
       visits: (page.visits || 0) + 1
     });
   } catch (e) {

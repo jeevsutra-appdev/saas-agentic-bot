@@ -11,7 +11,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       return NextResponse.json({ error: "Missing tenantSlug" }, { status: 400 });
     }
 
-    const page = LocalDbController.getLandingPage(id, tenantSlug);
+    const page = await LocalDbController.getLandingPage(id, tenantSlug);
     if (!page) {
       return NextResponse.json({ error: "Page not found" }, { status: 404 });
     }
@@ -33,10 +33,10 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       return NextResponse.json({ error: "Missing parameters" }, { status: 400 });
     }
 
-    let page = LocalDbController.getLandingPage(id, tenantSlug);
+    let page = await LocalDbController.getLandingPage(id, tenantSlug);
     if (!page) {
       // Create new
-      page = LocalDbController.createLandingPage(tenantSlug, {
+      page = await LocalDbController.createLandingPage(tenantSlug, {
         name: `Funnel Page ${id}`,
         slug: id,
         status: "draft",
@@ -47,7 +47,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       });
     } else {
       // Update existing
-      page = LocalDbController.updateLandingPage(id, tenantSlug, { 
+      page = await LocalDbController.updateLandingPage(id, tenantSlug, { 
         pageTree,
         ...(settings ? { settings } : {})
       }) as import('@aether/db').LocalLandingPage;

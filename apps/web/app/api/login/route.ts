@@ -12,7 +12,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const user = LocalDbController.getUserByEmail(email);
+    const user = await LocalDbController.getUserByEmail(email);
 
     if (!user) {
       return NextResponse.json(
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
       );
     }
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       email: user.email,
       role: user.role,
@@ -37,6 +37,13 @@ export async function POST(req: Request) {
       planId: user.planId || "free",
       creditsBalance: user.creditsBalance || 2000
     });
+
+    response.cookies.set("sb-access-token", "mock-session-token", {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+    });
+
+    return response;
   } catch (err) {
     return NextResponse.json(
       { success: false, error: "Internal authentication error." },

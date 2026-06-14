@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "tenantSlug required" }, { status: 400 });
   }
 
-  let docs = LocalDbController.getDocumentsByTenant(tenantSlug);
+  let docs = await LocalDbController.getDocumentsByTenant(tenantSlug);
   if (agentId) {
     docs = docs.filter(d => d.agentId === agentId);
   }
@@ -52,12 +52,12 @@ export async function DELETE(request: Request) {
   }
 
   // Delete all chunks matching base name
-  const docs = LocalDbController.getDocumentsByTenant(tenantSlug);
+  const docs = await LocalDbController.getDocumentsByTenant(tenantSlug);
   const toDelete = docs.filter(
     d => d.name === docBaseName || d.name.startsWith(`${docBaseName} [Part `)
   );
   for (const doc of toDelete) {
-    LocalDbController.deleteDocument(tenantSlug, doc.id);
+    await LocalDbController.deleteDocument(tenantSlug, doc.id);
   }
 
   return NextResponse.json({ success: true, deleted: toDelete.length });

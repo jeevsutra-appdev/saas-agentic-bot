@@ -6,7 +6,7 @@ export async function GET(req: Request) {
   const tenantSlug = searchParams.get("tenantSlug");
   const serviceId = searchParams.get("serviceId") || undefined;
   if (!tenantSlug) return NextResponse.json({ error: "Missing tenantSlug" }, { status: 400 });
-  const schedules = LocalDbController.getBookingSchedules(tenantSlug, serviceId);
+  const schedules = await LocalDbController.getBookingSchedules(tenantSlug, serviceId);
   return NextResponse.json({ success: true, schedules });
 }
 
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     if (!tenantSlug || !Array.isArray(schedules)) {
       return NextResponse.json({ error: "Missing tenantSlug or schedules array" }, { status: 400 });
     }
-    const saved = LocalDbController.upsertBookingSchedules(tenantSlug, schedules);
+    const saved = await LocalDbController.upsertBookingSchedules(tenantSlug, schedules);
     return NextResponse.json({ success: true, schedules: saved });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });

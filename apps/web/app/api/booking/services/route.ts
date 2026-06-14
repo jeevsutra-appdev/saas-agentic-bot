@@ -5,7 +5,7 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const tenantSlug = searchParams.get("tenantSlug");
   if (!tenantSlug) return NextResponse.json({ error: "Missing tenantSlug" }, { status: 400 });
-  const services = LocalDbController.getBookingServices(tenantSlug);
+  const services = await LocalDbController.getBookingServices(tenantSlug);
   return NextResponse.json({ success: true, services });
 }
 
@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { tenantSlug, ...data } = body;
     if (!tenantSlug) return NextResponse.json({ error: "Missing tenantSlug" }, { status: 400 });
-    const service = LocalDbController.createBookingService(tenantSlug, {
+    const service = await LocalDbController.createBookingService(tenantSlug, {
       name: data.name || "New Service",
       description: data.description || "",
       durationMinutes: data.durationMinutes || 60,
@@ -39,7 +39,7 @@ export async function PUT(req: Request) {
     const body = await req.json();
     const { tenantSlug, id, ...updates } = body;
     if (!tenantSlug || !id) return NextResponse.json({ error: "Missing tenantSlug or id" }, { status: 400 });
-    const service = LocalDbController.updateBookingService(tenantSlug, id, updates);
+    const service = await LocalDbController.updateBookingService(tenantSlug, id, updates);
     if (!service) return NextResponse.json({ error: "Service not found" }, { status: 404 });
     return NextResponse.json({ success: true, service });
   } catch (err: any) {
@@ -52,6 +52,6 @@ export async function DELETE(req: Request) {
   const tenantSlug = searchParams.get("tenantSlug");
   const id = searchParams.get("id");
   if (!tenantSlug || !id) return NextResponse.json({ error: "Missing params" }, { status: 400 });
-  const deleted = LocalDbController.deleteBookingService(tenantSlug, id);
+  const deleted = await LocalDbController.deleteBookingService(tenantSlug, id);
   return NextResponse.json({ success: deleted });
 }

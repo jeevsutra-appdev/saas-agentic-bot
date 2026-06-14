@@ -16,14 +16,14 @@ export async function POST(request: Request) {
 
     if (action === "login") {
       if (!id || !password) return NextResponse.json({ error: "id and password required" }, { status: 400 });
-      const rider = LocalDbController.loginDeliveryBoy(tenantSlug, id, password);
+      const rider = await LocalDbController.loginDeliveryBoy(tenantSlug, id, password);
       if (!rider) return NextResponse.json({ success: false, error: "Invalid credentials" }, { status: 401 });
       return NextResponse.json({ success: true, rider });
     }
 
     if (action === "get_dashboard") {
       if (!id) return NextResponse.json({ error: "id is required" }, { status: 400 });
-      const rider = LocalDbController.getDeliveryBoys(tenantSlug).find(r => r.id === id);
+      const rider = (await LocalDbController.getDeliveryBoys(tenantSlug)).find(r => r.id === id);
       if (!rider) return NextResponse.json({ error: "Rider not found" }, { status: 404 });
 
       // Calculate stats based on orders

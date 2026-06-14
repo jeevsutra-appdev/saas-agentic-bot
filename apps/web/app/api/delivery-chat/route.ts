@@ -8,7 +8,7 @@ export async function GET(request: Request) {
   if (!tenantSlug || !orderId)
     return NextResponse.json({ error: "tenantSlug and orderId required" }, { status: 400 });
 
-  const messages = LocalDbController.getChatMessages(tenantSlug, orderId);
+  const messages = await LocalDbController.getChatMessages(tenantSlug, orderId);
   return NextResponse.json({ success: true, messages });
 }
 
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
   if (!tenantSlug || !orderId || !from || !fromRole || !text)
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
 
-  const msg = LocalDbController.addChatMessage({ tenantSlug, orderId, from, fromRole, text });
+  const msg = await LocalDbController.addChatMessage({ tenantSlug, orderId, from, fromRole, text });
   return NextResponse.json({ success: true, message: msg });
 }
 
@@ -28,6 +28,6 @@ export async function PATCH(request: Request) {
   if (!tenantSlug || !orderId || !role)
     return NextResponse.json({ error: "Missing fields" }, { status: 400 });
 
-  LocalDbController.markChatRead(tenantSlug, orderId, role);
+  await LocalDbController.markChatRead(tenantSlug, orderId, role);
   return NextResponse.json({ success: true });
 }

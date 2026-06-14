@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { createAetherClient } from "./supabase";
 
 export interface LocalTenantSettings {
   id: string;
@@ -523,28 +524,32 @@ const DB_FILE_PATH = path.join(process.cwd(), "..", "db", "local_db.json");
 const inMemoryRateLimits: Record<string, { count: number; windowStart: number }> = {};
 
 export class LocalDbController {
+  private static cachedDb: LocalDatabaseSchema | null = null;
+  private static lastFetchTime: number = 0;
+  private static readonly CACHE_TTL = 3000; // 3 seconds TTL
+  private static isFetching: boolean = false;
 
-  public static getCustomers(tenantSlug: string, storeId?: string): LocalCustomer[] {
-    const db = this.read();
+  public static async getCustomers(tenantSlug: string, storeId?: string): Promise<LocalCustomer[]> {
+    const db = await this.read();
     if (storeId) {
       return db.customers.filter(c => c.tenantSlug === tenantSlug && (!c.storeId || c.storeId === storeId));
     }
     return db.customers.filter(c => c.tenantSlug === tenantSlug);
   }
 
-  public static addCustomer(customer: Omit<LocalCustomer, "id" | "createdAt">): LocalCustomer {
-    const db = this.read();
+  public static async addCustomer(customer: Omit<LocalCustomer, "id" | "createdAt">): Promise<LocalCustomer> {
+    const db = await this.read();
     const newCustomer: LocalCustomer = {
       ...customer,
       id: "cust_" + Date.now() + "_" + Math.random().toString(36).substring(2, 6),
       createdAt: new Date().toISOString()
     };
     db.customers.push(newCustomer);
-    this.write(db);
+    await this.write(db);
     return newCustomer;
   }
 
-  public static checkRateLimit(agentId: string, maxRequests: number, windowMs: number): boolean {
+  public static async checkRateLimit(agentId: string, maxRequests: number, windowMs: number): Promise<boolean> {
     const now = Date.now();
     const limit = inMemoryRateLimits[agentId];
 
@@ -562,13 +567,13 @@ export class LocalDbController {
     return true;
   }
 
-  public static getTenantSettings(tenantSlug: string): LocalTenantSettings | null {
-    const db = this.read();
+  public static async getTenantSettings(tenantSlug: string): Promise<LocalTenantSettings | null> {
+    const db = await this.read();
     return db.tenantSettings.find(s => s.tenantSlug === tenantSlug) || null;
   }
 
-  public static upsertTenantSettings(tenantSlug: string, settings: Partial<LocalTenantSettings>) {
-    const db = this.read();
+  public static async upsertTenantSettings(tenantSlug: string, settings: Partial<LocalTenantSettings>) {
+    const db = await this.read();
     const existingIndex = db.tenantSettings.findIndex(s => s.tenantSlug === tenantSlug);
     
     if (existingIndex >= 0) {
@@ -585,22 +590,213 @@ export class LocalDbController {
         updatedAt: new Date().toISOString()
       });
     }
-    this.write(db);
+    await this.write(db);
   }
 
   private static initDb() {
-    // Check if db directory exists, create if not
-    const dir = path.dirname(DB_FILE_PATH);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
+    try {
+      // Check if db directory exists, create if not
+      const dir = path.dirname(DB_FILE_PATH);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
 
-    if (!fs.existsSync(DB_FILE_PATH)) {
-      const initialSchema: LocalDatabaseSchema = {
+      if (!fs.existsSync(DB_FILE_PATH)) {
+        const initialSchema: LocalDatabaseSchema = {
+          users: [
+            {
+              email: "jeevsutra@gmail.com",
+              passwordHash: "Js1234567", // Simulated plain check for simplicity
+              role: "super_admin"
+            },
+            {
+              email: "imranhossain786@gmail.com",
+              passwordHash: "Js1234567",
+              role: "client",
+              tenantSlug: "imran-ai",
+              planId: "enterprise",
+              creditsBalance: 500000
+            }
+          ],
+          leads: [
+            {
+              id: "lead_1",
+              tenantSlug: "imran-ai",
+              name: "John Doe",
+              email: "john@example.com",
+              details: "Interested in Enterprise plan",
+              createdAt: new Date().toISOString()
+            }
+          ],
+          categories: [
+            {
+              id: "cat_1",
+              tenantSlug: "imran-ai",
+              name: "Premium Services",
+              description: "High-end bespoke digital services",
+              tags: ["digital", "premium"],
+              createdAt: new Date().toISOString()
+            }
+          ],
+          products: [
+            {
+              id: "prod_1",
+              tenantSlug: "imran-ai",
+              name: "Custom Support Bundle",
+              price: 4900,
+              description: "Dedicated 24/7 client portal chat assistance",
+              categoryId: "cat_1",
+              isService: true,
+              createdAt: new Date().toISOString()
+            }
+          ],
+          storefronts: [
+            {
+              id: "store_1",
+              tenantSlug: "imran-ai",
+              heroText: "Welcome to our Premium Store",
+              createdAt: new Date().toISOString()
+            }
+          ],
+          appointments: [
+            {
+              id: "appt_1",
+              tenantSlug: "imran-ai",
+              clientName: "Alice Miller",
+              clientEmail: "alice@example.com",
+              timeSlot: "Friday at 3:00 PM",
+              status: "confirmed",
+              createdAt: new Date().toISOString()
+            }
+          ],
+          documents: [
+            {
+              id: "doc_1",
+              tenantSlug: "imran-ai",
+              name: "Standard Delivery Rules",
+              content: "We deliver products globally within 3 to 5 business days.",
+              characters: 56,
+              previewCoordinates: [0.0123, -0.0456, 0.089],
+              createdAt: new Date().toISOString()
+            }
+          ],
+          skillRuns: [
+            {
+              id: "run_1",
+              tenantSlug: "imran-ai",
+              skillName: "lead_capture",
+              status: "success",
+              latencyMs: 12,
+              payload: JSON.stringify({ name: "John Doe", email: "john@example.com" }),
+              response: "Lead registered in standard schema",
+              timestamp: new Date().toISOString()
+            }
+          ],
+          agents: [
+            {
+              id: "agent_default",
+              tenantSlug: "imran-ai",
+              name: "Aether Default Agent",
+              systemPrompt: "You are an expert AI assistant of acharya Imran. Your role is to provide customer support, sell all services, and book appointments.",
+              avatarUrl: "",
+              themeColor: "#6366f1",
+              templateStyle: "glass",
+              ragDocumentIds: ["doc_1"],
+              activeSkills: ["ecommerce_checkout", "lead_capture"],
+              createdAt: new Date().toISOString()
+            }
+          ],
+          orders: [],
+          analyticsEvents: [],
+          subscriptions: [],
+          creditLedgers: [],
+          invoices: [],
+          campaigns: [],
+          landingPages: [],
+          landingPageFunnels: [],
+          tenantSettings: [],
+          deliveryBoys: [],
+          posManagers: [],
+          stores: [],
+          customers: [],
+          bookingServices: [],
+          bookingSchedules: [],
+          chatMessages: [],
+          riderLocations: [],
+          pushSubscriptions: [],
+        };
+
+        try {
+          fs.writeFileSync(DB_FILE_PATH, JSON.stringify(initialSchema, null, 2), "utf-8");
+        } catch (e) {
+          console.warn("[LocalDb] initDb write warning:", e);
+        }
+      }
+    } catch (e) {
+      console.warn("[LocalDb] initDb warning:", e);
+    }
+  }
+
+  private static readFromDisk(): LocalDatabaseSchema {
+    try {
+      this.initDb();
+      if (!fs.existsSync(DB_FILE_PATH)) {
+        throw new Error("File not found after initialization");
+      }
+      const data = fs.readFileSync(DB_FILE_PATH, "utf-8");
+      const parsed = JSON.parse(data) as Partial<LocalDatabaseSchema>;
+      
+      let needsSave = false;
+      const products = parsed.products || [];
+      for (const p of products) {
+        if (!p.barcode) {
+          p.barcode = Math.floor(100000000000 + Math.random() * 900000000000).toString();
+          needsSave = true;
+        }
+      }
+      
+      const result: LocalDatabaseSchema = {
+        users: parsed.users || [],
+        leads: parsed.leads || [],
+        categories: parsed.categories || [],
+        products: parsed.products || [],
+        storefronts: parsed.storefronts || [],
+        appointments: parsed.appointments || [],
+        bookingServices: parsed.bookingServices || [],
+        bookingSchedules: parsed.bookingSchedules || [],
+        documents: parsed.documents || [],
+        skillRuns: parsed.skillRuns || [],
+        agents: parsed.agents || [],
+        orders: parsed.orders || [],
+        analyticsEvents: parsed.analyticsEvents || [],
+        subscriptions: parsed.subscriptions || [],
+        creditLedgers: parsed.creditLedgers || [],
+        invoices: parsed.invoices || [],
+        campaigns: parsed.campaigns || [],
+        landingPages: parsed.landingPages || [],
+        landingPageFunnels: parsed.landingPageFunnels || [],
+        tenantSettings: parsed.tenantSettings || [],
+        deliveryBoys: parsed.deliveryBoys || [],
+        posManagers: parsed.posManagers || [],
+        stores: parsed.stores || [],
+        customers: parsed.customers || [],
+        chatMessages: (parsed as any).chatMessages || [],
+        riderLocations: (parsed as any).riderLocations || [],
+        pushSubscriptions: (parsed as any).pushSubscriptions || [],
+      };
+      if (needsSave) {
+        try {
+          fs.writeFileSync(DB_FILE_PATH, JSON.stringify(result, null, 2));
+        } catch (e) {}
+      }
+      return result;
+    } catch (err) {
+      console.warn("[LocalDb] readFromDisk warning (falling back to memory schema):", err);
+      return {
         users: [
           {
             email: "jeevsutra@gmail.com",
-            passwordHash: "Js1234567", // Simulated plain check for simplicity
+            passwordHash: "Js1234567",
             role: "super_admin"
           },
           {
@@ -719,145 +915,133 @@ export class LocalDbController {
         riderLocations: [],
         pushSubscriptions: [],
       };
-
-      fs.writeFileSync(DB_FILE_PATH, JSON.stringify(initialSchema, null, 2), "utf-8");
     }
   }
 
-  private static read(): LocalDatabaseSchema {
-    this.initDb();
+  
+  private static async read(): Promise<LocalDatabaseSchema> {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (!url || (!serviceKey && !anonKey)) {
+      if (this.cachedDb) return this.cachedDb;
+      return this.readFromDisk(); // Fallback for pure local dev without supabase
+    }
+
+    const now = Date.now();
+    if (this.cachedDb && (now - this.lastFetchTime < this.CACHE_TTL)) {
+      return this.cachedDb;
+    }
+
+    this.isFetching = true;
+    const supabase = createAetherClient({ serviceRole: !!serviceKey });
+    
     try {
-      const data = fs.readFileSync(DB_FILE_PATH, "utf-8");
-      const parsed = JSON.parse(data) as Partial<LocalDatabaseSchema>;
-      // Defensive defaults — ensure all arrays exist even if JSON was created before a field was added
+      const { data, error } = await supabase.from("local_db_store").select("*") as any;
+      this.isFetching = false;
       
-      let needsSave = false;
-      const products = parsed.products || [];
-      for (const p of products) {
-        if (!p.barcode) {
-          // Generate a 12 digit EAN-style barcode
-          p.barcode = Math.floor(100000000000 + Math.random() * 900000000000).toString();
-          needsSave = true;
-        }
+      if (error) {
+        console.error("[Supabase Sync] Fetch error:", error.message);
+        return this.cachedDb || this.readFromDisk();
       }
       
-      const result: LocalDatabaseSchema = {
-        users: parsed.users || [],
-        leads: parsed.leads || [],
-        categories: parsed.categories || [],
-        products: parsed.products || [],
-        storefronts: parsed.storefronts || [],
-        appointments: parsed.appointments || [],
-        bookingServices: parsed.bookingServices || [],
-        bookingSchedules: parsed.bookingSchedules || [],
-        documents: parsed.documents || [],
-        skillRuns: parsed.skillRuns || [],
-        agents: parsed.agents || [],
-        orders: parsed.orders || [],
-        analyticsEvents: parsed.analyticsEvents || [],
-        subscriptions: parsed.subscriptions || [],
-        creditLedgers: parsed.creditLedgers || [],
-        invoices: parsed.invoices || [],
-        campaigns: parsed.campaigns || [],
-        landingPages: parsed.landingPages || [],
-        landingPageFunnels: parsed.landingPageFunnels || [],
-        tenantSettings: parsed.tenantSettings || [],
-        deliveryBoys: parsed.deliveryBoys || [],
-        posManagers: parsed.posManagers || [],
-        stores: parsed.stores || [],
-        customers: parsed.customers || [],
-        chatMessages: (parsed as any).chatMessages || [],
-        riderLocations: (parsed as any).riderLocations || [],
-        pushSubscriptions: (parsed as any).pushSubscriptions || [],
-      };
-      if (needsSave) { fs.writeFileSync(DB_FILE_PATH, JSON.stringify(result, null, 2)); }
-      return result;
-    } catch (err) {
-      return {
-        users: [],
-        leads: [],
-        categories: [],
-        products: [],
-        storefronts: [],
-        appointments: [],
-        bookingServices: [],
-        bookingSchedules: [],
-        documents: [],
-        skillRuns: [],
-        agents: [],
-        orders: [],
-        analyticsEvents: [],
-        subscriptions: [],
-        creditLedgers: [],
-        invoices: [],
-        campaigns: [],
-        landingPages: [],
-        landingPageFunnels: [],
-        tenantSettings: [],
-        deliveryBoys: [],
-        posManagers: [],
-        stores: [],
-        customers: [],
-        chatMessages: [],
-        riderLocations: [],
-        pushSubscriptions: [],
-      };
+      if (data && data.length > 0) {
+        const db = { ...(this.cachedDb || this.readFromDisk()) } as any;
+        for (const row of data) {
+          db[row.key] = row.data;
+        }
+        this.cachedDb = db;
+        this.lastFetchTime = Date.now();
+        
+        // Try saving to local disk for local dev caching
+        try {
+          const fs = require('fs');
+          fs.writeFileSync(DB_FILE_PATH, JSON.stringify(db, null, 2), "utf-8");
+        } catch (e) {}
+      }
+      return this.cachedDb || this.readFromDisk();
+    } catch (e) {
+      this.isFetching = false;
+      return this.cachedDb || this.readFromDisk();
     }
   }
 
-  private static write(schema: LocalDatabaseSchema) {
-    this.initDb();
-    fs.writeFileSync(DB_FILE_PATH, JSON.stringify(schema, null, 2), "utf-8");
+  private static async write(schema: LocalDatabaseSchema) {
+    this.cachedDb = schema;
+    this.lastFetchTime = Date.now();
+    
+    try {
+      const fs = require('fs');
+      const dir = path.dirname(DB_FILE_PATH);
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(DB_FILE_PATH, JSON.stringify(schema, null, 2), "utf-8");
+    } catch (e) {}
+
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (url && (serviceKey || anonKey)) {
+      const supabase = createAetherClient({ serviceRole: !!serviceKey });
+      for (const key of Object.keys(schema)) {
+        try {
+          const { error } = await supabase.from("local_db_store").upsert({ key, data: (schema as any)[key] } as any);
+          if (error) console.error(`[Supabase Sync] Write error for key ${key}:`, error.message);
+        } catch (e) {
+          console.error(`[Supabase Sync] Write rejected for key ${key}:`, e);
+        }
+      }
+    }
   }
 
-  // --- User Operations ---
-  public static getUserByEmail(email: string): LocalUser | undefined {
-    const db = this.read();
+  public static async getUserByEmail(email: string): Promise<LocalUser | undefined> {
+    const db = await this.read();
     return db.users.find(u => u.email.toLowerCase() === email.toLowerCase());
   }
 
-  public static getUserByPhone(phone: string): LocalUser | undefined {
-    const db = this.read();
+  public static async getUserByPhone(phone: string): Promise<LocalUser | undefined> {
+    const db = await this.read();
     return db.users.find(u => u.phone === phone);
   }
 
-  public static saveUser(user: LocalUser) {
-    const db = this.read();
+  public static async saveUser(user: LocalUser) {
+    const db = await this.read();
     const idx = db.users.findIndex(u => u.email.toLowerCase() === user.email.toLowerCase());
     if (idx >= 0) {
       db.users[idx] = user;
     } else {
       db.users.push(user);
     }
-    this.write(db);
+    await this.write(db);
   }
 
-  public static getUserByTenant(tenantSlug: string): LocalUser | undefined {
-    const db = this.read();
+  public static async getUserByTenant(tenantSlug: string): Promise<LocalUser | undefined> {
+    const db = await this.read();
     return db.users.find(u => u.tenantSlug === tenantSlug);
   }
 
-  public static addCreditLedgerEntry(entry: LocalCreditLedger) {
-    const db = this.read();
+  public static async addCreditLedgerEntry(entry: LocalCreditLedger) {
+    const db = await this.read();
     db.creditLedgers.push(entry);
-    this.write(db);
+    await this.write(db);
   }
 
-  public static addSubscription(sub: LocalSubscription) {
-    const db = this.read();
+  public static async addSubscription(sub: LocalSubscription) {
+    const db = await this.read();
     db.subscriptions.push(sub);
-    this.write(db);
+    await this.write(db);
   }
 
-  public static getSubscriptionsByTenant(tenantSlug: string) {
-    const db = this.read();
+  public static async getSubscriptionsByTenant(tenantSlug: string) {
+    const db = await this.read();
     return db.subscriptions.filter(s => s.tenantSlug === tenantSlug);
   }
 
 
   // --- Category Operations ---
-  public static getCategoriesByTenant(tenantSlug: string, storeId?: string): LocalCategory[] {
-    const db = this.read();
+  public static async getCategoriesByTenant(tenantSlug: string, storeId?: string): Promise<LocalCategory[]> {
+    const db = await this.read();
     return db.categories.filter(c => {
       if (c.tenantSlug.toLowerCase() !== tenantSlug.toLowerCase()) return false;
       if (!storeId) return true;
@@ -870,29 +1054,29 @@ export class LocalDbController {
     });
   }
 
-  public static addCategory(cat: Omit<LocalCategory, "id" | "createdAt">): LocalCategory {
-    const db = this.read();
+  public static async addCategory(cat: Omit<LocalCategory, "id" | "createdAt">): Promise<LocalCategory> {
+    const db = await this.read();
     const newCat: LocalCategory = {
       ...cat,
       id: "cat_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4),
       createdAt: new Date().toISOString()
     };
     db.categories.push(newCat);
-    this.write(db);
+    await this.write(db);
     return newCat;
   }
 
   // --- Storefront Operations ---
-  public static getStorefrontByTenant(tenantSlug: string, storeId?: string): LocalStorefront | undefined {
-    const db = this.read();
+  public static async getStorefrontByTenant(tenantSlug: string, storeId?: string): Promise<LocalStorefront | undefined> {
+    const db = await this.read();
     if (storeId) {
       return db.storefronts.find(s => s.id === storeId && s.tenantSlug.toLowerCase() === tenantSlug.toLowerCase());
     }
     return db.storefronts.find(s => s.tenantSlug.toLowerCase() === tenantSlug.toLowerCase());
   }
 
-  public static upsertStorefront(storefront: Omit<LocalStorefront, "id" | "createdAt"> & { id?: string }): LocalStorefront {
-    const db = this.read();
+  public static async upsertStorefront(storefront: Omit<LocalStorefront, "id" | "createdAt"> & { id?: string }): Promise<LocalStorefront> {
+    const db = await this.read();
     let existingIdx = -1;
     if (storefront.id) {
       existingIdx = db.storefronts.findIndex(s => s.id === storefront.id && s.tenantSlug.toLowerCase() === storefront.tenantSlug.toLowerCase());
@@ -902,7 +1086,7 @@ export class LocalDbController {
     
     if (existingIdx >= 0) {
       db.storefronts[existingIdx] = { ...db.storefronts[existingIdx], ...storefront };
-      this.write(db);
+      await this.write(db);
       return db.storefronts[existingIdx];
     } else {
       const newStorefront: LocalStorefront = {
@@ -911,32 +1095,32 @@ export class LocalDbController {
         createdAt: new Date().toISOString()
       };
       db.storefronts.push(newStorefront);
-      this.write(db);
+      await this.write(db);
       return newStorefront;
     }
   }
 
 
   // --- Leads Operations ---
-  public static getLeadsByTenant(tenantSlug: string): LocalLead[] {
-    const db = this.read();
+  public static async getLeadsByTenant(tenantSlug: string): Promise<LocalLead[]> {
+    const db = await this.read();
     return db.leads.filter(l => l.tenantSlug.toLowerCase() === tenantSlug.toLowerCase());
   }
 
-  public static addLead(lead: Omit<LocalLead, "id" | "createdAt">): LocalLead {
-    const db = this.read();
+  public static async addLead(lead: Omit<LocalLead, "id" | "createdAt">): Promise<LocalLead> {
+    const db = await this.read();
     const newLead: LocalLead = {
       ...lead,
       id: "lead_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4),
       createdAt: new Date().toISOString()
     };
     db.leads.push(newLead);
-    this.write(db);
+    await this.write(db);
     return newLead;
   }
 
-  public static updateLead(tenantSlug: string, emailOrPhone: string, updateData: Partial<LocalLead>): LocalLead | null {
-    const db = this.read();
+  public static async updateLead(tenantSlug: string, emailOrPhone: string, updateData: Partial<LocalLead>): Promise<LocalLead | null> {
+    const db = await this.read();
     const leadIndex = db.leads.findIndex(l => 
       l.tenantSlug.toLowerCase() === tenantSlug.toLowerCase() && 
       (l.email === emailOrPhone || l.phone === emailOrPhone)
@@ -944,13 +1128,13 @@ export class LocalDbController {
     if (leadIndex === -1) return null;
 
     db.leads[leadIndex] = { ...db.leads[leadIndex], ...updateData };
-    this.write(db);
+    await this.write(db);
     return db.leads[leadIndex];
   }
 
   // --- Product Catalog Operations ---
-  public static getProductsByTenant(tenantSlug: string, storeId?: string): LocalProduct[] {
-    const db = this.read();
+  public static async getProductsByTenant(tenantSlug: string, storeId?: string): Promise<LocalProduct[]> {
+    const db = await this.read();
     return db.products.filter(p => {
       if (p.tenantSlug.toLowerCase() !== tenantSlug.toLowerCase()) return false;
       if (!storeId) return true;
@@ -963,8 +1147,8 @@ export class LocalDbController {
     });
   }
 
-  public static addProduct(prod: Omit<LocalProduct, "id" | "createdAt">): LocalProduct {
-    const db = this.read();
+  public static async addProduct(prod: Omit<LocalProduct, "id" | "createdAt">): Promise<LocalProduct> {
+    const db = await this.read();
     const newProd: LocalProduct = {
       ...prod,
       barcode: prod.barcode || Math.floor(100000000000 + Math.random() * 900000000000).toString(),
@@ -972,111 +1156,111 @@ export class LocalDbController {
       createdAt: new Date().toISOString()
     };
     db.products.push(newProd);
-    this.write(db);
+    await this.write(db);
     return newProd;
   }
 
-  public static updateProduct(productId: string, tenantSlug: string, updates: Partial<LocalProduct>): LocalProduct | null {
-    const db = this.read();
+  public static async updateProduct(productId: string, tenantSlug: string, updates: Partial<LocalProduct>): Promise<LocalProduct | null> {
+    const db = await this.read();
     const prodIndex = db.products.findIndex(p => p.id === productId && p.tenantSlug === tenantSlug);
     if (prodIndex === -1) return null;
     
     db.products[prodIndex] = { ...db.products[prodIndex], ...updates };
-    this.write(db);
+    await this.write(db);
     return db.products[prodIndex];
   }
 
-  public static deleteProduct(productId: string, tenantSlug: string): boolean {
-    const db = this.read();
+  public static async deleteProduct(productId: string, tenantSlug: string): Promise<boolean> {
+    const db = await this.read();
     const initialLength = db.products.length;
     db.products = db.products.filter(p => !(p.id === productId && p.tenantSlug === tenantSlug));
     if (db.products.length < initialLength) {
-      this.write(db);
+      await this.write(db);
       return true;
     }
     return false;
   }
 
   // --- Vector Document Operations ---
-  public static getDocumentsByTenant(tenantSlug: string): LocalDocument[] {
-    const db = this.read();
+  public static async getDocumentsByTenant(tenantSlug: string): Promise<LocalDocument[]> {
+    const db = await this.read();
     return db.documents.filter(d => d.tenantSlug.toLowerCase() === tenantSlug.toLowerCase());
   }
 
-  public static addDocument(doc: Omit<LocalDocument, "id" | "createdAt">): LocalDocument {
-    const db = this.read();
+  public static async addDocument(doc: Omit<LocalDocument, "id" | "createdAt">): Promise<LocalDocument> {
+    const db = await this.read();
     const newDoc: LocalDocument = {
       ...doc,
       id: "doc_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4),
       createdAt: new Date().toISOString()
     };
     db.documents.push(newDoc);
-    this.write(db);
+    await this.write(db);
     return newDoc;
   }
 
-  public static deleteDocument(tenantSlug: string, docId: string): void {
-    const db = this.read();
+  public static async deleteDocument(tenantSlug: string, docId: string): Promise<void> {
+    const db = await this.read();
     db.documents = db.documents.filter(d => !(d.id === docId && d.tenantSlug.toLowerCase() === tenantSlug.toLowerCase()));
-    this.write(db);
+    await this.write(db);
   }
 
   // --- Skill Run Ledger Operations ---
-  public static getSkillRunsByTenant(tenantSlug: string): LocalSkillRun[] {
-    const db = this.read();
+  public static async getSkillRunsByTenant(tenantSlug: string): Promise<LocalSkillRun[]> {
+    const db = await this.read();
     return db.skillRuns.filter(r => r.tenantSlug.toLowerCase() === tenantSlug.toLowerCase());
   }
 
-  public static addSkillRun(run: Omit<LocalSkillRun, "id" | "timestamp">): LocalSkillRun {
-    const db = this.read();
+  public static async addSkillRun(run: Omit<LocalSkillRun, "id" | "timestamp">): Promise<LocalSkillRun> {
+    const db = await this.read();
     const newRun: LocalSkillRun = {
       ...run,
       id: "run_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4),
       timestamp: new Date().toISOString()
     };
     db.skillRuns.push(newRun);
-    this.write(db);
+    await this.write(db);
     return newRun;
   }
 
   // --- Agent Operations ---
-  public static getAgentsByTenant(tenantSlug: string): LocalAgent[] {
-    const db = this.read();
+  public static async getAgentsByTenant(tenantSlug: string): Promise<LocalAgent[]> {
+    const db = await this.read();
     return db.agents.filter(a => a.tenantSlug.toLowerCase() === tenantSlug.toLowerCase());
   }
 
-  public static addAgent(agent: Omit<LocalAgent, "id" | "createdAt">): LocalAgent {
-    const db = this.read();
+  public static async addAgent(agent: Omit<LocalAgent, "id" | "createdAt">): Promise<LocalAgent> {
+    const db = await this.read();
     const newAgent: LocalAgent = {
       ...agent,
       id: "agent_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4),
       createdAt: new Date().toISOString()
     };
     db.agents.push(newAgent);
-    this.write(db);
+    await this.write(db);
     return newAgent;
   }
 
-  public static updateAgent(id: string, updates: Partial<LocalAgent>): LocalAgent | null {
-    const db = this.read();
+  public static async updateAgent(id: string, updates: Partial<LocalAgent>): Promise<LocalAgent | null> {
+    const db = await this.read();
     const idx = db.agents.findIndex(a => a.id === id);
     if (idx === -1) return null;
     db.agents[idx] = { ...db.agents[idx], ...updates };
-    this.write(db);
+    await this.write(db);
     return db.agents[idx];
   }
 
-  public static deleteAgent(id: string): boolean {
-    const db = this.read();
+  public static async deleteAgent(id: string): Promise<boolean> {
+    const db = await this.read();
     const initialLen = db.agents.length;
     db.agents = db.agents.filter(a => a.id !== id);
-    this.write(db);
+    await this.write(db);
     return db.agents.length < initialLen;
   }
 
   // --- Orders ---
-  public static createOrder(tenantSlug: string, orderData: Omit<LocalOrder, "id" | "tenantSlug" | "createdAt">): LocalOrder {
-    const db = this.read();
+  public static async createOrder(tenantSlug: string, orderData: Omit<LocalOrder, "id" | "tenantSlug" | "createdAt">): Promise<LocalOrder> {
+    const db = await this.read();
     const newOrder: LocalOrder = {
       ...orderData,
       id: `order_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
@@ -1084,12 +1268,12 @@ export class LocalDbController {
       createdAt: new Date().toISOString()
     };
     db.orders.push(newOrder);
-    this.write(db);
+    await this.write(db);
     return newOrder;
   }
 
-  public static getOrders(tenantSlug: string, storeId?: string): LocalOrder[] {
-    const db = this.read();
+  public static async getOrders(tenantSlug: string, storeId?: string): Promise<LocalOrder[]> {
+    const db = await this.read();
     return db.orders.filter(o => {
       if (o.tenantSlug.toLowerCase() !== tenantSlug.toLowerCase()) return false;
       if (!storeId) return true;
@@ -1102,31 +1286,31 @@ export class LocalDbController {
     });
   }
 
-  public static updateOrderStatus(tenantSlug: string, orderId: string, status: LocalOrder["status"]): LocalOrder | null {
-    const db = this.read();
+  public static async updateOrderStatus(tenantSlug: string, orderId: string, status: LocalOrder["status"]): Promise<LocalOrder | null> {
+    const db = await this.read();
     const idx = db.orders.findIndex(o => o.id === orderId && o.tenantSlug === tenantSlug);
     if (idx !== -1) {
       db.orders[idx].status = status;
-      this.write(db);
+      await this.write(db);
       return db.orders[idx];
     }
     return null;
   }
 
-  public static updateOrder(tenantSlug: string, orderId: string, updates: Partial<LocalOrder>): LocalOrder | null {
-    const db = this.read();
+  public static async updateOrder(tenantSlug: string, orderId: string, updates: Partial<LocalOrder>): Promise<LocalOrder | null> {
+    const db = await this.read();
     const idx = db.orders.findIndex(o => o.id === orderId && o.tenantSlug === tenantSlug);
     if (idx !== -1) {
       db.orders[idx] = { ...db.orders[idx], ...updates };
-      this.write(db);
+      await this.write(db);
       return db.orders[idx];
     }
     return null;
   }
 
   // --- Analytics ---
-  public static logAnalyticsEvent(tenantSlug: string, eventData: Omit<LocalAnalyticsEvent, "id" | "tenantSlug" | "createdAt">): LocalAnalyticsEvent {
-    const db = this.read();
+  public static async logAnalyticsEvent(tenantSlug: string, eventData: Omit<LocalAnalyticsEvent, "id" | "tenantSlug" | "createdAt">): Promise<LocalAnalyticsEvent> {
+    const db = await this.read();
     const newEvent: LocalAnalyticsEvent = {
       ...eventData,
       id: `evt_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
@@ -1134,30 +1318,30 @@ export class LocalDbController {
       createdAt: new Date().toISOString()
     };
     db.analyticsEvents.push(newEvent);
-    this.write(db);
+    await this.write(db);
     return newEvent;
   }
 
-  public static getAnalytics(tenantSlug: string): LocalAnalyticsEvent[] {
-    return this.read().analyticsEvents.filter(e => e.tenantSlug === tenantSlug);
+  public static async getAnalytics(tenantSlug: string): Promise<LocalAnalyticsEvent[]> {
+    return (await this.read()).analyticsEvents.filter(e => e.tenantSlug === tenantSlug);
   }
 
   // --- Storefront Operations ---
-  public static getStorefront(tenantSlug: string, storeId?: string): LocalStorefront | undefined {
-    const db = this.read();
+  public static async getStorefront(tenantSlug: string, storeId?: string): Promise<LocalStorefront | undefined> {
+    const db = await this.read();
     if (storeId) {
       return db.storefronts.find(s => s.id === storeId && s.tenantSlug === tenantSlug);
     }
     return db.storefronts.find(s => s.tenantSlug === tenantSlug);
   }
 
-  public static getStorefrontsByTenant(tenantSlug: string): LocalStorefront[] {
-    const db = this.read();
+  public static async getStorefrontsByTenant(tenantSlug: string): Promise<LocalStorefront[]> {
+    const db = await this.read();
     return db.storefronts.filter(s => s.tenantSlug.toLowerCase() === tenantSlug.toLowerCase());
   }
 
-  public static createStorefront(tenantSlug: string, config: Omit<LocalStorefront, "id" | "tenantSlug" | "createdAt">): LocalStorefront {
-    const db = this.read();
+  public static async createStorefront(tenantSlug: string, config: Omit<LocalStorefront, "id" | "tenantSlug" | "createdAt">): Promise<LocalStorefront> {
+    const db = await this.read();
     const newStorefront: LocalStorefront = {
       ...config,
       id: "store_" + Date.now() + "_" + Math.random().toString(36).substring(2, 6),
@@ -1165,12 +1349,12 @@ export class LocalDbController {
       createdAt: new Date().toISOString()
     };
     db.storefronts.push(newStorefront);
-      this.write(db);
+      await this.write(db);
       return newStorefront;
     }
 
-  public static updateStorefront(tenantSlug: string, updates: Partial<LocalStorefront>, storeId?: string): LocalStorefront {
-    const db = this.read();
+  public static async updateStorefront(tenantSlug: string, updates: Partial<LocalStorefront>, storeId?: string): Promise<LocalStorefront> {
+    const db = await this.read();
     let storefront;
     if (storeId) {
       storefront = db.storefronts.find(s => s.id === storeId && s.tenantSlug.toLowerCase() === tenantSlug.toLowerCase());
@@ -1192,12 +1376,12 @@ export class LocalDbController {
       };
       db.storefronts.push(storefront);
     }
-    this.write(db);
+    await this.write(db);
     return storefront;
   }
 
-  public static updateStorePage(tenantSlug: string, page: LocalStorePage, storeId?: string): LocalStorefront | null {
-    const db = this.read();
+  public static async updateStorePage(tenantSlug: string, page: LocalStorePage, storeId?: string): Promise<LocalStorefront | null> {
+    const db = await this.read();
     let sf: LocalStorefront | undefined;
     if (storeId) {
       sf = db.storefronts.find(s => s.id === storeId && s.tenantSlug.toLowerCase() === tenantSlug.toLowerCase());
@@ -1210,25 +1394,25 @@ export class LocalDbController {
     const updated: LocalStorePage = { ...page, updatedAt: new Date().toISOString() };
     if (idx >= 0) { pages[idx] = updated; } else { pages.push(updated); }
     sf.pages = pages;
-    this.write(db);
+    await this.write(db);
     return sf;
   }
 
   // --- Landing Pages ---
-  public static getLandingPages(tenantSlug: string): LocalLandingPage[] {
-    return this.read().landingPages.filter(lp => lp.tenantSlug === tenantSlug);
+  public static async getLandingPages(tenantSlug: string): Promise<LocalLandingPage[]> {
+    return (await this.read()).landingPages.filter(lp => lp.tenantSlug === tenantSlug);
   }
 
-  public static getLandingPage(id: string, tenantSlug: string): LocalLandingPage | undefined {
-    return this.read().landingPages.find(lp => lp.id === id && lp.tenantSlug === tenantSlug);
+  public static async getLandingPage(id: string, tenantSlug: string): Promise<LocalLandingPage | undefined> {
+    return (await this.read()).landingPages.find(lp => lp.id === id && lp.tenantSlug === tenantSlug);
   }
 
-  public static getLandingPageBySlug(tenantSlug: string, slug: string): LocalLandingPage | undefined {
-    return this.read().landingPages.find(lp => lp.slug === slug && lp.tenantSlug === tenantSlug);
+  public static async getLandingPageBySlug(tenantSlug: string, slug: string): Promise<LocalLandingPage | undefined> {
+    return (await this.read()).landingPages.find(lp => lp.slug === slug && lp.tenantSlug === tenantSlug);
   }
 
-  public static createLandingPage(tenantSlug: string, lpData: Omit<LocalLandingPage, "id" | "tenantSlug" | "createdAt" | "updatedAt">): LocalLandingPage {
-    const db = this.read();
+  public static async createLandingPage(tenantSlug: string, lpData: Omit<LocalLandingPage, "id" | "tenantSlug" | "createdAt" | "updatedAt">): Promise<LocalLandingPage> {
+    const db = await this.read();
     const newPage: LocalLandingPage = {
       ...lpData,
       id: `lp_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
@@ -1237,12 +1421,12 @@ export class LocalDbController {
       updatedAt: new Date().toISOString()
     };
     db.landingPages.push(newPage);
-    this.write(db);
+    await this.write(db);
     return newPage;
   }
 
-  public static updateLandingPage(id: string, tenantSlug: string, updates: Partial<LocalLandingPage>): LocalLandingPage | null {
-    const db = this.read();
+  public static async updateLandingPage(id: string, tenantSlug: string, updates: Partial<LocalLandingPage>): Promise<LocalLandingPage | null> {
+    const db = await this.read();
     const idx = db.landingPages.findIndex(lp => lp.id === id && lp.tenantSlug === tenantSlug);
     if (idx === -1) return null;
     
@@ -1251,17 +1435,17 @@ export class LocalDbController {
       ...updates,
       updatedAt: new Date().toISOString()
     };
-    this.write(db);
+    await this.write(db);
     return db.landingPages[idx];
   }
 
-  public static getCampaigns(tenantSlug: string): LocalCampaign[] {
-    const db = this.read();
+  public static async getCampaigns(tenantSlug: string): Promise<LocalCampaign[]> {
+    const db = await this.read();
     return db.campaigns.filter(c => c.tenantSlug === tenantSlug);
   }
 
-  public static createCampaign(data: { tenantSlug: string; name: string; description: string; status: string }): LocalCampaign {
-    const db = this.read();
+  public static async createCampaign(data: { tenantSlug: string; name: string; description: string; status: string }): Promise<LocalCampaign> {
+    const db = await this.read();
     const newCamp: LocalCampaign = {
       id: "camp_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9),
       tenantSlug: data.tenantSlug,
@@ -1272,21 +1456,21 @@ export class LocalDbController {
       updatedAt: new Date().toISOString()
     };
     db.campaigns.push(newCamp);
-    this.write(db);
+    await this.write(db);
     return newCamp;
   }
 
-  public static updateCategory(categoryId: string, tenantSlug: string, updates: Partial<LocalCategory>): LocalCategory | null {
-    const db = this.read();
+  public static async updateCategory(categoryId: string, tenantSlug: string, updates: Partial<LocalCategory>): Promise<LocalCategory | null> {
+    const db = await this.read();
     const idx = db.categories.findIndex(c => c.id === categoryId && c.tenantSlug === tenantSlug);
     if (idx === -1) return null;
     db.categories[idx] = { ...db.categories[idx], ...updates };
-    this.write(db);
+    await this.write(db);
     return db.categories[idx];
   }
 
-  public static deleteCategory(categoryId: string, tenantSlug: string): boolean {
-    const db = this.read();
+  public static async deleteCategory(categoryId: string, tenantSlug: string): Promise<boolean> {
+    const db = await this.read();
     const initialLen = db.categories.length;
     db.categories = db.categories.filter(c => !(c.id === categoryId && c.tenantSlug === tenantSlug));
     if (db.categories.length < initialLen) {
@@ -1297,20 +1481,20 @@ export class LocalDbController {
         }
         return p;
       });
-      this.write(db);
+      await this.write(db);
       return true;
     }
     return false;
   }
 
   // --- Delivery Boys ---
-  public static getDeliveryBoys(tenantSlug: string): LocalDeliveryBoy[] {
-    const db = this.read();
+  public static async getDeliveryBoys(tenantSlug: string): Promise<LocalDeliveryBoy[]> {
+    const db = await this.read();
     return db.deliveryBoys.filter(d => d.tenantSlug.toLowerCase() === tenantSlug.toLowerCase());
   }
 
-  public static createDeliveryBoy(tenantSlug: string, data: Omit<LocalDeliveryBoy, "id" | "tenantSlug" | "createdAt">): LocalDeliveryBoy {
-    const db = this.read();
+  public static async createDeliveryBoy(tenantSlug: string, data: Omit<LocalDeliveryBoy, "id" | "tenantSlug" | "createdAt">): Promise<LocalDeliveryBoy> {
+    const db = await this.read();
     const newBoy: LocalDeliveryBoy = {
       ...data,
       id: `rider_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
@@ -1318,49 +1502,49 @@ export class LocalDbController {
       createdAt: new Date().toISOString()
     };
     db.deliveryBoys.push(newBoy);
-    this.write(db);
+    await this.write(db);
     return newBoy;
   }
 
-  public static updateDeliveryBoy(tenantSlug: string, id: string, updates: Partial<LocalDeliveryBoy>): LocalDeliveryBoy | null {
-    const db = this.read();
+  public static async updateDeliveryBoy(tenantSlug: string, id: string, updates: Partial<LocalDeliveryBoy>): Promise<LocalDeliveryBoy | null> {
+    const db = await this.read();
     const idx = db.deliveryBoys.findIndex(d => d.id === id && d.tenantSlug === tenantSlug);
     if (idx === -1) return null;
     db.deliveryBoys[idx] = { ...db.deliveryBoys[idx], ...updates };
-    this.write(db);
+    await this.write(db);
     return db.deliveryBoys[idx];
   }
 
-  public static deleteDeliveryBoy(tenantSlug: string, id: string): boolean {
-    const db = this.read();
+  public static async deleteDeliveryBoy(tenantSlug: string, id: string): Promise<boolean> {
+    const db = await this.read();
     const before = db.deliveryBoys.length;
     db.deliveryBoys = db.deliveryBoys.filter(d => !(d.id === id && d.tenantSlug === tenantSlug));
-    if (db.deliveryBoys.length < before) { this.write(db); return true; }
+    if (db.deliveryBoys.length < before) { await this.write(db); return true; }
     return false;
   }
 
-  public static loginDeliveryBoy(tenantSlug: string, id: string, password: string): LocalDeliveryBoy | null {
-    const db = this.read();
+  public static async loginDeliveryBoy(tenantSlug: string, id: string, password: string): Promise<LocalDeliveryBoy | null> {
+    const db = await this.read();
     return db.deliveryBoys.find(d =>
       d.tenantSlug === tenantSlug && d.id === id && (d.password === password || d.passwordHash === password)
     ) || null;
   }
 
   // --- Stores ---
-  public static getStores(tenantSlug: string): LocalStore[] {
-    const db = this.read();
+  public static async getStores(tenantSlug: string): Promise<LocalStore[]> {
+    const db = await this.read();
     return db.stores.filter(s => s.tenantSlug.toLowerCase() === tenantSlug.toLowerCase());
   }
 
-  public static getStoreBySlug(tenantSlug: string, storeSlug: string): LocalStore | null {
-    const db = this.read();
+  public static async getStoreBySlug(tenantSlug: string, storeSlug: string): Promise<LocalStore | null> {
+    const db = await this.read();
     return db.stores.find(
       s => s.tenantSlug.toLowerCase() === tenantSlug.toLowerCase() && s.storeSlug.toLowerCase() === storeSlug.toLowerCase()
     ) || null;
   }
 
-  public static createStore(data: Omit<LocalStore, "id" | "createdAt" | "updatedAt">): LocalStore {
-    const db = this.read();
+  public static async createStore(data: Omit<LocalStore, "id" | "createdAt" | "updatedAt">): Promise<LocalStore> {
+    const db = await this.read();
     const now = new Date().toISOString();
     const store: LocalStore = {
       ...data,
@@ -1369,40 +1553,40 @@ export class LocalDbController {
       updatedAt: now
     };
     db.stores.push(store);
-    this.write(db);
+    await this.write(db);
     return store;
   }
 
-  public static updateStore(tenantSlug: string, storeId: string, updates: Partial<LocalStore>): LocalStore | null {
-    const db = this.read();
+  public static async updateStore(tenantSlug: string, storeId: string, updates: Partial<LocalStore>): Promise<LocalStore | null> {
+    const db = await this.read();
     const idx = db.stores.findIndex(s => s.id === storeId && s.tenantSlug.toLowerCase() === tenantSlug.toLowerCase());
     if (idx === -1) return null;
     db.stores[idx] = { ...db.stores[idx], ...updates, updatedAt: new Date().toISOString() };
-    this.write(db);
+    await this.write(db);
     return db.stores[idx];
   }
 
-  public static deleteStore(tenantSlug: string, storeId: string): boolean {
-    const db = this.read();
+  public static async deleteStore(tenantSlug: string, storeId: string): Promise<boolean> {
+    const db = await this.read();
     const before = db.stores.length;
     db.stores = db.stores.filter(s => !(s.id === storeId && s.tenantSlug.toLowerCase() === tenantSlug.toLowerCase()));
-    this.write(db);
+    await this.write(db);
     return db.stores.length < before;
   }
 
   // --- Booking Services ---
-  public static getBookingServices(tenantSlug: string): LocalBookingService[] {
-    const db = this.read();
+  public static async getBookingServices(tenantSlug: string): Promise<LocalBookingService[]> {
+    const db = await this.read();
     return db.bookingServices.filter(s => s.tenantSlug.toLowerCase() === tenantSlug.toLowerCase());
   }
 
-  public static getBookingServiceById(id: string, tenantSlug: string): LocalBookingService | null {
-    const db = this.read();
+  public static async getBookingServiceById(id: string, tenantSlug: string): Promise<LocalBookingService | null> {
+    const db = await this.read();
     return db.bookingServices.find(s => s.id === id && s.tenantSlug.toLowerCase() === tenantSlug.toLowerCase()) || null;
   }
 
-  public static createBookingService(tenantSlug: string, data: Omit<LocalBookingService, "id" | "tenantSlug" | "createdAt">): LocalBookingService {
-    const db = this.read();
+  public static async createBookingService(tenantSlug: string, data: Omit<LocalBookingService, "id" | "tenantSlug" | "createdAt">): Promise<LocalBookingService> {
+    const db = await this.read();
     const newService: LocalBookingService = {
       ...data,
       id: `bsvc_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
@@ -1410,30 +1594,30 @@ export class LocalDbController {
       createdAt: new Date().toISOString()
     };
     db.bookingServices.push(newService);
-    this.write(db);
+    await this.write(db);
     return newService;
   }
 
-  public static updateBookingService(tenantSlug: string, id: string, updates: Partial<LocalBookingService>): LocalBookingService | null {
-    const db = this.read();
+  public static async updateBookingService(tenantSlug: string, id: string, updates: Partial<LocalBookingService>): Promise<LocalBookingService | null> {
+    const db = await this.read();
     const idx = db.bookingServices.findIndex(s => s.id === id && s.tenantSlug.toLowerCase() === tenantSlug.toLowerCase());
     if (idx === -1) return null;
     db.bookingServices[idx] = { ...db.bookingServices[idx], ...updates };
-    this.write(db);
+    await this.write(db);
     return db.bookingServices[idx];
   }
 
-  public static deleteBookingService(tenantSlug: string, id: string): boolean {
-    const db = this.read();
+  public static async deleteBookingService(tenantSlug: string, id: string): Promise<boolean> {
+    const db = await this.read();
     const before = db.bookingServices.length;
     db.bookingServices = db.bookingServices.filter(s => !(s.id === id && s.tenantSlug.toLowerCase() === tenantSlug.toLowerCase()));
-    this.write(db);
+    await this.write(db);
     return db.bookingServices.length < before;
   }
 
   // --- Booking Schedules ---
-  public static getBookingSchedules(tenantSlug: string, serviceId?: string): LocalBookingSchedule[] {
-    const db = this.read();
+  public static async getBookingSchedules(tenantSlug: string, serviceId?: string): Promise<LocalBookingSchedule[]> {
+    const db = await this.read();
     return db.bookingSchedules.filter(s => {
       if (s.tenantSlug.toLowerCase() !== tenantSlug.toLowerCase()) return false;
       if (serviceId) return s.serviceId === serviceId || !s.serviceId;
@@ -1441,8 +1625,8 @@ export class LocalDbController {
     });
   }
 
-  public static upsertBookingSchedules(tenantSlug: string, schedules: Omit<LocalBookingSchedule, "id">[]): LocalBookingSchedule[] {
-    const db = this.read();
+  public static async upsertBookingSchedules(tenantSlug: string, schedules: Omit<LocalBookingSchedule, "id">[]): Promise<LocalBookingSchedule[]> {
+    const db = await this.read();
     // Remove existing schedules for this tenant
     db.bookingSchedules = db.bookingSchedules.filter(s => s.tenantSlug.toLowerCase() !== tenantSlug.toLowerCase());
     const newSchedules: LocalBookingSchedule[] = schedules.map(s => ({
@@ -1451,59 +1635,59 @@ export class LocalDbController {
       tenantSlug
     }));
     db.bookingSchedules.push(...newSchedules);
-    this.write(db);
+    await this.write(db);
     return newSchedules;
   }
 
   // --- Enhanced Appointment Operations ---
-  public static getAppointmentsByTenant(tenantSlug: string): LocalAppointment[] {
-    const db = this.read();
+  public static async getAppointmentsByTenant(tenantSlug: string): Promise<LocalAppointment[]> {
+    const db = await this.read();
     return db.appointments.filter(a => a.tenantSlug.toLowerCase() === tenantSlug.toLowerCase());
   }
 
-  public static getAppointmentsByService(tenantSlug: string, serviceId: string): LocalAppointment[] {
-    const db = this.read();
+  public static async getAppointmentsByService(tenantSlug: string, serviceId: string): Promise<LocalAppointment[]> {
+    const db = await this.read();
     return db.appointments.filter(a => a.tenantSlug.toLowerCase() === tenantSlug.toLowerCase() && a.serviceId === serviceId);
   }
 
-  public static getAppointmentsByDate(tenantSlug: string, date: string): LocalAppointment[] {
-    const db = this.read();
+  public static async getAppointmentsByDate(tenantSlug: string, date: string): Promise<LocalAppointment[]> {
+    const db = await this.read();
     return db.appointments.filter(a => a.tenantSlug.toLowerCase() === tenantSlug.toLowerCase() && a.date === date);
   }
 
-  public static addAppointment(appt: Omit<LocalAppointment, "id" | "createdAt">): LocalAppointment {
-    const db = this.read();
+  public static async addAppointment(appt: Omit<LocalAppointment, "id" | "createdAt">): Promise<LocalAppointment> {
+    const db = await this.read();
     const newAppt: LocalAppointment = {
       ...appt,
       id: "appt_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4),
       createdAt: new Date().toISOString()
     };
     db.appointments.push(newAppt);
-    this.write(db);
+    await this.write(db);
     return newAppt;
   }
 
-  public static updateAppointment(tenantSlug: string, id: string, updates: Partial<LocalAppointment>): LocalAppointment | null {
-    const db = this.read();
+  public static async updateAppointment(tenantSlug: string, id: string, updates: Partial<LocalAppointment>): Promise<LocalAppointment | null> {
+    const db = await this.read();
     const idx = db.appointments.findIndex(a => a.id === id && a.tenantSlug.toLowerCase() === tenantSlug.toLowerCase());
     if (idx === -1) return null;
     db.appointments[idx] = { ...db.appointments[idx], ...updates };
-    this.write(db);
+    await this.write(db);
     return db.appointments[idx];
   }
 
-  public static cancelAppointment(tenantSlug: string, id: string): LocalAppointment | null {
+  public static async cancelAppointment(tenantSlug: string, id: string): Promise<LocalAppointment | null> {
     return this.updateAppointment(tenantSlug, id, { status: "cancelled" });
   }
 
   // --- POS Managers ---
-  public static getPosManagers(tenantSlug: string): LocalPosManager[] {
-    const db = this.read();
+  public static async getPosManagers(tenantSlug: string): Promise<LocalPosManager[]> {
+    const db = await this.read();
     return (db.posManagers || []).filter(p => p.tenantSlug.toLowerCase() === tenantSlug.toLowerCase());
   }
 
-  public static createPosManager(tenantSlug: string, data: Omit<LocalPosManager, "id" | "tenantSlug" | "createdAt">): LocalPosManager {
-    const db = this.read();
+  public static async createPosManager(tenantSlug: string, data: Omit<LocalPosManager, "id" | "tenantSlug" | "createdAt">): Promise<LocalPosManager> {
+    const db = await this.read();
     const newManager: LocalPosManager = {
       ...data,
       id: `posmgr_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
@@ -1512,40 +1696,40 @@ export class LocalDbController {
     };
     if (!db.posManagers) db.posManagers = [];
     db.posManagers.push(newManager);
-    this.write(db);
+    await this.write(db);
     return newManager;
   }
 
-  public static updatePosManager(tenantSlug: string, id: string, updates: Partial<LocalPosManager>): LocalPosManager | null {
-    const db = this.read();
+  public static async updatePosManager(tenantSlug: string, id: string, updates: Partial<LocalPosManager>): Promise<LocalPosManager | null> {
+    const db = await this.read();
     if (!db.posManagers) return null;
     const idx = db.posManagers.findIndex(p => p.id === id && p.tenantSlug === tenantSlug);
     if (idx === -1) return null;
     db.posManagers[idx] = { ...db.posManagers[idx], ...updates };
-    this.write(db);
+    await this.write(db);
     return db.posManagers[idx];
   }
 
-  public static deletePosManager(tenantSlug: string, id: string): boolean {
-    const db = this.read();
+  public static async deletePosManager(tenantSlug: string, id: string): Promise<boolean> {
+    const db = await this.read();
     if (!db.posManagers) return false;
     const initialLength = db.posManagers.length;
     db.posManagers = db.posManagers.filter(p => !(p.id === id && p.tenantSlug === tenantSlug));
     if (db.posManagers.length !== initialLength) {
-      this.write(db);
+      await this.write(db);
       return true;
     }
     return false;
   }
 
   // --- Chat Messages ---
-  public static getChatMessages(tenantSlug: string, orderId: string): LocalChatMessage[] {
-    const db = this.read();
+  public static async getChatMessages(tenantSlug: string, orderId: string): Promise<LocalChatMessage[]> {
+    const db = await this.read();
     return (db.chatMessages || []).filter(m => m.tenantSlug === tenantSlug && m.orderId === orderId);
   }
 
-  public static addChatMessage(msg: Omit<LocalChatMessage, "id" | "timestamp">): LocalChatMessage {
-    const db = this.read();
+  public static async addChatMessage(msg: Omit<LocalChatMessage, "id" | "timestamp">): Promise<LocalChatMessage> {
+    const db = await this.read();
     const newMsg: LocalChatMessage = {
       ...msg,
       id: "msg_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5),
@@ -1553,12 +1737,12 @@ export class LocalDbController {
     };
     if (!db.chatMessages) db.chatMessages = [];
     db.chatMessages.push(newMsg);
-    this.write(db);
+    await this.write(db);
     return newMsg;
   }
 
-  public static markChatRead(tenantSlug: string, orderId: string, role: "admin" | "rider"): void {
-    const db = this.read();
+  public static async markChatRead(tenantSlug: string, orderId: string, role: "admin" | "rider"): Promise<void> {
+    const db = await this.read();
     if (!db.chatMessages) return;
     const otherRole = role === "admin" ? "rider" : "admin";
     db.chatMessages = db.chatMessages.map(m =>
@@ -1566,32 +1750,32 @@ export class LocalDbController {
         ? { ...m, read: true }
         : m
     );
-    this.write(db);
+    await this.write(db);
   }
 
   // --- Rider Locations ---
-  public static updateRiderLocation(loc: LocalRiderLocation): void {
-    const db = this.read();
+  public static async updateRiderLocation(loc: LocalRiderLocation): Promise<void> {
+    const db = await this.read();
     if (!db.riderLocations) db.riderLocations = [];
     const idx = db.riderLocations.findIndex(l => l.riderId === loc.riderId && l.tenantSlug === loc.tenantSlug);
     if (idx >= 0) db.riderLocations[idx] = loc;
     else db.riderLocations.push(loc);
-    this.write(db);
+    await this.write(db);
   }
 
-  public static getRiderLocation(tenantSlug: string, riderId: string): LocalRiderLocation | null {
-    const db = this.read();
+  public static async getRiderLocation(tenantSlug: string, riderId: string): Promise<LocalRiderLocation | null> {
+    const db = await this.read();
     return (db.riderLocations || []).find(l => l.riderId === riderId && l.tenantSlug === tenantSlug) || null;
   }
 
-  public static getAllRiderLocations(tenantSlug: string): LocalRiderLocation[] {
-    const db = this.read();
+  public static async getAllRiderLocations(tenantSlug: string): Promise<LocalRiderLocation[]> {
+    const db = await this.read();
     return (db.riderLocations || []).filter(l => l.tenantSlug === tenantSlug);
   }
 
   // --- Push Subscriptions ---
-  public static savePushSubscription(record: Omit<LocalPushSubscriptionRecord, "id" | "createdAt">): LocalPushSubscriptionRecord {
-    const db = this.read();
+  public static async savePushSubscription(record: Omit<LocalPushSubscriptionRecord, "id" | "createdAt">): Promise<LocalPushSubscriptionRecord> {
+    const db = await this.read();
     if (!db.pushSubscriptions) db.pushSubscriptions = [];
     const newRec: LocalPushSubscriptionRecord = {
       ...record,
@@ -1603,12 +1787,12 @@ export class LocalDbController {
       !(s.tenantSlug === record.tenantSlug && s.role === record.role && s.riderId === record.riderId)
     );
     db.pushSubscriptions.push(newRec);
-    this.write(db);
+    await this.write(db);
     return newRec;
   }
 
-  public static getPushSubscriptions(tenantSlug: string, role?: "admin" | "rider", riderId?: string): LocalPushSubscriptionRecord[] {
-    const db = this.read();
+  public static async getPushSubscriptions(tenantSlug: string, role?: "admin" | "rider", riderId?: string): Promise<LocalPushSubscriptionRecord[]> {
+    const db = await this.read();
     return (db.pushSubscriptions || []).filter(s => {
       if (s.tenantSlug !== tenantSlug) return false;
       if (role && s.role !== role) return false;
@@ -1617,10 +1801,10 @@ export class LocalDbController {
     });
   }
 
-  public static deletePushSubscription(tenantSlug: string, id: string): void {
-    const db = this.read();
+  public static async deletePushSubscription(tenantSlug: string, id: string): Promise<void> {
+    const db = await this.read();
     if (!db.pushSubscriptions) return;
     db.pushSubscriptions = db.pushSubscriptions.filter(s => !(s.id === id && s.tenantSlug === tenantSlug));
-    this.write(db);
+    await this.write(db);
   }
 }

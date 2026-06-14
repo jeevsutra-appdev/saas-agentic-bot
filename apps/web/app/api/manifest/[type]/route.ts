@@ -17,14 +17,14 @@ export async function GET(request: Request, { params }: { params: { type: string
     let primaryColor = "#4f46e5"; // default indigo
     let bgColor = "#1e1e2d";
 
-    const storefronts = LocalDbController.getStorefrontsByTenant(tenantSlug);
+    const storefronts = await LocalDbController.getStorefrontsByTenant(tenantSlug);
     let activeStoreId = storeId;
     if (!activeStoreId && storefronts.length > 0) {
       activeStoreId = storefronts[0].id;
     }
 
     if (activeStoreId) {
-      const storefront = LocalDbController.getStorefrontByTenant(tenantSlug, activeStoreId);
+      const storefront = await LocalDbController.getStorefrontByTenant(tenantSlug, activeStoreId);
       if (storefront) {
         storeName = storefront.companyName || storeName;
         storeLogo = storefront.brandLogo || storeLogo;

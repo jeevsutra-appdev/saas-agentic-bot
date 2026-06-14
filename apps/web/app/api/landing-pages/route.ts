@@ -11,7 +11,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Missing tenantSlug" }, { status: 400 });
     }
 
-    const pages = LocalDbController.getLandingPages(tenantSlug);
+    const pages = await LocalDbController.getLandingPages(tenantSlug);
     return NextResponse.json({ pages });
   } catch (error) {
     console.error("GET Landing Pages Error:", error);
@@ -65,7 +65,7 @@ export async function POST(req: Request) {
       }
     }
 
-    const newPage = LocalDbController.createLandingPage(tenantSlug, {
+    const newPage = await LocalDbController.createLandingPage(tenantSlug, {
       name,
       slug: pageSlug,
       productId,

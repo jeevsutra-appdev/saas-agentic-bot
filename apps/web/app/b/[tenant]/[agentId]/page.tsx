@@ -4,7 +4,7 @@ import ChatWidgetUI from "@/components/ChatWidgetUI";
 import { Metadata } from "next";
 
 export async function generateMetadata({ params }: { params: { tenant: string, agentId: string } }): Promise<Metadata> {
-  const agent = LocalDbController.getAgentsByTenant(params.tenant).find(a => a.id === params.agentId);
+  const agent = (await LocalDbController.getAgentsByTenant(params.tenant)).find(a => a.id === params.agentId);
   if (!agent) return { title: "Agent Not Found" };
 
   return {
@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: { params: { tenant: string, a
 }
 
 export default async function PublicChatbotWidget({ params }: { params: { tenant: string, agentId: string } }) {
-  const agent = LocalDbController.getAgentsByTenant(params.tenant).find(a => a.id === params.agentId);
+  const agent = (await LocalDbController.getAgentsByTenant(params.tenant)).find(a => a.id === params.agentId);
 
   if (!agent) {
     return <div className="fixed inset-0 bg-[#070913] flex items-center justify-center text-white">Agent Not Found</div>;

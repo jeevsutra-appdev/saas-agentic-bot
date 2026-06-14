@@ -7,8 +7,8 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const tenantSlug = searchParams.get("tenant") || "imran-ai";
 
-    const leads = LocalDbController.getLeadsByTenant(tenantSlug);
-    const runs = LocalDbController.getSkillRunsByTenant(tenantSlug);
+    const leads = await LocalDbController.getLeadsByTenant(tenantSlug);
+    const runs = await LocalDbController.getSkillRunsByTenant(tenantSlug);
 
     return NextResponse.json({
       success: true,
@@ -34,10 +34,10 @@ export async function POST(request: Request) {
 
     // Also persist in our local database user records for persistence!
     const targetSlug = tenantSlug || "imran-ai";
-    const user = LocalDbController.getUserByEmail("imranhossain786@gmail.com");
+    const user = await LocalDbController.getUserByEmail("imranhossain786@gmail.com");
     if (user) {
       user.planId = "enterprise";
-      LocalDbController.saveUser(user);
+      await LocalDbController.saveUser(user);
     }
 
     console.log(`[n8n Configured] Updated custom n8n webhook endpoint: ${webhookUrl} for tenant ${targetSlug}`);

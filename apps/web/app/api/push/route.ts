@@ -49,7 +49,7 @@ export async function POST(request: Request) {
     if (!tenantSlug || !subscription || !role)
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
 
-    LocalDbController.savePushSubscription({ tenantSlug, role, riderId, subscription });
+    await LocalDbController.savePushSubscription({ tenantSlug, role, riderId, subscription });
     return NextResponse.json({ success: true });
   }
 
@@ -58,15 +58,15 @@ export async function POST(request: Request) {
     if (!tenantSlug || !title)
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
 
-    const subs = LocalDbController.getPushSubscriptions(tenantSlug, role, riderId);
+    const subs = await LocalDbController.getPushSubscriptions(tenantSlug, role, riderId);
     const payload = JSON.stringify({ title, body: msgBody || "", data: data || {} });
 
     const results = await Promise.allSettled(
       subs.map(rec =>
-        webpush.sendNotification(rec.subscription as any, payload).catch(err => {
+        webpush.sendNotification(rec.subscription as any, payload).catch(async err => {
           // Remove invalid subscriptions (410 Gone)
           if (err.statusCode === 410) {
-            LocalDbController.deletePushSubscription(tenantSlug, rec.id);
+            await LocalDbController.deletePushSubscription(tenantSlug, rec.id);
           }
           throw err;
         })

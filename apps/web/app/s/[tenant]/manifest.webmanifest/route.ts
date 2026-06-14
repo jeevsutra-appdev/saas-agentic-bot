@@ -20,7 +20,7 @@ export async function GET(
   _req: Request,
   { params }: { params: { tenant: string } }
 ) {
-  const settings = LocalDbController.getTenantSettings(params.tenant);
+  const settings = await LocalDbController.getTenantSettings(params.tenant);
   let config: StorefrontConfig | null = null;
   if (settings?.bookingStorefrontConfig) {
     try { config = JSON.parse(settings.bookingStorefrontConfig); } catch {}

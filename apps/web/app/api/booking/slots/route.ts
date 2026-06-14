@@ -53,7 +53,7 @@ export async function GET(req: Request) {
   let durationMins = 60;
   let bufferMins = 0;
   if (serviceId) {
-    const service = LocalDbController.getBookingServiceById(serviceId, tenantSlug);
+    const service = await LocalDbController.getBookingServiceById(serviceId, tenantSlug);
     if (service) {
       durationMins = service.durationMinutes;
       bufferMins = service.bufferMinutes || 0;
@@ -61,7 +61,7 @@ export async function GET(req: Request) {
   }
 
   // Get schedule for this day
-  const schedules = LocalDbController.getBookingSchedules(tenantSlug, serviceId || undefined)
+  const schedules = (await LocalDbController.getBookingSchedules(tenantSlug, serviceId || undefined))
     .filter(s => s.dayOfWeek === dayOfWeek && s.isActive);
 
   if (schedules.length === 0) {
@@ -69,7 +69,7 @@ export async function GET(req: Request) {
   }
 
   // Get already booked appointments on this date
-  const existingAppts = LocalDbController.getAppointmentsByDate(tenantSlug, date)
+  const existingAppts = (await LocalDbController.getAppointmentsByDate(tenantSlug, date))
     .filter(a => a.status !== "cancelled")
     .filter(a => !serviceId || a.serviceId === serviceId)
     .map(a => a.startTime || a.timeSlot);

@@ -77,7 +77,7 @@ export async function GET(request: Request) {
     }
 
     // Fetch products
-    let products = LocalDbController.getProductsByTenant(tenantSlug);
+    let products = await LocalDbController.getProductsByTenant(tenantSlug);
     
     // Filter if specific IDs requested
     if (productIdsStr !== "all") {

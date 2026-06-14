@@ -7,7 +7,7 @@ export async function GET(request: Request) {
     const tenantSlug = searchParams.get("tenantSlug") || searchParams.get("tenant");
     if (!tenantSlug) return NextResponse.json({ error: "Missing tenantSlug" }, { status: 400 });
 
-    const riders = LocalDbController.getDeliveryBoys(tenantSlug);
+    const riders = await LocalDbController.getDeliveryBoys(tenantSlug);
     return NextResponse.json({ success: true, riders });
   } catch (e: any) {
     return NextResponse.json({ success: false, error: e.message }, { status: 500 });
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "name and phone are required" }, { status: 400 });
     }
 
-    const rider = LocalDbController.createDeliveryBoy(tenantSlug, {
+    const rider = await LocalDbController.createDeliveryBoy(tenantSlug, {
       name,
       phone,
       email: email || undefined,
@@ -50,7 +50,7 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: "tenantSlug and riderId are required" }, { status: 400 });
     }
 
-    const rider = LocalDbController.updateDeliveryBoy(tenantSlug, riderId, updates);
+    const rider = await LocalDbController.updateDeliveryBoy(tenantSlug, riderId, updates);
     if (!rider) return NextResponse.json({ error: "Rider not found" }, { status: 404 });
 
     return NextResponse.json({ success: true, rider });
@@ -69,7 +69,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "tenantSlug and riderId are required" }, { status: 400 });
     }
 
-    const ok = LocalDbController.deleteDeliveryBoy(tenantSlug, riderId);
+    const ok = await LocalDbController.deleteDeliveryBoy(tenantSlug, riderId);
     return NextResponse.json({ success: ok });
   } catch (e: any) {
     return NextResponse.json({ success: false, error: e.message }, { status: 500 });

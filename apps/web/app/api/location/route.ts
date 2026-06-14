@@ -7,7 +7,7 @@ export async function POST(request: Request) {
   if (!tenantSlug || !riderId || lat == null || lng == null)
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
 
-  LocalDbController.updateRiderLocation({
+  await LocalDbController.updateRiderLocation({
     riderId,
     tenantSlug,
     orderId,
@@ -27,10 +27,10 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "tenantSlug required" }, { status: 400 });
 
   if (riderId) {
-    const loc = LocalDbController.getRiderLocation(tenantSlug, riderId);
+    const loc = await LocalDbController.getRiderLocation(tenantSlug, riderId);
     return NextResponse.json({ success: true, location: loc });
   }
 
-  const locations = LocalDbController.getAllRiderLocations(tenantSlug);
+  const locations = await LocalDbController.getAllRiderLocations(tenantSlug);
   return NextResponse.json({ success: true, locations });
 }

@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     if (!tenantSlug) {
       return NextResponse.json({ error: "Missing tenantSlug" }, { status: 400 });
     }
-    const docs = LocalDbController.getDocumentsByTenant(tenantSlug).map(d => ({
+    const docs = (await LocalDbController.getDocumentsByTenant(tenantSlug)).map(d => ({
       id: d.id,
       name: d.name,
       characters: d.characters,
@@ -33,7 +33,7 @@ export async function DELETE(request: Request) {
     if (!tenantSlug || !docId) {
       return NextResponse.json({ error: "Missing tenantSlug or docId" }, { status: 400 });
     }
-    LocalDbController.deleteDocument(tenantSlug, docId);
+    await LocalDbController.deleteDocument(tenantSlug, docId);
     return NextResponse.json({ success: true });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
@@ -123,7 +123,7 @@ export async function POST(request: Request) {
     const chunks = await chunkDocumentText(rawText, 1000, 200);
     console.log(`[RAG Ingestion] Split into ${chunks.length} chunks.`);
 
-    const rawSettings = LocalDbController.getTenantSettings(tenantSlug);
+    const rawSettings = await LocalDbController.getTenantSettings(tenantSlug);
     const tenantSettings = rawSettings
       ? {
           ...rawSettings,
@@ -160,7 +160,7 @@ export async function POST(request: Request) {
       console.log(`[RAG Ingestion] Embedding chunk ${i + 1}/${chunks.length}...`);
       const embedding = await generateRealEmbedding(chunkText, tenantSettings || undefined, "index");
 
-      const newDoc = LocalDbController.addDocument({
+      const newDoc = await LocalDbController.addDocument({
         tenantSlug,
         agentId: agentId || undefined,
         name: chunkName,
@@ -176,7 +176,7 @@ export async function POST(request: Request) {
     }
 
     const actualDimensions =
-      LocalDbController.getDocumentsByTenant(tenantSlug).find(d => d.id === firstDocumentId)
+      (await LocalDbController.getDocumentsByTenant(tenantSlug)).find(d => d.id === firstDocumentId)
         ?.previewCoordinates?.length || 0;
 
     return NextResponse.json({

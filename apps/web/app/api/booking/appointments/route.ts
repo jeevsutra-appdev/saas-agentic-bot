@@ -46,7 +46,7 @@ export async function GET(req: Request) {
   const clientEmail = searchParams.get("clientEmail") || undefined;
   if (!tenantSlug) return NextResponse.json({ error: "Missing tenantSlug" }, { status: 400 });
 
-  let appointments = LocalDbController.getAppointmentsByTenant(tenantSlug);
+  let appointments = await LocalDbController.getAppointmentsByTenant(tenantSlug);
   if (serviceId) appointments = appointments.filter(a => a.serviceId === serviceId);
   if (clientEmail) appointments = appointments.filter(a => a.clientEmail === clientEmail);
 
@@ -65,7 +65,7 @@ export async function POST(req: Request) {
     let serviceName = "Consultation";
     let durationMins = 60;
     if (serviceId) {
-      const service = LocalDbController.getBookingServiceById(serviceId, tenantSlug);
+      const service = await LocalDbController.getBookingServiceById(serviceId, tenantSlug);
       if (service) { serviceName = service.name; durationMins = service.durationMinutes; }
     }
 
@@ -74,7 +74,7 @@ export async function POST(req: Request) {
     const endTime = `${Math.floor(endMins / 60).toString().padStart(2, "0")}:${(endMins % 60).toString().padStart(2, "0")}`;
     const timeSlot = `${date} ${startTime} - ${endTime}`;
 
-    const settings = LocalDbController.getTenantSettings(tenantSlug);
+    const settings = await LocalDbController.getTenantSettings(tenantSlug);
 
     // Zoom meeting creation
     let zoomMeetingId: string | undefined;
@@ -93,7 +93,7 @@ export async function POST(req: Request) {
       if (zoom) { zoomMeetingId = zoom.meetingId; zoomJoinUrl = zoom.joinUrl; zoomStartUrl = zoom.startUrl; }
     }
 
-    const newAppt = LocalDbController.addAppointment({
+    const newAppt = await LocalDbController.addAppointment({
       tenantSlug,
       serviceId: serviceId || undefined,
       serviceName,
@@ -114,7 +114,7 @@ export async function POST(req: Request) {
       notes: notes || undefined
     });
 
-    LocalDbController.addSkillRun({
+    await LocalDbController.addSkillRun({
       tenantSlug,
       skillName: "calendar_booking",
       status: "success",
@@ -151,8 +151,8 @@ export async function POST(req: Request) {
         timezone: timezone || "UTC",
         attendeeEmails: [clientEmail, ...(settings?.smtpFrom ? [settings.smtpFrom] : [])],
         zoomJoinUrl
-      }).then(gcalEventId => {
-        if (gcalEventId) LocalDbController.updateAppointment(tenantSlug, newAppt.id, { gcalEventId } as any);
+      }).then(async gcalEventId => {
+        if (gcalEventId) await LocalDbController.updateAppointment(tenantSlug, newAppt.id, { gcalEventId } as any);
       })
     ]).catch(err => console.error("[Booking POST] Background tasks:", err));
 
@@ -169,11 +169,11 @@ export async function PUT(req: Request) {
     const { tenantSlug, id, ...updates } = body;
     if (!tenantSlug || !id) return NextResponse.json({ error: "Missing params" }, { status: 400 });
 
-    const existing = LocalDbController.getAppointmentsByTenant(tenantSlug).find((a: any) => a.id === id);
-    const appt = LocalDbController.updateAppointment(tenantSlug, id, updates);
+    const existing = (await LocalDbController.getAppointmentsByTenant(tenantSlug)).find((a: any) => a.id === id);
+    const appt = await LocalDbController.updateAppointment(tenantSlug, id, updates);
     if (!appt) return NextResponse.json({ error: "Appointment not found" }, { status: 404 });
 
-    const settings = LocalDbController.getTenantSettings(tenantSlug);
+    const settings = await LocalDbController.getTenantSettings(tenantSlug);
 
     // If date/time changed → reschedule emails + update GCal
     const dateChanged = updates.date || updates.startTime;
@@ -216,10 +216,10 @@ export async function DELETE(req: Request) {
   const id = searchParams.get("id");
   if (!tenantSlug || !id) return NextResponse.json({ error: "Missing params" }, { status: 400 });
 
-  const appt = LocalDbController.cancelAppointment(tenantSlug, id);
+  const appt = await LocalDbController.cancelAppointment(tenantSlug, id);
 
   if (appt) {
-    const settings = LocalDbController.getTenantSettings(tenantSlug);
+    const settings = await LocalDbController.getTenantSettings(tenantSlug);
     Promise.all([
       triggerCancellationEmails(tenantSlug, {
         clientName: appt.clientName,

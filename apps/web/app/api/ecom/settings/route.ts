@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     const activeStoreId = storeId || shopId || undefined;
 
     if (action === "create_store") {
-      const storefront = LocalDbController.createStorefront(tenantSlug, {
+      const storefront = await LocalDbController.createStorefront(tenantSlug, {
         companyName: companyName || "New Premium Shop",
         template: template || "retail",
         themePreset: themePreset || "nimbus",
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, storefront });
     }
 
-    const storefront = LocalDbController.updateStorefront(tenantSlug, {
+    const storefront = await LocalDbController.updateStorefront(tenantSlug, {
       companyName,
       storeLanguage,
       storeDescription,

@@ -10,7 +10,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "tenantSlug is required" }, { status: 400 });
     }
 
-    const agents = LocalDbController.getAgentsByTenant(tenantSlug);
+    const agents = await LocalDbController.getAgentsByTenant(tenantSlug);
     return NextResponse.json({ success: true, agents });
   } catch (err: any) {
     console.error("GET /api/agents error:", err);
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "tenantSlug and name are required" }, { status: 400 });
     }
 
-    const newAgent = LocalDbController.addAgent({
+    const newAgent = await LocalDbController.addAgent({
       tenantSlug,
       name,
       systemPrompt: systemPrompt || "You are a helpful Aether assistant.",
@@ -64,7 +64,7 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: "id and updates are required" }, { status: 400 });
     }
 
-    const updatedAgent = LocalDbController.updateAgent(id, updates);
+    const updatedAgent = await LocalDbController.updateAgent(id, updates);
     if (!updatedAgent) {
       return NextResponse.json({ error: "Agent not found" }, { status: 404 });
     }
@@ -84,7 +84,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "id is required" }, { status: 400 });
     }
 
-    const success = LocalDbController.deleteAgent(id);
+    const success = await LocalDbController.deleteAgent(id);
     if (!success) {
       return NextResponse.json({ error: "Agent not found" }, { status: 404 });
     }

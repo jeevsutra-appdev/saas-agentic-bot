@@ -7,7 +7,7 @@ export async function GET(request: Request) {
     const tenantSlug = searchParams.get("tenant") || "imran-ai";
     const storeId = searchParams.get("storeId") || searchParams.get("shopId") || undefined;
 
-    const storefronts = LocalDbController.getStorefrontsByTenant(tenantSlug);
+    const storefronts = await LocalDbController.getStorefrontsByTenant(tenantSlug);
     let activeStoreId = storeId;
     if (!activeStoreId && storefronts.length > 0) {
       if (storefronts.length === 1) {
@@ -15,13 +15,13 @@ export async function GET(request: Request) {
       }
     }
 
-    const categories = LocalDbController.getCategoriesByTenant(tenantSlug, activeStoreId);
-    const storefront = LocalDbController.getStorefrontByTenant(tenantSlug, activeStoreId);
-    const products = LocalDbController.getProductsByTenant(tenantSlug, activeStoreId);
+    const categories = await LocalDbController.getCategoriesByTenant(tenantSlug, activeStoreId);
+    const storefront = await LocalDbController.getStorefrontByTenant(tenantSlug, activeStoreId);
+    const products = await LocalDbController.getProductsByTenant(tenantSlug, activeStoreId);
 
     let assignedAgent = null;
     if (storefront?.assignedAgentId) {
-      const allAgents = LocalDbController.getAgentsByTenant(tenantSlug);
+      const allAgents = await LocalDbController.getAgentsByTenant(tenantSlug);
       assignedAgent = allAgents.find(a => a.id === storefront.assignedAgentId) || null;
     }
 
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
     const { action, tenantSlug = "imran-ai", ...data } = body;
 
     if (action === "create_category") {
-      const category = LocalDbController.addCategory({
+      const category = await LocalDbController.addCategory({
         tenantSlug,
         storeId: data.storeId || undefined,
         name: data.name,
@@ -59,7 +59,7 @@ export async function POST(request: Request) {
     } 
     
     else if (action === "update_category") {
-      const category = LocalDbController.updateCategory(data.id, tenantSlug, {
+      const category = await LocalDbController.updateCategory(data.id, tenantSlug, {
         name: data.name,
         description: data.description || "",
         tags: data.tags || [],
@@ -73,7 +73,7 @@ export async function POST(request: Request) {
     }
 
     else if (action === "delete_category") {
-      const success = LocalDbController.deleteCategory(data.id, tenantSlug);
+      const success = await LocalDbController.deleteCategory(data.id, tenantSlug);
       if (!success) {
         return NextResponse.json({ error: "Category not found" }, { status: 404 });
       }
@@ -81,7 +81,7 @@ export async function POST(request: Request) {
     }
     
     else if (action === "update_storefront") {
-      const storefront = LocalDbController.upsertStorefront({
+      const storefront = await LocalDbController.upsertStorefront({
         tenantSlug,
         id: data.id || undefined,
         brandLogo: data.brandLogo,

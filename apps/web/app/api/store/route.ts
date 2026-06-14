@@ -7,8 +7,8 @@ export async function GET(request: Request) {
     const tenantSlug = searchParams.get("tenant") || "imran-ai";
 
     const storeId = searchParams.get("storeId") || searchParams.get("shopId") || undefined;
-    const products = LocalDbController.getProductsByTenant(tenantSlug, storeId);
-    const appointments = LocalDbController.getAppointmentsByTenant(tenantSlug);
+    const products = await LocalDbController.getProductsByTenant(tenantSlug, storeId);
+    const appointments = await LocalDbController.getAppointmentsByTenant(tenantSlug);
 
     return NextResponse.json({
       success: true,
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     const targetSlug = tenantSlug || "imran-ai";
     const priceCents = Math.round(parseFloat(priceUSD) * 100);
 
-    const product = LocalDbController.addProduct({
+    const product = await LocalDbController.addProduct({
       tenantSlug: targetSlug,
       storeId: storeId || shopId || undefined,
       name,
@@ -111,7 +111,7 @@ export async function PUT(request: Request) {
     if (isStandaloneLandingPage !== undefined) updates.isStandaloneLandingPage = isStandaloneLandingPage;
     if (tags !== undefined) updates.tags = tags;
 
-    const updatedProduct = LocalDbController.updateProduct(id, targetSlug, updates);
+    const updatedProduct = await LocalDbController.updateProduct(id, targetSlug, updates);
 
     if (!updatedProduct) {
       return NextResponse.json({ error: "Product not found or unauthorized." }, { status: 404 });
@@ -143,7 +143,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "Product ID is required." }, { status: 400 });
     }
 
-    const deleted = LocalDbController.deleteProduct(id, tenantSlug);
+    const deleted = await LocalDbController.deleteProduct(id, tenantSlug);
 
     if (!deleted) {
       return NextResponse.json({ error: "Product not found or unauthorized." }, { status: 404 });

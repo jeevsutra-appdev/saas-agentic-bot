@@ -58,7 +58,7 @@ export async function POST(request: Request) {
     // Only look up a real agent if agentId is a valid saved ID (not "new")
     let allAgents: any[] = [];
     if (agentId && agentId !== "new") {
-      allAgents = LocalDbController.getAgentsByTenant(tenantSlug);
+      allAgents = await LocalDbController.getAgentsByTenant(tenantSlug);
       agentConfig = allAgents.find(a => a.id === agentId) || null;
       if (agentConfig) {
         if (agentConfig.systemPrompt) {
@@ -156,7 +156,7 @@ You are equipped with advanced conversational marketing psychology. Your goal is
     // Advanced Fair Use Rate Limiting
     if (agentId && agentConfig && agentConfig.rateLimitConfig) {
       const { maxRequests, windowMs } = agentConfig.rateLimitConfig;
-      if (!LocalDbController.checkRateLimit(agentId, maxRequests, windowMs)) {
+      if (!await LocalDbController.checkRateLimit(agentId, maxRequests, windowMs)) {
         return NextResponse.json(
           { error: "Rate limit exceeded. Please wait before sending more messages." },
           { status: 429 }
@@ -171,7 +171,7 @@ You are equipped with advanced conversational marketing psychology. Your goal is
     let skillOutput = "";
 
     // Load tenant settings once for both RAG and tool integrations
-    const tenantRawSettings = LocalDbController.getTenantSettings(tenantSlug);
+    const tenantRawSettings = await LocalDbController.getTenantSettings(tenantSlug);
 
     // Inject custom tool (Google Sheets / Telegram) instructions into system prompt
     if (tenantRawSettings?.telegramToolName || tenantRawSettings?.googleSheetsToolName) {
@@ -205,7 +205,7 @@ You are equipped with advanced conversational marketing psychology. Your goal is
       const queryVector = await generateRealEmbedding(userQuery, tenantSettings, "search");
       
       // Fetch from localDb to support dynamic ingestion
-      let tenantDocs = LocalDbController.getDocumentsByTenant(tenantSlug);
+      let tenantDocs = await LocalDbController.getDocumentsByTenant(tenantSlug);
       
       // Filter by agent if applicable
       if (agentId && agentConfig && Array.isArray(agentConfig.ragDocumentIds)) {

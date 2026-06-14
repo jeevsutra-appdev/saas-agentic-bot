@@ -73,15 +73,15 @@ export interface GCalEventData {
   zoomJoinUrl?: string;
 }
 
-function getGCalConfig(tenantSlug: string): { serviceAccountJson: string; calendarId: string } | null {
-  const settings = LocalDbController.getTenantSettings(tenantSlug);
+async function getGCalConfig(tenantSlug: string): Promise<{ serviceAccountJson: string; calendarId: string } | null> {
+  const settings = await LocalDbController.getTenantSettings(tenantSlug);
   if (!settings?.gcalServiceAccountJson || !settings?.gcalCalendarId) return null;
   return { serviceAccountJson: settings.gcalServiceAccountJson, calendarId: settings.gcalCalendarId };
 }
 
 export async function createGCalEvent(tenantSlug: string, eventData: GCalEventData): Promise<string | null> {
   try {
-    const gcal = getGCalConfig(tenantSlug);
+    const gcal = await getGCalConfig(tenantSlug);
     if (!gcal) return null;
     const token = await getGCalAccessToken(gcal.serviceAccountJson);
     if (!token) return null;
@@ -125,7 +125,7 @@ export async function updateGCalEvent(
   eventData: Partial<GCalEventData>
 ): Promise<boolean> {
   try {
-    const gcal = getGCalConfig(tenantSlug);
+    const gcal = await getGCalConfig(tenantSlug);
     if (!gcal) return false;
     const token = await getGCalAccessToken(gcal.serviceAccountJson);
     if (!token) return false;
@@ -154,7 +154,7 @@ export async function updateGCalEvent(
 
 export async function cancelGCalEvent(tenantSlug: string, gcalEventId: string): Promise<boolean> {
   try {
-    const gcal = getGCalConfig(tenantSlug);
+    const gcal = await getGCalConfig(tenantSlug);
     if (!gcal) return false;
     const token = await getGCalAccessToken(gcal.serviceAccountJson);
     if (!token) return false;

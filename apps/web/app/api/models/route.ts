@@ -51,7 +51,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Missing tenantSlug" }, { status: 400 });
     }
 
-    const settings = LocalDbController.getTenantSettings(tenantSlug);
+    const settings = await LocalDbController.getTenantSettings(tenantSlug);
     const availableGroups: { provider: string; label: string; models: { id: string; name: string }[] }[] = [];
 
     let openRouterModels = [...PROVIDER_MODELS.openrouter];

@@ -7,7 +7,7 @@ export async function GET(request: Request) {
     const tenantSlug = searchParams.get("tenantSlug") || searchParams.get("tenant");
     if (!tenantSlug) return NextResponse.json({ error: "Missing tenantSlug" }, { status: 400 });
 
-    const posManagers = LocalDbController.getPosManagers(tenantSlug);
+    const posManagers = await LocalDbController.getPosManagers(tenantSlug);
     // Return full manager objects including password for Admin view/edit
     return NextResponse.json({ success: true, managers: posManagers });
   } catch (e: any) {
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
 
     if (action === "login") {
       if (!phone || !password) return NextResponse.json({ success: false, error: "Missing credentials" }, { status: 400 });
-      const posManagers = LocalDbController.getPosManagers(tenantSlug);
+      const posManagers = await LocalDbController.getPosManagers(tenantSlug);
       const matched = posManagers.find(m => m.phone === phone && m.password === password && m.isActive);
       
       if (matched) {
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     }
 
     if (action === "create") {
-      const newManager = LocalDbController.createPosManager(tenantSlug, {
+      const newManager = await LocalDbController.createPosManager(tenantSlug, {
         name,
         phone,
         password,
@@ -48,13 +48,13 @@ export async function POST(request: Request) {
 
     if (action === "update") {
       if (!id) return NextResponse.json({ success: false, error: "Missing id" }, { status: 400 });
-      const updated = LocalDbController.updatePosManager(tenantSlug, id, body);
+      const updated = await LocalDbController.updatePosManager(tenantSlug, id, body);
       return NextResponse.json({ success: true, manager: updated });
     }
 
     if (action === "delete") {
       if (!id) return NextResponse.json({ success: false, error: "Missing id" }, { status: 400 });
-      const deleted = LocalDbController.deletePosManager(tenantSlug, id);
+      const deleted = await LocalDbController.deletePosManager(tenantSlug, id);
       return NextResponse.json({ success: deleted });
     }
 
