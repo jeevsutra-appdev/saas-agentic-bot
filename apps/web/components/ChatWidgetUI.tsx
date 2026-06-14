@@ -346,7 +346,7 @@ export default function ChatWidgetUI({ tenantSlug, agentConfig, isPreviewMode = 
 
   const handleLeadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!leadName || !leadPhone) return;
+    if (!leadName || (!leadPhone && !leadEmail)) return;
     setIsSubmittingLead(true);
     try {
       const res = await fetch("/api/leads", {
@@ -1595,7 +1595,7 @@ export default function ChatWidgetUI({ tenantSlug, agentConfig, isPreviewMode = 
 
               <input 
                 type="email"
-                placeholder="Email Address (Optional)"
+                placeholder="Email Address"
                 value={leadEmail}
                 onChange={(e) => setLeadEmail(e.target.value)}
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500/50 transition-colors"
@@ -1603,7 +1603,7 @@ export default function ChatWidgetUI({ tenantSlug, agentConfig, isPreviewMode = 
 
               <button 
                 type="submit"
-                disabled={isSubmittingLead || !leadName || !leadPhone}
+                disabled={isSubmittingLead || !leadName || (!leadPhone && !leadEmail)}
                 className="w-full h-10 mt-1 rounded-xl text-white text-xs font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-50"
                 style={{ background: `linear-gradient(135deg, ${themeColor}, ${themeColor}CC)` }}
               >

@@ -67,6 +67,9 @@ export async function GET(req: Request) {
       gcalConfigured: !!(settings?.gcalServiceAccountJson),
       // Booking storefront config
       bookingStorefrontConfig: settings?.bookingStorefrontConfig || "",
+      // Subscription Data
+      planId: settings?.planId || "free",
+      unlockedFeatures: settings?.unlockedFeatures || [],
     };
 
     return NextResponse.json(maskedSettings);

@@ -6,6 +6,7 @@ import { subDays, isAfter, format } from "date-fns";
 import Barcode from 'react-barcode';
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, ResponsiveContainer, CartesianGrid, XAxis, YAxis, Tooltip as RechartsTooltip } from "recharts";
 import LandingPageDashboard from "../../../components/landing-page-studio/DashboardView";
+import { FeatureGate } from "@/components/FeatureGate";
 import { motion, AnimatePresence } from "framer-motion";
 import {  
   Building,
@@ -7783,6 +7784,7 @@ export default function TenantDashboard() {
         
         {/* E-COMMERCE TAB */}
         {activeTab === "ecom" && selectedShopId === null && (
+          <FeatureGate tenantSlug={tenantSlug} featureKey="ecom">
           <div className="p-4 sm:p-8 max-w-7xl w-full mx-auto flex flex-col gap-6 sm:gap-8 overflow-y-auto h-full select-none text-gray-200">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-4 sm:pb-6">
@@ -7954,10 +7956,12 @@ export default function TenantDashboard() {
               )}
             </AnimatePresence>
           </div>
+          </FeatureGate>
         )}
 
         {/* E-COMMERCE TAB */}
         {activeTab === "ecom" && selectedShopId !== null && (
+          <FeatureGate tenantSlug={tenantSlug} featureKey="ecom">
           <div className="p-4 sm:p-8 max-w-7xl w-full mx-auto flex flex-col gap-6 sm:gap-8 overflow-y-auto h-full select-none text-gray-200">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-4 sm:pb-6">
@@ -8212,6 +8216,7 @@ export default function TenantDashboard() {
                </div>
             </div>
           </div>
+          </FeatureGate>
         )}
 
 
@@ -9825,7 +9830,9 @@ export default function TenantDashboard() {
 
         {/* 7. LANDING PAGES TAB */}
         {activeTab === "landing-pages" && (
-          <LandingPageDashboard tenantSlug={tenantSlug} />
+          <FeatureGate tenantSlug={tenantSlug} featureKey="landingPage">
+            <LandingPageDashboard tenantSlug={tenantSlug} />
+          </FeatureGate>
         )}
 
         {activeTab === "leads" && (
@@ -10643,7 +10650,9 @@ export default function TenantDashboard() {
 
         {/* BOOKING SUITE TAB */}
         {activeTab === "booking" && (
+          <FeatureGate tenantSlug={tenantSlug} featureKey="booking">
           <BookingSuiteTab tenantSlug={tenantSlug} />
+          </FeatureGate>
         )}
 
         {/* 6. SETTINGS TAB */}

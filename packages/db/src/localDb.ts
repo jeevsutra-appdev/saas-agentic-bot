@@ -34,6 +34,9 @@ export interface LocalTenantSettings {
   gcalCalendarId?: string;
   // Booking storefront customization (JSON string)
   bookingStorefrontConfig?: string;
+  // Subscription Plan
+  planId?: string;
+  unlockedFeatures?: string[];
   updatedAt: string;
 }
 
@@ -570,6 +573,11 @@ export class LocalDbController {
   public static async getTenantSettings(tenantSlug: string): Promise<LocalTenantSettings | null> {
     const db = await this.read();
     return db.tenantSettings.find(s => s.tenantSlug === tenantSlug) || null;
+  }
+
+  public static async getAllTenantSettings(): Promise<LocalTenantSettings[]> {
+    const db = await this.read();
+    return db.tenantSettings || [];
   }
 
   public static async upsertTenantSettings(tenantSlug: string, settings: Partial<LocalTenantSettings>) {
