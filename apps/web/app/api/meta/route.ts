@@ -16,7 +16,9 @@ export async function GET(req: Request) {
     const response = await fetch(url, {
       signal: controller.signal,
       headers: {
-        "User-Agent": "AetherBot-MetaScraper/1.0",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
       },
     });
 
@@ -26,12 +28,23 @@ export async function GET(req: Request) {
       throw new Error(`Failed to fetch: ${response.status}`);
     }
 
+    const contentType = response.headers.get("content-type") || "";
+    if (contentType.startsWith("image/")) {
+      return NextResponse.json({
+        title: url.split("/").pop() || "Image",
+        description: "",
+        image: url,
+        url: url,
+      });
+    }
+
     const html = await response.text();
 
-    // Basic regex parser for OpenGraph tags
     const getMetaTag = (property: string) => {
-      const match = html.match(new RegExp(`<meta(?:\\s+[^>]*?)?(?:property|name)=["'](?:og:)?${property}["'](?:\\s+[^>]*?)?content=["']([^"']*)["']`, "i"));
-      return match ? match[1] : null;
+      const match1 = html.match(new RegExp(`<meta[^>]*?(?:property|name)=["'](?:og:)?${property}["'][^>]*?content=["']([^"']+)["']`, "i"));
+      if (match1) return match1[1];
+      const match2 = html.match(new RegExp(`<meta[^>]*?content=["']([^"']+)["'][^>]*?(?:property|name)=["'](?:og:)?${property}["']`, "i"));
+      return match2 ? match2[1] : null;
     };
 
     const getTitle = () => {
@@ -41,16 +54,46 @@ export async function GET(req: Request) {
       return titleMatch ? titleMatch[1].trim() : null;
     };
 
+    const getFallbackImage = () => {
+      const imgRegex = /<img[^>]+src=["']([^"']+)["']/gi;
+      let match;
+      while ((match = imgRegex.exec(html)) !== null) {
+        const src = match[1];
+        if (src.startsWith("data:")) {
+           // Only allow data URIs if they are reasonably large (likely a real image, not a tiny placeholder)
+           if (src.length > 1000) return src;
+           continue;
+        }
+        if (!src.includes("pixel") && !src.includes("tracking") && !src.includes("icon") && src.length > 10) {
+          try {
+            return new URL(src, url).href;
+          } catch (e) {
+            continue;
+          }
+        }
+      }
+      return null;
+    };
+
+    let image = getMetaTag("image");
+    if (image) {
+      try {
+        image = new URL(image, url).href;
+      } catch (e) {}
+    } else {
+      image = getFallbackImage();
+    }
+
     const metadata = {
       title: getTitle(),
       description: getMetaTag("description"),
-      image: getMetaTag("image"),
+      image: image,
       url: getMetaTag("url") || url,
     };
 
     return NextResponse.json(metadata);
   } catch (error: any) {
-    console.error("Meta Scrape Error:", error);
+    console.error("Meta Scrape Error:", error.message);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

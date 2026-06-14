@@ -4,9 +4,9 @@ import { LocalDbController } from "@aether/db";
 
 export async function POST(req: Request) {
   try {
-    const { email, password } = await req.json();
+    const { email, password, supabaseBypass } = await req.json();
 
-    if (!email || !password) {
+    if (!email || (!password && !supabaseBypass)) {
       return NextResponse.json(
         { success: false, error: "Please enter your email and password." },
         { status: 400 }
@@ -22,8 +22,8 @@ export async function POST(req: Request) {
       );
     }
 
-    // Verify raw seeded password
-    if (user.passwordHash !== password) {
+    // Verify raw seeded password if not bypassed by Supabase auth
+    if (!supabaseBypass && user.passwordHash !== password) {
       return NextResponse.json(
         { success: false, error: "Incorrect password. Please try again." },
         { status: 401 }

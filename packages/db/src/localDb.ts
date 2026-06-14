@@ -19,6 +19,9 @@ export interface LocalTenantSettings {
   // Google Sheets Tool Integration
   googleSheetsWebhookUrl?: string;
   googleSheetsToolName?: string;
+  // n8n Webhook Integration
+  n8nUrl?: string;
+  hmacSecret?: string;
   // Gmail / SMTP
   smtpHost?: string;
   smtpPort?: number;
@@ -172,6 +175,7 @@ export interface LocalAgent {
   customDomain?: string;
   ragDocumentIds?: string[];
   activeSkills?: string[];
+  preloadedPdfs?: { id: string; name: string; url: string; description: string }[];
   mainModel?: string;
   fallbackModel1?: string;
   fallbackModel2?: string;
@@ -1505,7 +1509,7 @@ export class LocalDbController {
   // --- Delivery Boys ---
   public static async getDeliveryBoys(tenantSlug: string): Promise<LocalDeliveryBoy[]> {
     const db = await this.read();
-    return db.deliveryBoys.filter(d => d.tenantSlug.toLowerCase() === tenantSlug.toLowerCase());
+    return (db.deliveryBoys || []).filter(d => d.tenantSlug.toLowerCase() === tenantSlug.toLowerCase());
   }
 
   public static async createDeliveryBoy(tenantSlug: string, data: Omit<LocalDeliveryBoy, "id" | "tenantSlug" | "createdAt">): Promise<LocalDeliveryBoy> {
@@ -1516,6 +1520,7 @@ export class LocalDbController {
       tenantSlug,
       createdAt: new Date().toISOString()
     };
+    if (!db.deliveryBoys) db.deliveryBoys = [];
     db.deliveryBoys.push(newBoy);
     await this.write(db);
     return newBoy;
@@ -1523,6 +1528,7 @@ export class LocalDbController {
 
   public static async updateDeliveryBoy(tenantSlug: string, id: string, updates: Partial<LocalDeliveryBoy>): Promise<LocalDeliveryBoy | null> {
     const db = await this.read();
+    if (!db.deliveryBoys) return null;
     const idx = db.deliveryBoys.findIndex(d => d.id === id && d.tenantSlug === tenantSlug);
     if (idx === -1) return null;
     db.deliveryBoys[idx] = { ...db.deliveryBoys[idx], ...updates };
@@ -1532,6 +1538,7 @@ export class LocalDbController {
 
   public static async deleteDeliveryBoy(tenantSlug: string, id: string): Promise<boolean> {
     const db = await this.read();
+    if (!db.deliveryBoys) return false;
     const before = db.deliveryBoys.length;
     db.deliveryBoys = db.deliveryBoys.filter(d => !(d.id === id && d.tenantSlug === tenantSlug));
     if (db.deliveryBoys.length < before) { await this.write(db); return true; }
@@ -1540,6 +1547,7 @@ export class LocalDbController {
 
   public static async loginDeliveryBoy(tenantSlug: string, id: string, password: string): Promise<LocalDeliveryBoy | null> {
     const db = await this.read();
+    if (!db.deliveryBoys) return null;
     return db.deliveryBoys.find(d =>
       d.tenantSlug === tenantSlug && d.id === id && (d.password === password || d.passwordHash === password)
     ) || null;

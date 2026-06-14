@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
 });
 
 // PDF Document Component
-const CatalogPDF = ({ products, tenantSlug }: { products: any[], tenantSlug: string }) => (
+const CatalogPDF = ({ products, tenantSlug, agentName }: { products: any[], tenantSlug: string, agentName: string }) => (
   <Document>
     <Page size="A4" style={styles.page}>
       <Text style={styles.header}>Product Catalog</Text>
@@ -62,7 +62,7 @@ const CatalogPDF = ({ products, tenantSlug }: { products: any[], tenantSlug: str
       ))}
 
       <Text style={styles.footer}>
-        Generated dynamically by Aether AI Swarm • Click 'View Product' to purchase
+        Created by Jeevsutra Ai & {agentName}
       </Text>
     </Page>
   </Document>
@@ -73,6 +73,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const tenantSlug = searchParams.get("tenant") || "demo";
     const productIdsStr = searchParams.get("products");
+    const agentName = searchParams.get("agentName") || "Aether AI";
 
     if (!productIdsStr) {
       return NextResponse.json({ error: "No products specified" }, { status: 400 });
@@ -92,7 +93,7 @@ export async function GET(request: Request) {
     }
 
     // Render to Buffer
-    const buffer = await renderToBuffer(<CatalogPDF products={products} tenantSlug={tenantSlug} />);
+    const buffer = await renderToBuffer(<CatalogPDF products={products} tenantSlug={tenantSlug} agentName={agentName} />);
 
     // Return the Buffer as a PDF response
     return new NextResponse(new Uint8Array(buffer), {

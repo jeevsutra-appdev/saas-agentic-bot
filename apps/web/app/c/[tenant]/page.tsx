@@ -529,6 +529,8 @@ export default function TenantDashboard() {
         if (data.telegramToolName) setTelegramToolName(data.telegramToolName);
         if (data.googleSheetsWebhookUrl) setGoogleSheetsWebhookUrl(data.googleSheetsWebhookUrl);
         if (data.googleSheetsToolName) setGoogleSheetsToolName(data.googleSheetsToolName);
+        if (data.n8nUrl) setN8nUrl(data.n8nUrl);
+        if (data.hmacSecret) setHmacSecret(data.hmacSecret);
         if (data.telegramBotToken && data.telegramChatId) setTelegramBotStatus("connected");
       }
     } catch (e) {
@@ -1654,6 +1656,7 @@ export default function TenantDashboard() {
   const [selectedAgentId, setSelectedAgentId] = useState<string>("new");
   const [trainedDocs, setTrainedDocs] = useState<any[]>([]);
   const [isDeletingTrainedDoc, setIsDeletingTrainedDoc] = useState<string | null>(null);
+  const [preloadedPdfs, setPreloadedPdfs] = useState<{ id: string; name: string; url: string; description: string }[]>([]);
 
   const refreshTrainedDocs = (agentId: string) => {
     if (!agentId || agentId === "new") { setTrainedDocs([]); return; }
@@ -1661,51 +1664,6 @@ export default function TenantDashboard() {
       .then(r => r.json())
       .then(d => { if (d.docs) setTrainedDocs(d.docs); })
       .catch(() => {});
-  };
-
-  const handleDeleteTrainedDoc = async (docName: string) => {
-    setIsDeletingTrainedDoc(docName);
-    try {
-      await fetch(`/api/docs?tenantSlug=${tenantSlug}&name=${encodeURIComponent(docName)}`, { method: "DELETE" });
-      setTrainedDocs(prev => prev.filter(d => d.name !== docName));
-      // Also remove from global ingestedDocsList
-      setIngestedDocsList(prev => prev.filter(d => d.name !== docName && !d.name.startsWith(`${docName} [Part `)));
-    } catch (_) {}
-    finally { setIsDeletingTrainedDoc(null); }
-  };
-
-  // Fetch trained docs when agent changes
-  useEffect(() => {
-    refreshTrainedDocs(selectedAgentId);
-  }, [selectedAgentId, tenantSlug]);
-  const [agentsList, setAgentsList] = useState<any[]>([]);
-  const [localIp, setLocalIp] = useState("localhost");
-  useEffect(() => {
-    fetch("/api/sys/ip").then(r => r.json()).then(data => { if (data.ip) setLocalIp(data.ip); }).catch(() => {});
-  }, []);
-  const baseShareUrl = typeof window !== 'undefined' ? (window.location.hostname === 'localhost' && localIp !== 'localhost' ? `http://${localIp}:${window.location.port || '4022'}` : window.location.origin) : '';
-
-  const fetchAgents = async () => {
-    try {
-      const res = await fetch(`/api/agents?tenantSlug=${tenantSlug}`);
-      const contentType = res.headers.get("content-type");
-      if (contentType && contentType.indexOf("application/json") !== -1) {
-        const data = await res.json();
-        if (res.ok && data.success) {
-          const agents = data.agents || [];
-          setAgentsList(agents);
-          // Auto-select first agent so trainedDocs loads on refresh
-          if (agents.length > 0 && selectedAgentId === "new") {
-            const first = agents[agents.length - 1]; // most recently created
-            setSelectedAgentId(first.id);
-            setBotName(first.name || "Aether AI Agent");
-            setBotAvatar(first.avatarUrl || "");
-            setThemeColor(first.themeColor || "#6366f1");
-            setActiveTemplate(first.templateStyle || "glass");
-            setSystemPrompt(first.systemPrompt || "");
-            setAgentSkills(first.activeSkills || []);
-          }
-        }
       } else {
         console.warn("API did not return JSON:", await res.text());
       }
@@ -9690,6 +9648,7 @@ export default function TenantDashboard() {
                     themeColor, 
                     templateStyle: activeTemplate,
                     activeSkills: agentSkills,
+                    preloadedPdfs: preloadedPdfs,
                     ecommerceConfig,
                     simulateNonAI,
                     useOwnModels,
@@ -9756,7 +9715,8 @@ export default function TenantDashboard() {
                       simulateNonAI,
                       fallbackModel1,
                       fallbackModel2,
-                      activeSkills: agentSkills
+                      activeSkills: agentSkills,
+                      preloadedPdfs: preloadedPdfs
                     }} 
                     onUsageUpdate={(usage) => setTokenUsage(usage)}
                   />

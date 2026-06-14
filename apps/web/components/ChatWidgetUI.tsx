@@ -336,12 +336,55 @@ export default function ChatWidgetUI({ tenantSlug, agentConfig, isPreviewMode = 
     const file = e.target.files?.[0];
     if (!file) return;
     setUploadedFileName(file.name);
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      setUploadedFile(ev.target?.result as string);
-      if (file.type.startsWith("image/")) setIsVisionMode(true);
-    };
-    reader.readAsDataURL(file);
+
+    if (file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          let width = img.width;
+          let height = img.height;
+          
+          const MAX_SIZE = 1024;
+          if (width > height && width > MAX_SIZE) {
+            height = Math.round((height * MAX_SIZE) / width);
+            width = MAX_SIZE;
+          } else if (height > MAX_SIZE) {
+            width = Math.round((width * MAX_SIZE) / height);
+            height = MAX_SIZE;
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.7);
+            setUploadedFile(compressedDataUrl);
+            setIsVisionMode(true);
+          } else {
+            // Fallback if canvas context fails
+            setUploadedFile(ev.target?.result as string);
+            setIsVisionMode(true);
+          }
+        };
+        img.onerror = () => {
+          // Fallback if image loading fails
+          setUploadedFile(ev.target?.result as string);
+          setIsVisionMode(true);
+        };
+        img.src = ev.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        setUploadedFile(ev.target?.result as string);
+        setIsVisionMode(false);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleLeadSubmit = async (e: React.FormEvent) => {
@@ -634,7 +677,7 @@ export default function ChatWidgetUI({ tenantSlug, agentConfig, isPreviewMode = 
 
     // Append a blinking cursor block character if we are currently streaming
     const contentToParse = isStreaming ? content + "▍" : content;
-    const parts = contentToParse.split(/(\[CHECKOUT:[^\]]+\]|\[PRODUCTS:[^\]]+\]|\[BUY:[^\]]+\]|\[CATEGORY:[^\]]+\]|\[BOOKING\]|\[BOOK:[^\]]*\]|\[TIMER:[^\]]+\]|\[GENERATE_CATALOG_PDF:[^\]]+\]|\[DELEGATE:[^\]]+\]|\[FILE:[^\]]+\])/g);
+    const parts = contentToParse.split(/(\[CHECKOUT:[^\]]+\]|\[PRODUCTS:[^\]]+\]|\[BUY:[^\]]+\]|\[CATEGORY:[^\]]+\]|\[BOOKING\]|\[BOOK:[^\]]*\]|\[TIMER:[^\]]+\]|\[GENERATE_CATALOG_PDF:[^\]]+\]|\[SHARE_PRELOADED_PDF:[^\]]+\]|\[DELEGATE:[^\]]+\]|\[FILE:[^\]]+\])/g);
     
     return parts.map((part, i) => {
       if (part.startsWith("[FILE:") && part.endsWith("]")) {
@@ -669,16 +712,53 @@ export default function ChatWidgetUI({ tenantSlug, agentConfig, isPreviewMode = 
         return (
           <div key={i} className="my-4">
             <a 
-              href={`/api/pdf/catalog?tenant=${tenantSlug}&products=${ids}`} 
+              href={`/api/pdf/catalog?tenant=${tenantSlug}&products=${ids}&agentName=${encodeURIComponent(agentConfig?.name || "Aether AI")}`} 
               target="_blank"
               download
-              className="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl bg-gradient-to-r from-rose-600 to-indigo-600 hover:from-rose-500 hover:to-indigo-500 text-white font-bold text-sm shadow-lg transition group"
+              className="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl bg-gradient-to-r from-rose-600 to-indigo-600 hover:from-rose-500 hover:to-indigo-500 text-white font-bold text-sm shadow-[0_10px_30px_rgba(225,29,72,0.25)] transition-all hover:scale-[1.02] group"
             >
               <FileText className="w-5 h-5 group-hover:scale-110 transition" />
-              Download Interactive Catalog
+              Download Generated PDF
               <Download className="w-4 h-4 ml-1 opacity-70" />
             </a>
           </div>
+        );
+      }
+      if (part.startsWith("[SHARE_PRELOADED_PDF:") && part.endsWith("]")) {
+        const payload = part.substring(21, part.length - 1);
+        const [docName, docUrl] = payload.split("|");
+        return (
+          <motion.div 
+            key={i} 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="my-4 rounded-[20px] overflow-hidden border border-white/10 bg-gradient-to-b from-[#111] to-[#000] shadow-[0_12px_40px_rgba(0,0,0,0.6)] flex flex-col relative max-w-[320px] mx-auto w-full group"
+          >
+            <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent"></div>
+            <div className="p-5 relative z-10 flex flex-col items-center text-center">
+              <div className="w-14 h-14 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mb-3 shadow-[0_0_20px_rgba(99,102,241,0.15)] group-hover:scale-110 transition-transform duration-500">
+                <FileText className="w-7 h-7 text-indigo-400" />
+              </div>
+              <h4 className="font-extrabold text-white text-[16px] tracking-tight mb-1 px-2">{docName || "Requested Document"}</h4>
+              <p className="text-[11px] text-gray-400 mb-5">Premium Static Document</p>
+              
+              <a 
+                href={docUrl || "#"} 
+                target="_blank"
+                rel="noreferrer"
+                download
+                className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-[0_0_15px_rgba(99,102,241,0.4)] transition-all hover:scale-[1.02]"
+              >
+                View & Download
+                <Download className="w-4 h-4 ml-1 opacity-70" />
+              </a>
+            </div>
+            
+            <div className="bg-[#050505] p-3 flex justify-center items-center gap-2 border-t border-white/5">
+               <Sparkles className="w-3 h-3 text-emerald-400" />
+               <span className="text-[9px] font-mono text-emerald-400/80 uppercase tracking-widest font-bold">Available Instantly</span>
+            </div>
+          </motion.div>
         );
       }
       
@@ -1375,7 +1455,7 @@ export default function ChatWidgetUI({ tenantSlug, agentConfig, isPreviewMode = 
                   {(() => {
                     const isStreaming = idx === messages.length - 1 && isSending;
                     const contentToParse = isStreaming ? msg.content + "▍" : msg.content;
-                    const parts = contentToParse.split(/(\[CHECKOUT:[^\]]+\]|\[PRODUCTS:[^\]]+\]|\[BUY:[^\]]+\]|\[CATEGORY:[^\]]+\]|\[BOOKING\]|\[GENERATE_CATALOG_PDF:[^\]]+\]|\[DELEGATE:[^\]]+\]|\[FILE:[^\]]+\])/g);
+                    const parts = contentToParse.split(/(\[CHECKOUT:[^\]]+\]|\[PRODUCTS:[^\]]+\]|\[BUY:[^\]]+\]|\[CATEGORY:[^\]]+\]|\[BOOKING\]|\[BOOK:[^\]]*\]|\[TIMER:[^\]]+\]|\[GENERATE_CATALOG_PDF:[^\]]+\]|\[SHARE_PRELOADED_PDF:[^\]]+\]|\[DELEGATE:[^\]]+\]|\[FILE:[^\]]+\])/g);
                     let hasRenderedName = false;
                     
                     return parts.map((part, i) => {
@@ -1421,25 +1501,62 @@ export default function ChatWidgetUI({ tenantSlug, agentConfig, isPreviewMode = 
               <div className="absolute inset-0 opacity-20 bg-gradient-to-r from-transparent via-indigo-500 to-transparent blur-xl animate-[pulse_2s_ease-in-out_infinite] -z-10" style={{ backgroundImage: `linear-gradient(to right, transparent, ${themeColor}, transparent)` }}></div>
               <div className="absolute -left-[100%] top-0 bottom-0 w-[200%] bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-12 animate-[shimmer_2s_infinite] pointer-events-none"></div>
               
-              <div className="flex items-center gap-3 relative z-10">
-                <div className="flex items-center gap-1.5">
+              <div className="flex flex-col sm:flex-row items-center gap-4 relative z-10 w-full justify-center">
+                <div className="flex items-center gap-1.5 shrink-0">
                   {[0, 0.15, 0.3].map((delay, i) => (
                     <motion.div
                       key={i}
-                      className="h-2.5 w-2.5 rounded-full shadow-[0_0_8px_currentColor]"
+                      className="h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full shadow-[0_0_8px_currentColor]"
                       style={{ color: themeColor, backgroundColor: themeColor }}
                       animate={{ y: [0, -6, 0], opacity: [0.4, 1, 0.4], scale: [0.8, 1.2, 0.8] }}
                       transition={{ repeat: Infinity, duration: 1, delay, ease: "easeInOut" }}
                     />
                   ))}
                 </div>
-                <motion.span 
-                  animate={{ opacity: [0.5, 1, 0.5] }}
-                  transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-                  className="text-xs font-extrabold tracking-[0.15em] uppercase bg-gradient-to-r from-indigo-300 to-purple-400 bg-clip-text text-transparent"
-                >
-                  Agent is processing...
-                </motion.span>
+                
+                <div className="flex items-center justify-center overflow-hidden h-6 relative w-full max-w-[250px]">
+                  {(() => {
+                    // Generate dynamic statuses based on the last user message
+                    const lastUserMsg = messages.slice().reverse().find(m => m.role === "user")?.content?.toLowerCase() || "";
+                    const hasImage = messages.slice().reverse().find(m => m.role === "user")?.image || isVisionMode;
+                    const agentName = agentConfig?.name || "Agent";
+                    
+                    let statuses = [`${agentName} is thinking...`, "Orchestrating...", "Synthesizing response..."];
+                    
+                    if (hasImage) {
+                      statuses = ["Vision active...", "Analyzing visual data...", "Extracting features...", "Synthesizing response..."];
+                    } else if (lastUserMsg.includes("buy") || lastUserMsg.includes("price") || lastUserMsg.includes("catalog") || lastUserMsg.includes("product")) {
+                      statuses = ["Querying database...", "Fetching ecom products...", "Applying smart pricing...", "Synthesizing response..."];
+                    } else if (lastUserMsg.includes("search") || lastUserMsg.includes("find") || lastUserMsg.includes("who is")) {
+                      statuses = ["Orchestrating swarm...", "Searching web...", "Reading search results...", "Synthesizing response..."];
+                    } else if (lastUserMsg.includes("book") || lastUserMsg.includes("appointment") || lastUserMsg.includes("schedule")) {
+                      statuses = ["Checking availability...", "Accessing calendar booking...", "Synthesizing response..."];
+                    } else if (lastUserMsg.includes("lead") || lastUserMsg.includes("@") || lastUserMsg.includes("webhook")) {
+                      statuses = ["Validating data...", "Triggering automations...", "Synthesizing response..."];
+                    }
+
+                    // Simple hack to cycle through without an external component:
+                    // Use CSS animations to slide up the different statuses!
+                    return (
+                      <div className="absolute inset-0 flex flex-col items-center justify-start animate-[slideUp_6s_infinite_steps(3)]">
+                        {statuses.slice(0, 3).map((status, idx) => (
+                          <div key={idx} className="h-6 flex items-center justify-center shrink-0 w-full">
+                            <span 
+                              className="text-[11px] sm:text-xs font-extrabold tracking-[0.15em] uppercase text-center w-full truncate"
+                              style={{ 
+                                background: `linear-gradient(to right, ${themeColor}, #a78bfa)`, 
+                                WebkitBackgroundClip: "text", 
+                                WebkitTextFillColor: "transparent" 
+                              }}
+                            >
+                              {status}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })()}
+                </div>
               </div>
             </motion.div>
           )}
@@ -1447,6 +1564,15 @@ export default function ChatWidgetUI({ tenantSlug, agentConfig, isPreviewMode = 
 
         <div ref={messagesEndRef} />
       </div>
+
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes slideUp {
+          0% { transform: translateY(0); }
+          33.33% { transform: translateY(-24px); }
+          66.66% { transform: translateY(-48px); }
+          100% { transform: translateY(0); }
+        }
+      `}} />
 
       {/* Scroll to bottom button */}
       <AnimatePresence>

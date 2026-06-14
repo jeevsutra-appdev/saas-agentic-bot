@@ -112,6 +112,11 @@ You are equipped with advanced conversational marketing psychology. Your goal is
         if (isSkillAllowed("pdf_generation")) {
           finalSystemPrompt += `\n7. DYNAMIC PDF GENERATION: If the user explicitly asks for a PDF, catalog, brochure, or list of products to download, you MUST output the exact tag [GENERATE_CATALOG_PDF:id1,id2] (or [GENERATE_CATALOG_PDF:all] for everything) to instantly generate and provide them with an interactive downloadable PDF document containing those specific products. Do this naturally as part of the conversation.`;
         }
+
+        if (agentConfig?.preloadedPdfs?.length > 0) {
+          const pdfList = agentConfig.preloadedPdfs.map((pdf: any) => `- Name: ${pdf.name} | URL: ${pdf.url} | Context: ${pdf.description}`).join("\n");
+          finalSystemPrompt += `\n\n[PRE-LOADED DOCUMENTS / KNOWLEDGE BASE]\nYou have access to the following pre-loaded static PDF documents:\n${pdfList}\nIf the user asks for a document, portfolio, menu, or catalog that matches these contexts, you MUST output the exact tag [SHARE_PRELOADED_PDF:name|url] (e.g. [SHARE_PRELOADED_PDF:Summer Catalog|https://...]). The system will instantly render a premium download card for the user. Do this naturally as part of the conversation.`;
+        }
   
         // Strict Scoped Catalog Instructions
       let scopedProductsText = "";

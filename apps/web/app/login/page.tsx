@@ -24,30 +24,91 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      });
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-      const data = await response.json();
+      let authSuccess = false;
+      let targetPath = "";
 
-      if (response.ok && data.success) {
-        // Dynamic route target determined by the authenticated user role
-        if (data.role === "super_admin") {
-          showToast("Welcome back Super Admin! Redirecting...", "success");
-          router.push("/admin");
-        } else {
-          showToast(`Success! Logging into workspace "${data.tenantSlug}"`, "success");
-          router.push(`/c/${data.tenantSlug}`);
+      if (supabaseUrl && supabaseAnonKey && !isMagicLink) {
+        // Try Supabase Auth first
+        const { createBrowserClient } = await import("@supabase/ssr");
+        const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
+        
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (!error && data.session) {
+          authSuccess = true;
+          // If Supabase succeeds, we still need to know their tenant routing
+          // So we do a quick fetch to our API to get their routing info
+          const response = await fetch("/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password, supabaseBypass: true })
+          });
+          const apiData = await response.json();
+          if (response.ok && apiData.success) {
+            targetPath = apiData.role === "super_admin" ? "/admin" : `/c/${apiData.tenantSlug}`;
+          } else {
+            // Default fallback if tenant not found
+            targetPath = "/c/default-tenant";
+          }
         }
-      } else {
-        showToast(data.error || "Authentication failed.", "error");
+      }
+
+      // If Supabase failed (or not configured), fallback to hardcoded /api/login
+      if (!authSuccess) {
+        const response = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          authSuccess = true;
+          targetPath = data.role === "super_admin" ? "/admin" : `/c/${data.tenantSlug}`;
+        } else {
+          showToast(data.error || "Authentication failed.", "error");
+        }
+      }
+
+      if (authSuccess) {
+        showToast("Success! Redirecting...", "success");
+        router.push(targetPath);
       }
     } catch (err) {
-      showToast("Error: Network failure calling /api/login.", "error");
+      showToast("Error: Network failure calling login.", "error");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleOAuth = async (provider: "google" | "github") => {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    
+    if (!supabaseUrl || !supabaseAnonKey) {
+      showToast("OAuth is not configured in this environment.", "error");
+      return;
+    }
+
+    try {
+      const { createBrowserClient } = await import("@supabase/ssr");
+      const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
+      
+      await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}/api/auth/callback`
+        }
+      });
+    } catch (err) {
+      showToast(`Failed to initiate ${provider} login.`, "error");
     }
   };
 
@@ -181,7 +242,7 @@ export default function Login() {
         <div className="grid grid-cols-2 gap-3 text-xs font-semibold">
           <button 
             type="button"
-            onClick={handleLogin}
+            onClick={() => handleOAuth("github")}
             className="flex items-center justify-center gap-2 p-3 border border-white/10 rounded-xl hover:bg-white/[0.05] transition cursor-pointer text-white"
           >
             <Github className="h-4 w-4 text-white" />
@@ -189,7 +250,7 @@ export default function Login() {
           </button>
           <button 
             type="button"
-            onClick={handleLogin}
+            onClick={() => handleOAuth("google")}
             className="flex items-center justify-center gap-2 p-3 border border-white/10 rounded-xl hover:bg-white/[0.05] transition cursor-pointer text-white"
           >
             <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor">

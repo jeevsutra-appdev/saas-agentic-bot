@@ -55,6 +55,8 @@ export async function GET(req: Request) {
       telegramToolName: settings?.telegramToolName || "notify_admin",
       googleSheetsWebhookUrl: settings?.googleSheetsWebhookUrl || "",
       googleSheetsToolName: settings?.googleSheetsToolName || "save_to_sheet",
+      n8nUrl: settings?.n8nUrl || "",
+      hmacSecret: maskKey(settings?.hmacSecret),
       // Booking integrations
       zoomAccountId: settings?.zoomAccountId || "",
       zoomClientId: settings?.zoomClientId || "",
